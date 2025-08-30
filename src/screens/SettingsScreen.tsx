@@ -7,412 +7,445 @@ import {
   TouchableOpacity,
   Alert,
   Switch,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PaymentService } from '../services/PaymentService';
+import { SMSService } from '../services/SMSService';
+import { useTheme } from '../context/ThemeContext';
+import { textStyles } from '../utils/typography';
 
-const SettingItem = ({ 
-  title, 
-  subtitle, 
-  onPress, 
-  rightComponent,
-  icon,
-  type = 'default'
-}: {
+interface SettingItemProps {
   title: string;
   subtitle?: string;
   onPress?: () => void;
   rightComponent?: React.ReactNode;
-  icon: string;
-  type?: 'default' | 'export' | 'danger';
-}) => (
-  <TouchableOpacity 
-    style={[
-      styles.settingItem, 
-      type === 'export' && styles.exportItem,
-      type === 'danger' && styles.dangerItem
-    ]} 
-    onPress={onPress}
-    disabled={!onPress && !rightComponent}
-  >
-    <View style={styles.settingLeft}>
-      <View style={[
-        styles.settingIconContainer,
-        type === 'export' && styles.exportIconContainer,
-        type === 'danger' && styles.dangerIconContainer
-      ]}>
-        <Text style={[
-          styles.settingIcon,
-          type === 'export' && styles.exportIcon,
-          type === 'danger' && styles.dangerIcon
-        ]}>{icon}</Text>
-      </View>
-      <View style={styles.settingText}>
-        <Text style={[
-          styles.settingTitle,
-          type === 'export' && styles.exportTitle,
-          type === 'danger' && styles.dangerTitle
-        ]}>{title}</Text>
-        {subtitle && (
-          <Text style={[
-            styles.settingSubtitle,
-            type === 'export' && styles.exportSubtitle,
-            type === 'danger' && styles.dangerSubtitle
-          ]}>{subtitle}</Text>
+  icon?: string;
+  type?: 'default' | 'danger';
+}
+
+const SettingItem: React.FC<SettingItemProps> = ({
+  title,
+  subtitle,
+  onPress,
+  rightComponent,
+  icon,
+  type = 'default',
+}) => {
+  const { theme } = useTheme();
+
+  const settingItemStyles = StyleSheet.create({
+    settingItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomColor: theme.colors.border,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+    },
+    settingLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    settingIconContainer: {
+      width: 32,
+      height: 32,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+      backgroundColor:
+        type === 'danger' ? '#ff4444' + '20' : theme.colors.primary + '20',
+    },
+    settingIcon: {
+      ...textStyles.body,
+      color: type === 'danger' ? '#ff4444' : theme.colors.text,
+    },
+    settingText: {
+      flex: 1,
+    },
+    settingTitle: {
+      ...textStyles.bodyMedium,
+      color: type === 'danger' ? '#ff4444' : theme.colors.text,
+    },
+    settingSubtitle: {
+      ...textStyles.small,
+      marginTop: 2,
+      color: theme.colors.textSecondary,
+    },
+    settingArrow: {
+      ...textStyles.body,
+      marginLeft: 8,
+      color: theme.colors.textSecondary,
+    },
+  });
+
+  return (
+    <TouchableOpacity
+      style={settingItemStyles.settingItem}
+      onPress={onPress}
+      disabled={!onPress && !rightComponent}
+    >
+      <View style={settingItemStyles.settingLeft}>
+        {icon && (
+          <View style={settingItemStyles.settingIconContainer}>
+            <Text style={settingItemStyles.settingIcon}>{icon}</Text>
+          </View>
         )}
+        <View style={settingItemStyles.settingText}>
+          <Text style={settingItemStyles.settingTitle}>{title}</Text>
+          {subtitle && (
+            <Text style={settingItemStyles.settingSubtitle}>{subtitle}</Text>
+          )}
+        </View>
       </View>
+      {rightComponent || <Text style={settingItemStyles.settingArrow}>›</Text>}
+    </TouchableOpacity>
+  );
+};
+
+const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
+  const { theme } = useTheme();
+
+  const sectionHeaderStyles = StyleSheet.create({
+    sectionHeader: {
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 8,
+    },
+    sectionHeaderText: {
+      ...textStyles.captionMedium,
+      textTransform: 'uppercase',
+      color: theme.colors.textSecondary,
+    },
+  });
+
+  return (
+    <View style={sectionHeaderStyles.sectionHeader}>
+      <Text style={sectionHeaderStyles.sectionHeaderText}>{title}</Text>
     </View>
-    {rightComponent && (
-      <View style={styles.settingRight}>
-        {rightComponent}
-      </View>
-    )}
-    {onPress && !rightComponent && (
-      <View style={styles.settingArrow}>
-        <Text style={styles.arrowText}>›</Text>
-      </View>
-    )}
-  </TouchableOpacity>
-);
+  );
+};
 
 const SettingsScreen: React.FC = () => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
-  const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
-
-  const handleExportData = async () => {
-    try {
-      const csvData = await PaymentService.exportToCSV();
-      if (csvData) {
-        Alert.alert(
-          'Export Successful',
-          'Your payment data has been exported to CSV format.',
-          [
-            {
-              text: 'OK',
-              style: 'default',
-            },
-          ]
-        );
-      } else {
-        Alert.alert('No Data', 'No payment data to export.');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to export data');
-    }
-  };
+  const { theme } = useTheme();
+  const [smsParsingEnabled, setSmsParsingEnabled] = useState<boolean | null>(
+    null,
+  ); // null = loading
+  const [isTogglingSms, setIsTogglingSms] = useState(false);
 
   const handleClearAllData = () => {
     Alert.alert(
-      'Clear All Data',
-      'This action will permanently delete all your payment records. This cannot be undone.',
+      'Clear All Data? 🗑️',
+      'This will permanently delete all your payment records. This action cannot be undone.',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete All',
           style: 'destructive',
           onPress: async () => {
             try {
               await PaymentService.clearAllPayments();
-              Alert.alert('Success', 'All payment data has been cleared.');
+              Alert.alert('Success! ✅', 'All payment data has been cleared');
             } catch (error) {
-              Alert.alert('Error', 'Failed to clear data.');
+              Alert.alert('Error', 'Failed to clear data');
             }
           },
         },
-      ]
+      ],
     );
   };
 
+  const handleClearSmsPayments = async () => {
+    try {
+      const stats = await PaymentService.getPaymentStats();
+
+      if (stats.sms === 0) {
+        Alert.alert(
+          'No SMS Payments',
+          "You don't have any SMS-detected payments to clear.",
+        );
+        return;
+      }
+
+      Alert.alert(
+        'Clear SMS Payments? 📱',
+        `You have ${stats.sms} SMS payments and ${stats.manual} manual payments.\n\nThis will permanently delete all ${stats.sms} SMS-detected payments. Manual payments will be kept.`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Clear SMS Payments',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await PaymentService.clearSmsPayments();
+                Alert.alert(
+                  'Success! ✅',
+                  `Cleared ${stats.sms} SMS payments. ${stats.manual} manual payments preserved.`,
+                );
+              } catch (error) {
+                Alert.alert('Error', 'Failed to clear SMS payments');
+              }
+            },
+          },
+        ],
+      );
+    } catch (error) {
+      console.error('Error getting payment stats:', error);
+      Alert.alert('Error', 'Failed to get payment statistics');
+    }
+  };
+
+  const handleRateApp = () => {
+    Alert.alert(
+      'Rate SpendBook ⭐',
+      'Enjoying SpendBook? Help us by rating the app!',
+      [
+        { text: 'Later', style: 'cancel' },
+        {
+          text: 'Rate Now',
+          onPress: () =>
+            Linking.openURL(
+              'https://play.google.com/store/apps/details?id=com.spendbook',
+            ),
+        },
+      ],
+    );
+  };
+
+  // Handle SMS parsing toggle: single alert per action, processing lock to avoid duplicates
+  const handleSmsParsingToggle = async (value: boolean) => {
+    if (smsParsingEnabled === null || isTogglingSms) return;
+
+    setIsTogglingSms(true);
+    try {
+      const ok = await SMSService.setSmsParsingEnabled(value);
+      if (ok) {
+        // Only update state after success
+        setSmsParsingEnabled(value);
+        Alert.alert(
+          value ? 'SMS Parsing Enabled' : 'SMS Parsing Disabled',
+          value
+            ? 'SMS parsing has been enabled.'
+            : 'SMS parsing has been disabled.',
+        );
+      } else {
+        Alert.alert(
+          value ? 'Permission Required' : 'Error',
+          value
+            ? 'SMS permission is required to enable SMS parsing.'
+            : 'Failed to update SMS parsing setting.',
+        );
+        // Do not update toggle, just leave as is
+      }
+    } catch (e) {
+      console.error('Error toggling SMS parsing', e);
+      Alert.alert('Error', 'An unexpected error occurred');
+      // Do not update toggle, just leave as is
+    } finally {
+      setIsTogglingSms(false);
+    }
+  };
+
+  // Load SMS parsing setting on mount
+  React.useEffect(() => {
+    (async () => {
+      setSmsParsingEnabled(null); // loading
+      const enabled = await SMSService.isSmsParsingEnabled();
+      setSmsParsingEnabled(enabled);
+      if (enabled) {
+        await SMSService.startSmsMonitoring();
+      } else {
+        SMSService.stopSmsMonitoring();
+      }
+    })();
+  }, []);
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingVertical: 20,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    headerTitle: {
+      ...textStyles.heading,
+      color: theme.colors.text,
+    },
+    sectionHeaderText: {
+      ...textStyles.smallMedium,
+      textTransform: 'uppercase',
+    },
+    switchContainer: {
+      marginLeft: 'auto',
+    },
+    footerSpacer: {
+      height: 30,
+    },
+    footerContainer: {
+      marginTop: 20,
+      paddingHorizontal: 20,
+      paddingVertical: 24,
+    },
+    footerDivider: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginBottom: 20,
+      opacity: 0.3,
+    },
+    footerContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 8,
+    },
+    footerEmoji: {
+      ...textStyles.large,
+      marginRight: 8,
+    },
+    footerText: {
+      ...textStyles.body,
+      color: theme.colors.text,
+      textAlign: 'center',
+      fontWeight: '500',
+    },
+    footerFlag: {
+      ...textStyles.large,
+      marginLeft: 8,
+    },
+    footerSubtext: {
+      ...textStyles.small,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      fontStyle: 'italic',
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Settings</Text>
+      </View>
+
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Settings</Text>
-          <Text style={styles.headerSubtitle}>Customize your experience</Text>
-        </View>
-
-        {/* Preferences Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
-          
-          <SettingItem
-            icon="🔔"
-            title="Notifications"
-            subtitle="Get notified about spending alerts"
-            rightComponent={
+        {/* SMS Parsing Card */}
+        <SectionHeader title="SMS Parsing" />
+        <SettingItem
+          title="SMS Detection"
+          rightComponent={
+            <View style={styles.switchContainer}>
               <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-                trackColor={{ false: '#e0e0e0', true: '#3498db' }}
-                thumbColor={notificationsEnabled ? '#ffffff' : '#f4f3f4'}
+                value={smsParsingEnabled ?? false}
+                onValueChange={handleSmsParsingToggle}
+                disabled={smsParsingEnabled === null || isTogglingSms}
+                trackColor={{
+                  false: theme.colors.border,
+                  true: theme.colors.primary,
+                }}
+                thumbColor={theme.isDark ? '#ffffff' : theme.colors.surface}
               />
-            }
-          />
+            </View>
+          }
+        />
 
-          <SettingItem
-            icon="🌙"
-            title="Dark Mode"
-            subtitle="Enable dark theme"
-            rightComponent={
-              <Switch
-                value={darkModeEnabled}
-                onValueChange={setDarkModeEnabled}
-                trackColor={{ false: '#e0e0e0', true: '#3498db' }}
-                thumbColor={darkModeEnabled ? '#ffffff' : '#f4f3f4'}
-              />
-            }
-          />
+        {/* Data Management */}
+        <SectionHeader title="Data Management" />
+        <SettingItem
+          title="Clear SMS Data"
+          type="danger"
+          onPress={handleClearSmsPayments}
+        />
+        <SettingItem
+          title="Clear All Data"
+          type="danger"
+          onPress={handleClearAllData}
+        />
 
-          <SettingItem
-            icon="☁️"
-            title="Auto Backup"
-            subtitle="Automatically backup your data"
-            rightComponent={
-              <Switch
-                value={autoBackupEnabled}
-                onValueChange={setAutoBackupEnabled}
-                trackColor={{ false: '#e0e0e0', true: '#3498db' }}
-                thumbColor={autoBackupEnabled ? '#ffffff' : '#f4f3f4'}
-              />
-            }
-          />
-        </View>
+        {/* About */}
+        <SectionHeader title="About" />
+        <SettingItem
+          title="About"
+          onPress={() =>
+            Alert.alert(
+              'About SpendBook',
+              'SpendBook - Payment Tracker\n\n' +
+                'A simple payment tracking app for Android.\n\n' +
+                'Features:\n' +
+                '• SMS payment detection\n' +
+                '• Manual payment entry\n' +
+                '• Payment analytics\n' +
+                '• Data export\n\n' +
+                'Version: 1.0.0\n' +
+                'Made in India 🇮🇳',
+            )
+          }
+        />
+        <SettingItem title="Rate App" onPress={handleRateApp} />
+        <SettingItem
+          title="Privacy Policy"
+          onPress={() =>
+            Alert.alert(
+              'Privacy Policy',
+              'Privacy Policy for SpendBook\n\n' +
+                'Last updated: August 30, 2025\n\n' +
+                '🔒 Your Privacy is Protected\n\n' +
+                'SpendBook stores ALL your data locally on your device. ' +
+                'No data is sent to external servers or shared with third parties.\n\n' +
+                'What We Store Locally:\n' +
+                '• Payment records you enter manually\n' +
+                '• SMS messages (only if you enable SMS detection)\n' +
+                '• App preferences and settings\n\n' +
+                "What We DON'T Do:\n" +
+                '• ❌ No data sent to internet/cloud\n' +
+                '• ❌ No tracking or analytics\n' +
+                '• ❌ No data sharing with anyone\n' +
+                '• ❌ No account creation required\n\n' +
+                'Your Control:\n' +
+                '• Delete SMS data anytime\n' +
+                '• Clear all data anytime\n' +
+                '• Data stays on your device only\n\n' +
+                'Permissions:\n' +
+                '• SMS permission (optional for auto-detection)\n' +
+                '• No internet permission needed\n\n' +
+                'Contact: support@spendbook.app',
+            )
+          }
+        />
 
-        {/* Data Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Management</Text>
-          
-          <SettingItem
-            icon="📊"
-            title="Export Data"
-            subtitle="Download your payment history as CSV"
-            onPress={handleExportData}
-            type="export"
-          />
+        <SettingItem
+          title="Write to Support"
+          onPress={() =>
+            Linking.openURL('mailto:support@spendbook.app?subject=Support')
+          }
+        />
 
-          <SettingItem
-            icon="🗑️"
-            title="Clear All Data"
-            subtitle="Delete all payment records permanently"
-            onPress={handleClearAllData}
-            type="danger"
-          />
-        </View>
-
-        {/* App Info Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>App Information</Text>
-          
-          <SettingItem
-            icon="📱"
-            title="Version"
-            subtitle="Batua v1.0.0"
-          />
-
-          <SettingItem
-            icon="📋"
-            title="Privacy Policy"
-            subtitle="How we handle your data"
-            onPress={() => Alert.alert('Privacy Policy', 'Your data is stored locally on your device and never shared with third parties.')}
-          />
-
-          <SettingItem
-            icon="❓"
-            title="Help & Support"
-            subtitle="Get help using the app"
-            onPress={() => Alert.alert(
-              'Help & Support',
-              'Features:\n\n• Add payments manually\n• View spending analytics\n• Export data as CSV\n• Filter transaction history\n• Track spending by categories\n\nFor more help, contact support.'
-            )}
-          />
-        </View>
-
-        {/* About Section */}
-        <View style={styles.aboutSection}>
-          <Text style={styles.aboutTitle}>💼 Batua</Text>
-          <Text style={styles.aboutText}>
-            Smart payment tracker for effortless expense management.
-          </Text>
-          <Text style={styles.licenseText}>
-            © 2025 Batua. Licensed under MIT License. All rights reserved.
+        {/* Footer Message */}
+        <View style={styles.footerContainer}>
+          <View style={styles.footerDivider} />
+          <View style={styles.footerContent}>
+            <Text style={styles.footerEmoji}>💝</Text>
+            <Text style={styles.footerText}>Made with love in India</Text>
+            <Text style={styles.footerFlag}>🇮🇳</Text>
+          </View>
+          <Text style={styles.footerSubtext}>
+            Crafting beautiful experiences
           </Text>
         </View>
+
+        {/* Footer spacing */}
+        <View style={styles.footerSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  header: {
-    padding: 20,
-    paddingTop: 10,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 4,
-    paddingVertical: 2,
-    lineHeight: 34,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  section: {
-    marginBottom: 25,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: 15,
-    marginLeft: 20,
-    paddingVertical: 2,
-    lineHeight: 24,
-  },
-  settingItem: {
-    backgroundColor: '#ffffff',
-    marginHorizontal: 20,
-    marginBottom: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  exportItem: {
-    backgroundColor: '#f8f9ff',
-    borderWidth: 1,
-    borderColor: '#e3f2fd',
-  },
-  dangerItem: {
-    backgroundColor: '#fff5f5',
-    borderWidth: 1,
-    borderColor: '#ffebee',
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  settingIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f1f2f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  exportIconContainer: {
-    backgroundColor: '#e3f2fd',
-  },
-  dangerIconContainer: {
-    backgroundColor: '#ffebee',
-  },
-  settingIcon: {
-    fontSize: 18,
-  },
-  exportIcon: {
-    fontSize: 18,
-  },
-  dangerIcon: {
-    fontSize: 18,
-  },
-  settingText: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: 2,
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  exportTitle: {
-    color: '#1976d2',
-  },
-  dangerTitle: {
-    color: '#d32f2f',
-  },
-  settingSubtitle: {
-    fontSize: 13,
-    color: '#7f8c8d',
-    paddingVertical: 1,
-    lineHeight: 18,
-  },
-  exportSubtitle: {
-    color: '#1565c0',
-  },
-  dangerSubtitle: {
-    color: '#c62828',
-  },
-  settingRight: {
-    marginLeft: 12,
-  },
-  settingArrow: {
-    marginLeft: 8,
-  },
-  arrowText: {
-    fontSize: 18,
-    color: '#bdc3c7',
-    fontWeight: '300',
-  },
-  aboutSection: {
-    backgroundColor: '#ffffff',
-    margin: 20,
-    padding: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  aboutTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 8,
-    paddingVertical: 3,
-    lineHeight: 30,
-  },
-  aboutText: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 12,
-    paddingVertical: 2,
-  },
-  licenseText: {
-    fontSize: 12,
-    color: '#95a5a6',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingVertical: 1,
-    lineHeight: 16,
-  },
-});
 
 export default SettingsScreen;

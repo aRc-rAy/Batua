@@ -13,11 +13,14 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { PaymentCategory, RootStackParamList } from '../types';
 import { PaymentService } from '../services/PaymentService';
+import { useTheme } from '../context/ThemeContext';
+import { textStyles } from '../utils/typography';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type RouteProps = RouteProp<RootStackParamList, 'EditPayment'>;
 
 const EditPaymentScreen: React.FC = () => {
+  const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
   
@@ -98,6 +101,147 @@ const EditPaymentScreen: React.FC = () => {
   const handleRecommendationPress = (recommendation: string) => {
     setDescription(recommendation);
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    backButton: {
+      marginBottom: 10,
+    },
+    backButtonText: {
+      ...textStyles.bodyMedium,
+      color: theme.colors.primary,
+      paddingVertical: 2,
+      lineHeight: 22,
+    },
+    headerTitle: {
+      ...textStyles.heading,
+      color: theme.colors.text,
+    },
+    headerSubtitle: {
+      ...textStyles.body,
+      color: theme.colors.textSecondary,
+    },
+    section: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    label: {
+      ...textStyles.bodyMedium,
+      color: theme.colors.text,
+      marginBottom: 8,
+    },
+    amountInput: {
+      ...textStyles.subheading,
+      color: theme.colors.text,
+      backgroundColor: theme.colors.background,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    categoriesContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    categoryButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      marginBottom: 8,
+    },
+    selectedCategory: {
+      backgroundColor: theme.colors.primary,
+      borderColor: theme.colors.primary,
+    },
+    categoryIcon: {
+      ...textStyles.large,
+      marginRight: 8,
+    },
+    categoryText: {
+      ...textStyles.caption,
+      color: theme.colors.text,
+    },
+    selectedCategoryText: {
+      color: '#ffffff',
+    },
+    descriptionInput: {
+      ...textStyles.bodyMedium,
+      color: theme.colors.text,
+      backgroundColor: theme.colors.background,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      minHeight: 80,
+      textAlignVertical: 'top',
+    },
+    recommendationsContainer: {
+      marginTop: 12,
+    },
+    recommendationsLabel: {
+      ...textStyles.caption,
+      color: theme.colors.textSecondary,
+      marginBottom: 8,
+    },
+    recommendationsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    recommendationChip: {
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    recommendationText: {
+      ...textStyles.caption,
+      color: theme.colors.text,
+    },
+    saveButtonSection: {
+      paddingHorizontal: 20,
+      paddingVertical: 20,
+    },
+    saveButton: {
+      backgroundColor: theme.colors.primary,
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    saveButtonText: {
+      ...textStyles.button,
+      color: '#ffffff',
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -197,171 +341,5 @@ const EditPaymentScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  header: {
-    padding: 20,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
-  },
-  backButton: {
-    marginBottom: 10,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#3498db',
-    fontWeight: '600',
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 4,
-    paddingVertical: 3,
-    lineHeight: 30,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    paddingVertical: 2,
-    lineHeight: 20,
-  },
-  section: {
-    paddingHorizontal: 15,
-    marginBottom: 18,
-  },
-  saveButtonSection: {
-    paddingHorizontal: 15,
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: 6,
-    paddingVertical: 2,
-    lineHeight: 20,
-  },
-  amountInput: {
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    textAlign: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  descriptionInput: {
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 14,
-    color: '#2c3e50',
-    textAlignVertical: 'top',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-    minHeight: 60,
-  },
-  categoriesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  categoryButton: {
-    backgroundColor: '#ffffff',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-    minWidth: 80,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  selectedCategory: {
-    backgroundColor: '#3498db',
-  },
-  categoryIcon: {
-    fontSize: 18,
-    marginBottom: 3,
-  },
-  categoryText: {
-    fontSize: 11,
-    color: '#2c3e50',
-    fontWeight: '500',
-    paddingVertical: 1,
-    lineHeight: 16,
-  },
-  selectedCategoryText: {
-    color: '#ffffff',
-    fontWeight: '600',
-  },
-  saveButton: {
-    backgroundColor: '#3498db',
-    padding: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  saveButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  recommendationsContainer: {
-    marginTop: 10,
-  },
-  recommendationsLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#34495e',
-    marginBottom: 6,
-    paddingVertical: 2,
-    lineHeight: 18,
-  },
-  recommendationsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
-  recommendationChip: {
-    backgroundColor: '#e8f4f8',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#3498db',
-  },
-  recommendationText: {
-    fontSize: 12,
-    color: '#3498db',
-    fontWeight: '500',
-    paddingVertical: 1,
-    lineHeight: 16,
-  },
-});
 
 export default EditPaymentScreen;

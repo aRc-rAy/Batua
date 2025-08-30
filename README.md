@@ -1,4 +1,4 @@
-# 📱 Batua - Personal Payment Tracker
+# 📱 SpendBook - Personal Payment Tracker
 
 A comprehensive Android app for tracking daily expenses with smart SMS detection and analytics.
 

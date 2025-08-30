@@ -1,128 +1,147 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // Tab Icons
 import HomeScreen from '../screens/HomeScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AddPaymentScreen from '../screens/AddPaymentScreen';
 import EditPaymentScreen from '../screens/EditPaymentScreen';
+import PaymentActionsScreen from '../screens/PaymentActionsScreen';
 import { TabParamList, RootStackParamList } from '../types';
+import { useTheme } from '../context/ThemeContext';
+import { textStyles } from '../utils/typography';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
 
-// Simple emoji icons that work everywhere
-const renderHomeIcon = ({ color }: { color: string }) => (
-  <Text style={[styles.tabIcon, { color }]}>🏠</Text>
-);
-const renderHistoryIcon = ({ color }: { color: string }) => (
-  <Text style={[styles.tabIcon, { color }]}>📋</Text>
-);
-const renderAnalyticsIcon = ({ color }: { color: string }) => (
-  <Text style={[styles.tabIcon, { color }]}>📊</Text>
-);
-const renderSettingsIcon = ({ color }: { color: string }) => (
-  <Text style={[styles.tabIcon, { color }]}>⚙️</Text>
-);
-
 const TabNavigator: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#2980b9',
-        tabBarInactiveTintColor: '#95a5a6',
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
+          let iconName = '';
+          switch (route.name) {
+            case 'Home':
+              iconName = focused ? 'home' : 'home-outline';
+              break;
+            case 'History':
+              iconName = focused ? 'time' : 'time-outline';
+              break;
+            case 'Analytics':
+              iconName = focused ? 'bar-chart' : 'bar-chart-outline';
+              break;
+            case 'Settings':
+              iconName = focused ? 'settings' : 'settings-outline';
+              break;
+          }
+          return <Ionicons name={iconName} size={22} color={color} />;
+        },
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.tabInactive,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e1e8ed',
-          borderTopWidth: 1,
-          paddingTop: 5,
-          paddingBottom: 5,
-          height: 60,
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
+          borderTopWidth: 0.5,
+          height: 65,
+          paddingBottom: 8,
+          shadowColor: '#000',
+          shadowOpacity: 0.05,
+          shadowRadius: 4,
+          elevation: 2,
         },
         tabBarLabelStyle: {
+          ...textStyles.caption,
           fontSize: 11,
-          fontWeight: '600',
-          marginTop: -2,
-          paddingVertical: 1,
-          lineHeight: 15,
+          marginBottom: 4,
         },
         headerShown: false,
-      }}
+      })}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: renderHomeIcon,
-        }}
-      />
-      <Tab.Screen
-        name="History"
-        component={HistoryScreen}
-        options={{
-          tabBarLabel: 'History',
-          tabBarIcon: renderHistoryIcon,
-        }}
-      />
-      <Tab.Screen
-        name="Analytics"
-        component={AnalyticsScreen}
-        options={{
-          tabBarLabel: 'Analytics',
-          tabBarIcon: renderAnalyticsIcon,
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          tabBarLabel: 'Settings',
-          tabBarIcon: renderSettingsIcon,
-        }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 };
 
 const AppNavigator: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Main" component={TabNavigator} />
-        <Stack.Screen 
-          name="AddPayment" 
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Main"
+          component={TabNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddPayment"
           component={AddPaymentScreen}
           options={{
             headerShown: true,
-            headerTitle: '',
+            headerTitle: 'Add Payment',
+            headerTitleAlign: 'center',
             headerStyle: {
-              backgroundColor: '#f8f9fa',
-              elevation: 0,
+              backgroundColor: theme.colors.surface,
               shadowOpacity: 0,
+              elevation: 0,
             },
-            headerTintColor: '#2c3e50',
+            headerTitleStyle: {
+              ...textStyles.heading,
+              fontSize: 18,
+              color: theme.colors.text,
+            },
+            headerTintColor: theme.colors.primary,
           }}
         />
-        <Stack.Screen 
-          name="EditPayment" 
+        <Stack.Screen
+          name="EditPayment"
           component={EditPaymentScreen}
           options={{
+            headerShown: true,
+            headerTitle: 'Edit Payment',
+            headerTitleAlign: 'center',
+            headerStyle: {
+              backgroundColor: theme.colors.surface,
+            },
+            headerTitleStyle: {
+              ...textStyles.heading,
+              color: theme.colors.text,
+            },
+            headerTintColor: theme.colors.primary,
+          }}
+        />
+        <Stack.Screen
+          name="PaymentActions"
+          component={PaymentActionsScreen}
+          options={{
             headerShown: false,
+            presentation: 'modal',
+            gestureEnabled: true,
+            cardStyleInterpolator: ({ current, layouts }) => ({
+              cardStyle: {
+                transform: [
+                  {
+                    translateY: current.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [layouts.screen.height, 0],
+                    }),
+                  },
+                ],
+              },
+            }),
           }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  tabIcon: {
-    fontSize: 20,
-  },
-});
 
 export default AppNavigator;

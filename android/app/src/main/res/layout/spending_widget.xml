@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background"
+    android:gravity="center">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="💰 Batua"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="start" />
+
+        <TextView
+            android:id="@+id/widget_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aug 30"
+            android:textColor="#B0FFFFFF"
+            android:textSize="14sp"
+            android:gravity="end" />
+
+    </LinearLayout>
+
+    <!-- Today's Spending -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/widget_today_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Today"
+            android:textColor="#B0FFFFFF"
+            android:textSize="14sp"
+            android:gravity="start" />
+
+        <TextView
+            android:id="@+id/widget_today_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹0.00"
+            android:textColor="#4CAF50"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="end" />
+
+    </LinearLayout>
+
+    <!-- Monthly Spending -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/widget_month_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="This Month"
+            android:textColor="#B0FFFFFF"
+            android:textSize="14sp"
+            android:gravity="start" />
+
+        <TextView
+            android:id="@+id/widget_month_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹0.00"
+            android:textColor="#2196F3"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="end" />
+
+    </LinearLayout>
+
+    <!-- Last Updated -->
+    <TextView
+        android:id="@+id/widget_last_updated"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Updated: Never"
+        android:textColor="#80FFFFFF"
+        android:textSize="10sp"
+        android:gravity="center" />
+
+</LinearLayout>

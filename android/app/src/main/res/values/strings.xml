@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Batua</string>
+    <string name="app_name">SpendBook</string>
+    <string name="widget_description">SpendBook Spending Widget - View daily and monthly spending totals on your home screen</string>
 </resources>

@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
       android:name=".MainApplication"
@@ -22,5 +26,18 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+
+      <!-- Batua Spending Widget -->
+      <receiver
+        android:name=".widget.SpendingWidgetProvider"
+        android:label="SpendBook Spending Widget"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/spending_widget_info" />
+      </receiver>
     </application>
 </manifest>

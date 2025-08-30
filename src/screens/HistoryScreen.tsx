@@ -3,60 +3,82 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Alert,
-  Share,
+  Modal,
+  Platform,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Payment, RootStackParamList } from '../types';
 import { PaymentService } from '../services/PaymentService';
+import { useTheme } from '../context/ThemeContext';
+import { textStyles } from '../utils/typography';
+import RNFS from 'react-native-fs';
+import TransactionList from '../components/TransactionList';
 
 type FilterType = 'all' | 'manual' | 'sms';
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const HistoryScreen: React.FC = () => {
+  const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp>();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [filteredPayments, setFilteredPayments] = useState<Payment[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
   const [loading, setLoading] = useState(true);
-  const [selectedPaymentId, setSelectedPaymentId] = useState<string | null>(null);
+  const [exportProgress, setExportProgress] = useState<{
+    visible: boolean;
+    step: 'generating' | 'ready' | 'downloading';
+    filePath?: string;
+    fileName?: string;
+    cancelled: boolean;
+  }>({
+    visible: false,
+    step: 'generating',
+    cancelled: false
+  });
 
-  const loadPayments = useCallback(async () => {
-    try {
-      setLoading(true);
-      const allPayments = await PaymentService.getAllPayments();
-      setPayments(allPayments);
-      applyFilter(allPayments, filter);
-    } catch (error) {
-      console.error('Error loading payments:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [filter]);
-
-  const applyFilter = (allPayments: Payment[], filterType: FilterType) => {
+  // Function to filter payments without loading state
+  const applyFilter = useCallback((allPayments: Payment[], filterType: FilterType) => {
     let filtered = allPayments;
-    
-    // Apply filter based on payment type
     if (filterType === 'manual') {
       filtered = allPayments.filter(payment => payment.type === 'manual' && !payment.isFromSMS);
     } else if (filterType === 'sms') {
       filtered = allPayments.filter(payment => payment.type === 'sms' || payment.isFromSMS);
     }
-    // 'all' shows everything, so no additional filtering needed
-    
-    // Sort by date (newest first)
-    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    setFilteredPayments(filtered);
-  };
+    return filtered;
+  }, []);
+
+  const loadPayments = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      const allPayments = await PaymentService.getAllPayments();
+      setPayments(allPayments);
+      
+      // Apply all filter will be handled by useEffect
+      setFilteredPayments(allPayments);
+    } catch (error) {
+      console.error('Error loading payments:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Separate effect to handle filter changes without reloading data
+  React.useEffect(() => {
+    if (payments.length > 0) {
+      const filtered = applyFilter(payments, filter);
+      setFilteredPayments(filtered);
+    }
+  }, [filter, payments, applyFilter]);
 
   const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter);
-    applyFilter(payments, newFilter);
+    // Filter will be applied automatically by useEffect above
   };
 
   useFocusEffect(
@@ -65,457 +87,606 @@ const HistoryScreen: React.FC = () => {
     }, [loadPayments])
   );
 
-  const getCategoryIcon = (category: string) => {
-    const icons: { [key: string]: string } = {
-      Food: '🍽️',
-      Travel: '✈️',
-      Entertainment: '🎬',
-      Clothes: '👕',
-      Bills: '💡',
-      Healthcare: '🏥',
-      Others: '🔍'
-    };
-    return icons[category] || '💰';
-  };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
-  };
-
-  const handleExport = async () => {
+  const handleExportAll = async () => {
     try {
-      console.log('Export button pressed'); // Debug log
-      const csvData = await PaymentService.exportToCSV();
-      console.log('CSV data generated:', csvData ? 'Success' : 'No data'); // Debug log
+      // Reset progress state
+      setExportProgress({
+        visible: true,
+        step: 'generating',
+        cancelled: false
+      });
+
+      // Simulate some processing time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (csvData) {
-        await Share.share({
-          message: csvData,
-          title: 'Payment History Export',
-        });
-        console.log('Share completed'); // Debug log
-      } else {
-        Alert.alert('No Data', 'No payments to export');
+      // Check if user cancelled during generation
+      if (exportProgress.cancelled) {
+        setExportProgress(prev => ({ ...prev, visible: false }));
+        return;
       }
+
+      const filePath = await PaymentService.exportToExcel();
+      const fileName = filePath.split('/').pop() || 'SpendBook.xlsx';
+
+      // Update progress to ready state
+      setExportProgress(prev => ({
+        ...prev,
+        step: 'ready',
+        filePath,
+        fileName
+      }));
+
     } catch (error) {
-      console.error('Export error:', error);
-      Alert.alert('Error', 'Failed to export data');
+      setExportProgress(prev => ({ ...prev, visible: false }));
+      Alert.alert('Error', 'Failed to generate Excel file');
     }
   };
 
-  const handleDeletePayment = (payment: Payment) => {
-    Alert.alert(
-      'Delete Payment',
-      `Are you sure you want to delete this payment?\n\nAmount: ₹${payment.amount.toLocaleString()}\nDescription: ${payment.description || 'No description'}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await PaymentService.deletePayment(payment.id);
-              loadPayments(); // Reload payments after deletion
-              Alert.alert('Success', 'Payment deleted successfully');
-            } catch (error) {
-              console.error('Error deleting payment:', error);
-              Alert.alert('Error', 'Failed to delete payment');
-            }
-          }
-        }
-      ]
-    );
+  const handleDownload = async () => {
+    try {
+      setExportProgress(prev => ({ ...prev, step: 'downloading' }));
+      
+      if (!exportProgress.filePath) {
+        throw new Error('No file path available');
+      }
+
+      // Add a small delay to show the downloading state
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if file exists
+      const fileExists = await RNFS.exists(exportProgress.filePath);
+      
+      if (fileExists) {
+        setExportProgress(prev => ({ ...prev, visible: false }));
+        
+        Alert.alert(
+          'Download Complete! 🎉',
+          `Excel file successfully saved!\n\n📁 Location: Downloads/${exportProgress.fileName}\n\n💡 You can find it in your device's Downloads folder or File Manager`,
+          [
+            { 
+              text: 'Open File Manager', 
+              onPress: () => {
+                // Try to open Downloads folder
+                if (Platform.OS === 'android') {
+                  Linking.openURL('content://com.android.externalstorage.documents/document/primary%3ADownload')
+                    .catch(() => {
+                      // Fallback to generic file manager intent
+                      Linking.openURL('content://com.android.providers.downloads.documents/root/downloads')
+                        .catch(() => console.log('Cannot open file manager'));
+                    });
+                }
+              }
+            },
+            { text: 'Great!', style: 'default' }
+          ]
+        );
+      } else {
+        throw new Error('File was not created successfully');
+      }
+    } catch (error) {
+      setExportProgress(prev => ({ ...prev, visible: false }));
+      Alert.alert(
+        'Download Error',
+        'There was an issue saving the file. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
   };
 
-  const handleEditPayment = (payment: Payment) => {
-    // Navigate to EditPayment screen with payment data
-    navigation.navigate('EditPayment', { payment });
+  const handleCancelExport = () => {
+    if (exportProgress.step === 'generating') {
+      setExportProgress(prev => ({ ...prev, cancelled: true, visible: false }));
+    } else {
+      setExportProgress(prev => ({ ...prev, visible: false }));
+    }
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    headerTitle: {
+      ...textStyles.heading,
+      color: theme.colors.text,
+    },
+    filterSection: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    filterContainer: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.background,
+      borderRadius: 12,
+      padding: 4,
+    },
+    filterButton: {
+      flex: 1,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    filterButtonActive: {
+      backgroundColor: theme.colors.primary,
+    },
+    filterButtonText: {
+      ...textStyles.body,
+      color: theme.colors.textSecondary,
+    },
+    filterButtonTextActive: {
+      color: '#ffffff',
+    },
+    exportButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+      flex: 1,
+    },
+    actionButtonsContainer: {
+      flexDirection: 'row',
+      marginTop: 8,
+      paddingHorizontal: 20,
+      gap: 10,
+    },
+    actionSeparator: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginHorizontal: 20,
+      marginTop: 12,
+      marginBottom: 8,
+    },
+    actionButtonPrimary: {
+      backgroundColor: theme.colors.primary,
+    },
+    actionButtonSecondary: {
+      backgroundColor: theme.colors.accent,
+    },
+    exportButtonText: {
+      ...textStyles.body,
+      color: '#ffffff',
+      fontWeight: '600',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      ...textStyles.body,
+      color: theme.colors.textSecondary,
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 60,
+    },
+    emptyStateText: {
+      fontSize: 16,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    emptyStateSubtext: {
+      ...textStyles.caption,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+    },
+    monthSection: {
+      marginBottom: 20,
+    },
+    monthHeader: {
+      backgroundColor: theme.colors.surface,
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    dateHeader: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      backgroundColor: theme.colors.background,
+      borderTopWidth: 0.5,
+      borderTopColor: theme.colors.border,
+    },
+    dateHeaderText: {
+      ...textStyles.caption,
+      fontWeight: '600',
+      color: theme.colors.textSecondary,
+    },
+    recentTransactionsList: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    transactionCard: {
+      backgroundColor: theme.colors.card,
+      marginBottom: 1,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    transactionContainer: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    monthTitle: {
+      ...textStyles.heading,
+      color: theme.colors.text,
+    },
+    monthTotal: {
+      ...textStyles.caption,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    paymentCard: {
+      backgroundColor: theme.colors.card,
+      marginBottom: 1,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    paymentContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    paymentIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: theme.colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    paymentEmoji: {
+      fontSize: 18,
+    },
+    paymentInfo: {
+      flex: 1,
+    },
+    paymentDescription: {
+      ...textStyles.body,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    paymentCategory: {
+      ...textStyles.caption,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    paymentRight: {
+      alignItems: 'flex-end',
+    },
+    paymentAmount: {
+      ...textStyles.body,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    paymentType: {
+      ...textStyles.caption,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    paymentDate: {
+      ...textStyles.caption,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+      backgroundColor: theme.colors.surface,
+      margin: 20,
+      borderRadius: 12,
+      width: '85%',
+      maxHeight: '70%',
+    },
+    modalHeader: {
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    modalTitle: {
+      ...textStyles.heading,
+      color: theme.colors.text,
+      textAlign: 'center',
+    },
+    modalButtons: {
+      padding: 20,
+      gap: 10,
+    },
+    modalButton: {
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    modalButtonPrimary: {
+      backgroundColor: theme.colors.primary,
+    },
+    modalButtonSecondary: {
+      backgroundColor: theme.colors.accent,
+    },
+    modalButtonText: {
+      ...textStyles.body,
+      color: '#ffffff',
+      fontWeight: '600',
+    },
+    progressContent: {
+      paddingVertical: 30,
+      paddingHorizontal: 20,
+      alignItems: 'center',
+    },
+    progressText: {
+      ...textStyles.body,
+      fontWeight: '600',
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    progressSubtext: {
+      ...textStyles.caption,
+      textAlign: 'center',
+      fontStyle: 'italic',
+    },
+    modalButtonTextWhite: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#fff',
+      textAlign: 'center',
+    },
+    progressIndicator: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: 'rgba(0, 122, 255, 0.1)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    progressEmoji: {
+      fontSize: 32,
+    },
+    progressBar: {
+      width: '100%',
+      height: 4,
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      borderRadius: 2,
+      marginTop: 20,
+      overflow: 'hidden',
+    },
+    progressBarFill: {
+      height: '100%',
+      width: '70%',
+      borderRadius: 2,
+    },
+    downloadingAnimation: {
+      width: '100%',
+    },
+    successBadge: {
+      backgroundColor: 'rgba(52, 199, 89, 0.1)',
+      borderRadius: 20,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      marginTop: 16,
+    },
+    successText: {
+      fontSize: 14,
+      color: '#34C759',
+      fontWeight: '500',
+      textAlign: 'center',
+    },
+    cancelButton: {
+      borderWidth: 1,
+    },
+    downloadButton: {
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+    },
+  });
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading payment history...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Payment History</Text>
-          <Text style={styles.headerSubtitle}>Track your spending patterns</Text>
-        </View>
-
-        {/* Filter Buttons */}
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>History</Text>
+      </View>
+      
+      {/* Filter Options */}
+      <View style={styles.filterSection}>
         <View style={styles.filterContainer}>
-          {(['all', 'manual', 'sms'] as FilterType[]).map((filterOption) => (
+          {(['all', 'manual', 'sms'] as FilterType[]).map((filterType) => (
             <TouchableOpacity
-              key={filterOption}
+              key={filterType}
               style={[
                 styles.filterButton,
-                filter === filterOption && styles.activeFilterButton
+                filter === filterType && styles.filterButtonActive
               ]}
-              onPress={() => handleFilterChange(filterOption)}
+              onPress={() => handleFilterChange(filterType)}
             >
               <Text style={[
                 styles.filterButtonText,
-                filter === filterOption && styles.activeFilterButtonText
+                filter === filterType && styles.filterButtonTextActive
               ]}>
-                {filterOption === 'all' ? 'All' : filterOption === 'manual' ? 'Manual' : 'SMS'}
+                {filterType === 'all' ? 'All' : filterType === 'manual' ? 'Manual' : 'SMS'}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
+      </View>
 
-        {/* Export Button */}
-        <View style={styles.exportContainer}>
-          <TouchableOpacity 
-            style={styles.exportButton} 
-            onPress={handleExport}
-            activeOpacity={0.7}
+      {/* Action Buttons */}
+      <View style={styles.actionButtonsContainer}>
+          <TouchableOpacity
+            style={[styles.exportButton, styles.actionButtonPrimary]}
+            onPress={handleExportAll}
           >
-            <View style={styles.exportButtonContent}>
-              <View style={styles.exportIconContainer}>
-                <Text style={styles.exportIcon}>📊</Text>
-              </View>
-              <Text style={styles.exportButtonText}>Export to CSV</Text>
-            </View>
+            <Text style={styles.exportButtonText}>Download Excel</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Transactions List */}
-        <View style={styles.transactionsContainer}>
-          {loading ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>Loading...</Text>
-            </View>
-          ) : filteredPayments.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No payments found</Text>
-              <Text style={styles.emptyStateSubtext}>
-                {filter === 'all' ? 'Add some payments to see them here' : 
-                 filter === 'manual' ? 'No manual payments recorded' :
-                 'No SMS payments detected'}
-              </Text>
-            </View>
-          ) : (
-            filteredPayments.map((payment) => (
-              <View key={payment.id}>
-                <TouchableOpacity 
-                  style={[
-                    styles.paymentItem,
-                    selectedPaymentId === payment.id && styles.paymentItemSelected
-                  ]}
-                  onPress={() => {
-                    if (selectedPaymentId === payment.id) {
-                      setSelectedPaymentId(null); // Hide actions if already selected
-                    } else {
-                      setSelectedPaymentId(payment.id); // Show actions for this payment
-                    }
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.paymentLeft}>
-                    <View style={styles.categoryContainer}>
-                      <Text style={styles.categoryIcon}>
-                        {getCategoryIcon(payment.category)}
-                      </Text>
-                    </View>
-                    <View style={styles.paymentDetails}>
-                      <Text style={styles.paymentDescription} numberOfLines={1}>
-                        {payment.category}
-                      </Text>
-                      <Text style={styles.paymentCategory}>
-                        {payment.description || 'No description'}
-                      </Text>
-                      <Text style={styles.paymentDate}>
-                        {formatDate(payment.date)} at {formatTime(payment.date)} • {payment.type === 'sms' || payment.isFromSMS ? 'SMS Entry' : 'Manual Entry'}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.paymentRight}>
-                    <Text style={styles.paymentAmount}>
-                      -₹{payment.amount.toLocaleString()}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                
-                {/* Edit/Delete buttons outside the card */}
-                {selectedPaymentId === payment.id && (
-                  <View style={styles.actionButtons}>
-                    <TouchableOpacity
-                      style={styles.editButton}
-                      onPress={() => handleEditPayment(payment)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.editButtonText}>✏️ Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => handleDeletePayment(payment)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            ))
-          )}
+      {/* Separator */}
+      <View style={styles.actionSeparator} />
+
+      {/* Content */}
+      {loading ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>Loading history...</Text>
         </View>
-      </ScrollView>
+      ) : filteredPayments.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>No payment history found</Text>
+          <Text style={styles.emptyStateSubtext}>
+            {filter !== 'all' ? `No ${filter} payments found` : 'Add some payments to see history'}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.transactionContainer}>
+          <TransactionList
+            payments={filteredPayments}
+            onPaymentPress={(payment) => {
+              navigation.navigate('PaymentActions', { payment });
+            }}
+            selectedPaymentId={null}
+            showScrollView={true}
+          />
+        </View>
+      )}
+
+      {/* Export Progress Modal */}
+      <Modal
+        visible={exportProgress.visible}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCancelExport}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {exportProgress.step === 'generating' && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>🔄 Generating Excel File</Text>
+                </View>
+                <View style={styles.progressContent}>
+                  <View style={styles.progressIndicator}>
+                    <Text style={styles.progressEmoji}>📊</Text>
+                  </View>
+                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                    Preparing your payment data for Excel export
+                  </Text>
+                  <Text style={[styles.progressSubtext, { color: theme.colors.textSecondary }]}>
+                    Processing {payments.length} transactions...
+                  </Text>
+                  <View style={styles.progressBar}>
+                    <View style={[styles.progressBarFill, { backgroundColor: theme.colors.primary }]} />
+                  </View>
+                </View>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.error + '20', borderColor: theme.colors.error }]}
+                    onPress={handleCancelExport}
+                  >
+                    <Text style={[styles.modalButtonText, { color: theme.colors.error }]}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+
+            {exportProgress.step === 'ready' && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>✅ Excel File Ready!</Text>
+                </View>
+                <View style={styles.progressContent}>
+                  <View style={styles.progressIndicator}>
+                    <Text style={styles.progressEmoji}>🎉</Text>
+                  </View>
+                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                    {exportProgress.fileName}
+                  </Text>
+                  <Text style={[styles.progressSubtext, { color: theme.colors.textSecondary }]}>
+                    Ready to download to Downloads folder
+                  </Text>
+                  <View style={styles.successBadge}>
+                    <Text style={styles.successText}>📋 {payments.length} transactions included</Text>
+                  </View>
+                </View>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.textSecondary + '20', borderColor: theme.colors.textSecondary }]}
+                    onPress={handleCancelExport}
+                  >
+                    <Text style={[styles.modalButtonText, { color: theme.colors.textSecondary }]}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.downloadButton, { backgroundColor: theme.colors.primary }]}
+                    onPress={handleDownload}
+                  >
+                    <Text style={styles.modalButtonTextWhite}>💾 Download</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+
+            {exportProgress.step === 'downloading' && (
+              <>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>💾 Downloading...</Text>
+                </View>
+                <View style={styles.progressContent}>
+                  <View style={styles.progressIndicator}>
+                    <Text style={styles.progressEmoji}>⬇️</Text>
+                  </View>
+                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                    Saving to Downloads folder
+                  </Text>
+                  <Text style={[styles.progressSubtext, { color: theme.colors.textSecondary }]}>
+                    Almost done...
+                  </Text>
+                  <View style={styles.progressBar}>
+                    <View style={[styles.progressBarFill, styles.downloadingAnimation, { backgroundColor: theme.colors.primary }]} />
+                  </View>
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  header: {
-    padding: 20,
-    paddingTop: 10,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 4,
-    paddingVertical: 4,
-    lineHeight: 34,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-    gap: 10,
-  },
-  filterButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  activeFilterButton: {
-    backgroundColor: '#3498db',
-  },
-  filterButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2c3e50',
-    paddingVertical: 2,
-    lineHeight: 20,
-  },
-  activeFilterButtonText: {
-    color: '#ffffff',
-  },
-  exportContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  exportButton: {
-    backgroundColor: '#f0f7ff',
-    borderWidth: 2,
-    borderColor: '#3498db',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#3498db',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3.84,
-    elevation: 3,
-  },
-  exportButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  exportIconContainer: {
-    backgroundColor: '#3498db',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  exportIcon: {
-    fontSize: 14,
-    color: '#ffffff',
-  },
-  exportButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#3498db',
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  transactionsContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  emptyState: {
-    backgroundColor: '#ffffff',
-    padding: 40,
-    borderRadius: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  emptyStateText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: 8,
-    paddingVertical: 3,
-    lineHeight: 24,
-  },
-  emptyStateSubtext: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    textAlign: 'center',
-    paddingVertical: 2,
-    lineHeight: 20,
-  },
-  paymentItem: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  paymentItemSelected: {
-    backgroundColor: '#f0f8ff',
-    borderWidth: 2,
-    borderColor: '#3498db',
-  },
-  paymentLeft: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  categoryContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#f8f9fa',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  categoryIcon: {
-    fontSize: 20,
-  },
-  paymentDetails: {
-    flex: 1,
-  },
-  paymentDescription: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: 4,
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  paymentCategory: {
-    fontSize: 13,
-    color: '#7f8c8d',
-    marginBottom: 2,
-    paddingVertical: 1,
-    lineHeight: 18,
-  },
-  paymentDate: {
-    fontSize: 12,
-    color: '#95a5a6',
-    paddingVertical: 1,
-    lineHeight: 16,
-  },
-  paymentRight: {
-    alignItems: 'flex-end',
-  },
-  paymentAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#e74c3c',
-    paddingVertical: 2,
-    lineHeight: 22,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    marginHorizontal: 20,
-    marginBottom: 8,
-    padding: 12,
-    borderRadius: 8,
-    justifyContent: 'space-around',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  editButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    flex: 0.45,
-    alignItems: 'center',
-  },
-  editButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 18,
-  },
-  deleteButton: {
-    backgroundColor: '#e74c3c',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    flex: 0.45,
-    alignItems: 'center',
-  },
-  deleteButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 18,
-  },
-});
 
 export default HistoryScreen;

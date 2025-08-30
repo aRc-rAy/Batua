@@ -1,7 +1,7 @@
-# 📱 Batua Payment Tracker - Deployment Guide
+# 📱 SpendBook Payment Tracker - Deployment Guide
 
 ## App Information
-- **Name**: Batua Payment Tracker
+- **Name**: SpendBook Payment Tracker
 - **Version**: 1.0.0
 - **Platform**: Android
 - **APK Size**: ~21.4 MB
@@ -23,9 +23,9 @@
    ```bash
    git init
    git add .
-   git commit -m "Initial commit - Batua Payment Tracker v1.0.0"
+   git commit -m "Initial commit - SpendBook Payment Tracker v1.0.0"
    git branch -M main
-   git remote add origin https://github.com/yourusername/batua-payment-tracker.git
+   git remote add origin https://github.com/yourusername/spendbook-payment-tracker.git
    git push -u origin main
    ```
 
@@ -33,13 +33,13 @@
    - Go to your GitHub repository
    - Click "Releases" → "Create a new release"
    - Tag: `v1.0.0`
-   - Title: `Batua Payment Tracker v1.0.0`
+   - Title: `SpendBook Payment Tracker v1.0.0`
    - Upload: `app-release.apk`
    - Publish release
 
 3. **Share Download Link**:
    ```
-   https://github.com/yourusername/batua-payment-tracker/releases/download/v1.0.0/app-release.apk
+   https://github.com/yourusername/spendbook-payment-tracker/releases/download/v1.0.0/app-release.apk
    ```
 
 ### Option 2: Firebase App Distribution

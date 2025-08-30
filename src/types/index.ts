@@ -12,11 +12,19 @@ export interface Payment {
   isFromSMS: boolean;
 }
 
+// Enhanced description suggestions
+export interface DescriptionSuggestion {
+  text: string;
+  category: PaymentCategory;
+  icon: string;
+}
+
 // Navigation types
 export type RootStackParamList = {
   Main: undefined;
   AddPayment: undefined;
   EditPayment: { payment: Payment };
+  PaymentActions: { payment: Payment };
   Analytics: undefined;
   Settings: undefined;
 };

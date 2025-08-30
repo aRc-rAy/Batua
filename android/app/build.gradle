@@ -76,9 +76,9 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.paymenttracker"
+    namespace "com.spendbook"
     defaultConfig {
-        applicationId "com.paymenttracker"
+        applicationId "com.spendbook"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
