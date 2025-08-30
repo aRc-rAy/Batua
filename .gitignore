@@ -92,7 +92,7 @@ buck-out/
 
 # Build outputs (keep APK in root for releases)
 android/app/build/
-!batua-v1.0.0.apk
+!spendbook-v1.0.0.apk
 
 # VS Code
 .vscode/
