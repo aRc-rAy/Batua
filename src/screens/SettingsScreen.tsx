@@ -199,23 +199,6 @@ const SettingsScreen: React.FC = () => {
     }
   };
 
-  const handleRateApp = () => {
-    Alert.alert(
-      'Rate SpendBook ⭐',
-      'Enjoying SpendBook? Help us by rating the app!',
-      [
-        { text: 'Later', style: 'cancel' },
-        {
-          text: 'Rate Now',
-          onPress: () =>
-            Linking.openURL(
-              'https://play.google.com/store/apps/details?id=com.spendbook',
-            ),
-        },
-      ],
-    );
-  };
-
   // Handle SMS parsing toggle: single alert per action, processing lock to avoid duplicates
   const handleSmsParsingToggle = async (value: boolean) => {
     if (smsParsingEnabled === null || isTogglingSms) return;
@@ -327,6 +310,68 @@ const SettingsScreen: React.FC = () => {
       textAlign: 'center',
       fontStyle: 'italic',
     },
+    // Support section styles
+    supportContainer: {
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+    },
+    supportText: {
+      ...textStyles.body,
+      color: theme.colors.text,
+      textAlign: 'center',
+      fontStyle: 'italic',
+    },
+    paymentContainer: {
+      marginHorizontal: 20,
+      marginBottom: 8,
+    },
+    paymentMethod: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.colors.border,
+    },
+    paymentIcon: {
+      ...textStyles.body,
+      marginRight: 12,
+      fontSize: 18,
+    },
+    paymentText: {
+      ...textStyles.body,
+      color: theme.colors.text,
+      flex: 1,
+    },
+    arrow: {
+      ...textStyles.body,
+      color: theme.colors.textSecondary,
+      fontSize: 16,
+    },
+    contactMethod: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginHorizontal: 20,
+      marginBottom: 20,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.colors.border,
+    },
+    contactIcon: {
+      ...textStyles.body,
+      marginRight: 12,
+      fontSize: 18,
+    },
+    contactText: {
+      ...textStyles.body,
+      color: theme.colors.text,
+      flex: 1,
+    },
   });
 
   return (
@@ -370,26 +415,70 @@ const SettingsScreen: React.FC = () => {
           onPress={handleClearAllData}
         />
 
-        {/* About */}
-        <SectionHeader title="About" />
-        <SettingItem
-          title="About"
+        {/* Support Developer */}
+        <SectionHeader title="Support" />
+
+        {/* Support Message */}
+        <View style={styles.supportContainer}>
+          <Text style={styles.supportText}>
+            Enjoying SpendBook? Consider supporting the Developer! 💝
+          </Text>
+        </View>
+
+        {/* Payment Methods */}
+        <View style={styles.paymentContainer}>
+          <TouchableOpacity
+            style={styles.paymentMethod}
+            onPress={() => Linking.openURL('https://paypal.me/anidravi')}
+          >
+            <Text style={styles.paymentIcon}>🪙</Text>
+            <Text style={styles.paymentText}>PayPal</Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.paymentMethod}
+            onPress={() =>
+              Linking.openURL(
+                'upi://pay?pa=anidravi@upi&pn=Dilip%20Kumar%20Yadav&tn=Support%20SpendBook&cu=INR',
+              )
+            }
+          >
+            <Text style={styles.paymentIcon}>📱</Text>
+            <Text style={styles.paymentText}>UPI Payment</Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.paymentMethod}
+            onPress={() =>
+              Linking.openURL(
+                'tez://upi/pay?pa=anidravi@upi&pn=Dilip%20Kumar%20Yadav&tn=Support%20SpendBook&cu=INR',
+              )
+            }
+          >
+            <Text style={styles.paymentIcon}>💳</Text>
+            <Text style={styles.paymentText}>Google Pay</Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Contact */}
+        <TouchableOpacity
+          style={styles.contactMethod}
           onPress={() =>
-            Alert.alert(
-              'About SpendBook',
-              'SpendBook - Payment Tracker\n\n' +
-                'A simple payment tracking app for Android.\n\n' +
-                'Features:\n' +
-                '• SMS payment detection\n' +
-                '• Manual payment entry\n' +
-                '• Payment analytics\n' +
-                '• Data export\n\n' +
-                'Version: 1.0.0\n' +
-                'Made in India 🇮🇳',
+            Linking.openURL(
+              'mailto:fuleliji@gmail.com?subject=Appreciation%20for%20SpendBook',
             )
           }
-        />
-        <SettingItem title="Rate App" onPress={handleRateApp} />
+        >
+          <Text style={styles.contactIcon}>✉️</Text>
+          <Text style={styles.contactText}>Write to Developer</Text>
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+
+        {/* About */}
+        <SectionHeader title="About" />
         <SettingItem
           title="Privacy Policy"
           onPress={() =>
@@ -415,16 +504,27 @@ const SettingsScreen: React.FC = () => {
                 '• Data stays on your device only\n\n' +
                 'Permissions:\n' +
                 '• SMS permission (optional for auto-detection)\n' +
-                '• No internet permission needed\n\n' +
-                'Contact: support@spendbook.app',
+                '• No internet permission needed\n\n',
             )
           }
         />
-
         <SettingItem
-          title="Write to Support"
+          title="About SpendBook"
           onPress={() =>
-            Linking.openURL('mailto:support@spendbook.app?subject=Support')
+            Alert.alert(
+              'About SpendBook',
+              'SpendBook - Payment Tracker\n\n' +
+                'A simple payment tracking app for Android.\n\n' +
+                'Features:\n' +
+                '• SMS payment detection\n' +
+                '• Manual payment entry\n' +
+                '• Payment analytics\n' +
+                '• Data export\n\n' +
+                'Version: 1.0.0\n' +
+                'Made in India 🇮🇳\n\n' +
+                '💝 Support: If you find SpendBook helpful,\n' +
+                'consider supporting the development!',
+            )
           }
         />
 

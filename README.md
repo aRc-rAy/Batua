@@ -1,58 +1,109 @@
 # 📱 SpendBook - Personal Payment Tracker
 
-A comprehensive Android app for tracking daily expenses with smart SMS detection and analytics.
+A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights.
+
+[![Latest Release](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v1.0.0)
+[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases/download/v1.0.0/spendbook-v1.0.0.apk)
 
 ## ✨ Features
 
-- 📊 **Smart Analytics** - Weekly, monthly, and yearly spending insights
-- 💳 **SMS Auto-Detection** - Automatically detect payments from SMS
-- 📋 **Category Management** - Organize expenses by Food, Travel, Entertainment, etc.
-- 📈 **Visual Charts** - Bar charts and pie charts for spending analysis
-- 📄 **CSV Export** - Export transaction data for external analysis
-- ✏️ **Edit & Delete** - Modify or remove transactions easily
-- 🎯 **Insights Dashboard** - Top spending categories, daily averages, and trends
+### 💰 **Expense Tracking**
+- � **Manual Entry**: Add payments with amount, description, and category
+- � **SMS Auto-Detection**: Automatically detect payments from bank SMS
+- 🏷️ **Smart Categories**: 7 predefined categories with icons (Food 🍽️, Travel ✈️, Clothes 👕, Entertainment 🎬, Bills 📄, Healthcare 🏥, Others 📦)
+- ✏️ **Edit & Delete**: Modify or remove transactions easily
 
-## � Download
+### 📊 **Analytics & Insights**
+- 📈 **Visual Charts**: Bar charts and pie charts for spending analysis
+- 📅 **Time-based Analytics**: Daily, weekly, monthly, and yearly insights
+- 🎯 **Smart Insights**: Top spending categories, daily averages, and trends
+- 📊 **Dashboard**: Professional insights dashboard with spending patterns
+
+### 💾 **Data Management**
+- 📄 **CSV Export**: Export transaction data for external analysis
+- 💾 **Local Storage**: Secure local data storage with AsyncStorage
+- 🔄 **Data Persistence**: All data saved locally on device
+
+### 🎨 **User Experience**
+- 🌙 **Dark/Light Theme**: Professional theme support
+- 📱 **Responsive Design**: Optimized for Android devices
+- 🎯 **Intuitive Navigation**: Bottom tab navigation with stack navigation
+- ⚡ **Fast Performance**: Optimized React Native performance
+
+## 📥 Download & Installation
 
 ### Latest Release: v1.0.0
-**[Download APK](android/app/build/outputs/apk/release/app-release.apk)** (21.4 MB)
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v1.0.0/spendbook-v1.0.0.apk)** (27.9 MB)
 
 ### Installation Instructions:
-1. Enable "Install from Unknown Sources" in Android settings
-2. Download the APK file
-3. Tap the downloaded file and select "Install"
-4. Grant necessary permissions when prompted
+1. **Enable Unknown Sources**: Go to Settings → Security → Unknown Sources → Enable
+2. **Download APK**: Click the download link above
+3. **Install App**: Open the downloaded APK file and tap "Install"
+4. **Grant Permissions**: Allow SMS and Storage permissions when prompted
+5. **Launch App**: Tap "Open" to start using SpendBook
+
+### System Requirements:
+- **Android Version**: 5.0 (API 21) or higher
+- **Storage**: 50 MB free space
+- **Permissions**: SMS, Storage, Network
 
 ## 🔐 Permissions
 
-- **SMS Access**: For automatic payment detection from bank SMS
-- **Storage**: For CSV export functionality
+The app requires the following permissions for full functionality:
+
+- **📱 SMS Access**: For automatic payment detection from bank SMS
+- **💾 Storage**: For CSV export functionality and data persistence
+- **🌐 Network**: For potential future updates and analytics
 
 ## 🏗️ Technical Stack
 
 - **Framework**: React Native 0.80.2 with TypeScript
-- **Database**: AsyncStorage (local storage)
-- **Charts**: react-native-chart-kit
+- **Language**: TypeScript for type safety
+- **Database**: AsyncStorage for local data persistence
+- **Charts**: react-native-chart-kit for data visualization
 - **Navigation**: React Navigation (Bottom Tabs + Stack)
-- **Platform**: Android
+- **Icons**: react-native-vector-icons
+- **Platform**: Android (primary), iOS (compatible)
+- **Build Tool**: Gradle with Android Gradle Plugin
 
 ## 🚀 Getting Started (For Developers)
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- Android Studio
+- Node.js (v16 or higher)
+- npm or yarn
+- Android Studio (for Android development)
 - React Native CLI
+- Android SDK (API 21+)
 
 ### Installation
 ```bash
+# Clone the repository
+git clone https://github.com/aRc-rAy/Batua.git
+cd Batua
+
 # Install dependencies
 npm install
 
+# For iOS (if developing on macOS)
+cd ios && bundle exec pod install && cd ..
+```
+
+### Running the App
+```bash
 # Start Metro bundler
+npm start
+# OR
 npx react-native start
 
 # Run on Android
+npm run android
+# OR
 npx react-native run-android
+
+# Run on iOS (macOS only)
+npm run ios
+# OR
+npx react-native run-ios
 ```
 
 ### Building APK
@@ -60,192 +111,159 @@ npx react-native run-android
 # Navigate to android directory
 cd android
 
+# Build debug APK
+./gradlew assembleDebug
+
 # Build release APK
 ./gradlew assembleRelease
 
-# APK location: android/app/build/outputs/apk/release/app-release.apk
+# APK locations:
+# Debug: android/app/build/outputs/apk/debug/app-debug.apk
+# Release: android/app/build/outputs/apk/release/app-release.apk
 ```
 
-#### Step 1: Start Metro Bundler
+## 📁 Project Structure
 
+```
+SpendBook/
+├── android/                    # Android native code
+│   ├── app/
+│   │   ├── build.gradle       # Android app configuration
+│   │   └── src/main/
+│   │       ├── AndroidManifest.xml
+│   │       ├── java/          # Native Android code
+│   │       └── res/           # Android resources
+│   └── gradle.properties      # Gradle configuration
+├── ios/                       # iOS native code (if needed)
+├── src/                       # React Native source code
+│   ├── components/            # Reusable UI components
+│   ├── navigation/            # Navigation configuration
+│   │   └── AppNavigator.tsx   # Main navigation setup
+│   ├── screens/               # Screen components
+│   │   ├── HomeScreen.tsx     # Main dashboard
+│   │   ├── AddPaymentScreen.tsx # Add new payment
+│   │   ├── HistoryScreen.tsx  # Transaction history
+│   │   ├── AnalyticsScreen.tsx # Analytics dashboard
+│   │   ├── EditPaymentScreen.tsx # Edit transactions
+│   │   └── SettingsScreen.tsx # App settings
+│   ├── services/              # Business logic
+│   │   └── PaymentService.ts  # Payment data management
+│   └── types/                 # TypeScript definitions
+│       └── index.ts           # Type definitions
+├── __tests__/                 # Test files
+├── android/app/build/outputs/apk/release/ # Built APKs
+├── spendbook-v1.0.0.apk       # Latest release APK
+├── App.tsx                    # Main app component
+├── package.json               # Dependencies and scripts
+├── tsconfig.json              # TypeScript configuration
+└── README.md                  # This file
+```
+
+## 🎨 Design System
+
+### Typography
+- **Primary Font**: System font with optimized sizes
+- **Consistent Scaling**: Readable text across all screen sizes
+- **Accessibility**: WCAG compliant contrast ratios
+
+### Color Scheme
+- **Primary**: Professional blue tones
+- **Secondary**: Clean grays and whites
+- **Accent**: Category-specific colors
+- **Dark Mode**: Full dark theme support
+
+### Components
+- **Card-based Layout**: Clean, modern card designs
+- **Consistent Spacing**: 8px grid system
+- **Touch Targets**: Minimum 44px touch targets
+- **Loading States**: Smooth loading indicators
+
+## 🔧 Development Tasks
+
+Available VS Code tasks for development:
+
+- **Start Metro Bundler**: `npm start` - Development server
+- **Build and Run Android**: `npm run android` - Launch on Android
+- **Build Release APK**: `./gradlew assembleRelease` - Production build
+
+## 📊 App Capabilities
+
+### Core Functionality
+- ✅ Manual payment entry with categories
+- ✅ SMS transaction auto-detection
+- ✅ Transaction history with filtering
+- ✅ Edit and delete transactions
+- ✅ CSV export functionality
+- ✅ Analytics with charts and insights
+- ✅ Dark/Light theme support
+- ✅ Local data persistence
+- ✅ Professional UI/UX
+
+### Future Enhancements
+- 🔄 Cloud backup and sync
+- 📊 Advanced analytics and reporting
+- 🔔 Push notifications for budgets
+- 🏠 Home screen widget
+- 🔐 Biometric authentication
+- 🌍 Multi-language support
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Metro Bundler Issues:**
 ```bash
-npm start
-# OR
-npx react-native start
+# Clear Metro cache
+npx react-native start --reset-cache
 ```
 
-#### Step 2: Build and Run Android
-
-In a new terminal:
-
+**Android Build Issues:**
 ```bash
-npm run android
-# OR
-npx react-native run-android
+# Clean Android build
+cd android && ./gradlew clean && cd ..
 ```
 
-## Development
+**Permission Issues:**
+- Ensure SMS permissions are granted in Android settings
+- Check storage permissions for CSV export
 
-### Project Structure
+### Debug Mode
+- Shake device or press `Ctrl+M` (Android) / `Cmd+D` (iOS) for dev menu
+- Enable "Debug JS Remotely" for Chrome debugging
+- Check console logs for error messages
 
-```
-src/
-├── components/          # Reusable UI components
-├── navigation/          # Navigation configuration
-├── screens/            # Screen components
-│   └── HomeScreen.tsx  # Main dashboard screen
-└── types/              # TypeScript type definitions
-```
+## 📄 License
 
-### Available Tasks (VS Code)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- **Start Metro Bundler**: Starts the development server
-- **Build and Run Android**: Builds and launches the app on Android
+## 🤝 Contributing
 
-## Design Principles
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- **Minimalist Approach**: Clean, uncluttered interface
-- **Readable Typography**: Optimized font sizes for better readability
-- **Professional Look**: Business-friendly color scheme and layout
-- **User-Friendly**: Intuitive navigation and interactions
-- **Scalable Architecture**: Built for easy feature additions
+## 📞 Support
 
-## Next Steps
+- **Issues**: [GitHub Issues](https://github.com/aRc-rAy/Batua/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/aRc-rAy/Batua/discussions)
+- **Email**: For support inquiries
 
-This is **Step 1** of the development process. The basic project structure and enhanced features are ready for testing. Next steps will include:
+## 🙏 Acknowledgments
 
-1. **Step 2**: Implement local database storage ✅ (Database setup ready)
-2. **Step 3**: Add SMS reading capabilities for Android
-3. **Step 4**: Create advanced analytics with charts and graphs
-4. **Step 5**: Add Excel export functionality
-5. **Step 6**: Implement home widget for daily/monthly totals
-
-## What's New in This Update
-
-### ✅ **Enhanced Features Added:**
-
-1. **Full Add Payment Screen**
-
-   - Beautiful form with amount input, description, and category selection
-   - 7 payment categories with emojis: Food 🍽️, Travel ✈️, Clothes 👕, Entertainment 🎬, Bills 📄, Healthcare 🏥, Others 📦
-   - Form validation and success alerts
-   - Professional UI with good typography
-
-2. **Complete History Screen**
-
-   - Mock transaction data to demonstrate functionality
-   - Transaction cards with category icons and details
-   - Filter buttons (All, Manual, SMS)
-   - Total spending summary card
-   - Export button ready for Excel functionality
-
-3. **Enhanced Navigation**
-
-   - Stack navigation for modal screens
-   - Working "Add Payment" button on home screen
-   - Smooth transitions between screens
-   - Proper TypeScript navigation types
-
-4. **Professional Design System**
-   - Consistent color scheme and typography
-   - Card-based layouts with shadows
-   - Minimalist design with optimal spacing
-   - Readable font sizes throughout the app
-
-## Testing
-
-Run the app on your Android device or emulator to test the current implementation. You should see:
-
-### 🏠 **Home Screen:**
-
-- Welcome message with current date
-- Summary cards (currently showing ₹0)
-- Working "Add Payment" button that navigates to the form
-- Quick action buttons
-- Recent transactions placeholder
-
-### 📋 **History Screen:**
-
-- Mock transaction data displayed
-- Category-based filtering
-- Total spending summary
-- Export button (ready for implementation)
-
-### ➕ **Add Payment Screen:**
-
-- Amount input with number keyboard
-- Description text area
-- Category selection with visual feedback
-- Save button with validation
-- Success alerts when payment is saved
-
-### 🎯 **Test the Navigation:**
-
-1. Tap "Add Payment" on home screen → Should navigate to payment form
-2. Fill the form and tap "Save Payment" → Should show success alert
-3. Use bottom tabs to navigate between screens
-4. Tap back button on Add Payment screen → Should return to home
+- React Native community for the amazing framework
+- Open source libraries used in this project
+- Contributors and beta testers
 
 ---
 
-Built with ❤️ using React Native and TypeScript
+**Built with ❤️ using React Native and TypeScript**
 
-## Testing
-
-Run the app on your Android device or emulator to test the current implementation. You should see a clean home screen with navigation tabs.
+*Download SpendBook today and take control of your personal finances!* 📱💰
 
 ---
 
-Built with ❤️ using React Native and TypeScript
+**Built with ❤️ using React Native and TypeScript**
 
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+*Download SpendBook today and take control of your personal finances!* 📱💰
