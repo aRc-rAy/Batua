@@ -2,8 +2,8 @@
 
 A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights.
 
-[![Latest Release](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v1.0.0)
-[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases/download/v1.0.0/spendbook-v1.0.0.apk)
+[![Latest Release](https://img.shields.io/badge/version-2.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v2.0.1)
+[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases/download/v2.0.1/spendbook-v2.0.1.apk)
 
 ## ✨ Features
 
@@ -32,8 +32,8 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 
 ## 📥 Download & Installation
 
-### Latest Release: v1.0.0
-**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v1.0.0/spendbook-v1.0.0.apk)** (27.9 MB)
+### Latest Release: v2.0.1
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v2.0.1/spendbook-v2.0.1.apk)** (27.9 MB)
 
 ### Installation Instructions:
 1. **Enable Unknown Sources**: Go to Settings → Security → Unknown Sources → Enable

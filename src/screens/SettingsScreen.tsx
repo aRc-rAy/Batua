@@ -520,7 +520,7 @@ const SettingsScreen: React.FC = () => {
                 '• Manual payment entry\n' +
                 '• Payment analytics\n' +
                 '• Data export\n\n' +
-                'Version: 1.0.0\n' +
+                'Version: 2.0.1\n' +
                 'Made in India 🇮🇳\n\n' +
                 '💝 Support: If you find SpendBook helpful,\n' +
                 'consider supporting the development!',
