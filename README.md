@@ -1,6 +1,6 @@
 # 📱 SpendBook - Personal Payment Tracker
 
-A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights.
+A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
 
 [![Latest Release](https://img.shields.io/badge/version-2.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v2.0.1)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases/download/v2.0.1/spendbook-v2.0.1.apk)
