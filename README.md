@@ -20,7 +20,7 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 - 📊 **Dashboard**: Professional insights dashboard with spending patterns
 
 ### 💾 **Data Management**
-- 📄 **CSV Export**: Export transaction data for external analysis
+- 📄 **Excel Export**: Export transaction data for external analysis
 - 💾 **Local Storage**: Secure local data storage with AsyncStorage
 - 🔄 **Data Persistence**: All data saved locally on device
 
@@ -52,7 +52,7 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 The app requires the following permissions for full functionality:
 
 - **📱 SMS Access**: For automatic payment detection from bank SMS
-- **💾 Storage**: For CSV export functionality and data persistence
+- **💾 Storage**: For Excel export functionality and data persistence
 - **🌐 Network**: For potential future updates and analytics
 
 ## 🏗️ Technical Stack
@@ -193,7 +193,7 @@ Available VS Code tasks for development:
 - ✅ SMS transaction auto-detection
 - ✅ Transaction history with filtering
 - ✅ Edit and delete transactions
-- ✅ CSV export functionality
+- ✅ Excel export functionality
 - ✅ Analytics with charts and insights
 - ✅ Dark/Light theme support
 - ✅ Local data persistence
@@ -255,12 +255,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - React Native community for the amazing framework
 - Open source libraries used in this project
 - Contributors and beta testers
-
----
-
-**Built with ❤️ using React Native and TypeScript**
-
-*Download SpendBook today and take control of your personal finances!* 📱💰
 
 ---
 
