@@ -96,14 +96,14 @@ const TransactionList: React.FC<TransactionListProps> = ({
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
-    // Reset time for accurate comparison
-    today.setHours(0, 0, 0, 0);
-    yesterday.setHours(0, 0, 0, 0);
-    paymentDate.setHours(0, 0, 0, 0);
+    // Create new date objects for comparison without modifying originals
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterdayStart = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+    const paymentDateStart = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
 
-    if (paymentDate.getTime() === today.getTime()) {
+    if (paymentDateStart.getTime() === todayStart.getTime()) {
       return 'Today';
-    } else if (paymentDate.getTime() === yesterday.getTime()) {
+    } else if (paymentDateStart.getTime() === yesterdayStart.getTime()) {
       return 'Yesterday';
     } else {
       return paymentDate.toLocaleDateString('en-US', { 
@@ -114,13 +114,34 @@ const TransactionList: React.FC<TransactionListProps> = ({
     }
   };
 
-  const getTimeFromDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
+  const getDateTimeFromDate = (dateString: string) => {
+    const paymentDate = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    // Create new date objects for comparison without modifying originals
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterdayStart = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+    const paymentDateStart = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
+
+    const timeStr = paymentDate.toLocaleTimeString('en-US', { 
       hour: 'numeric', 
       minute: '2-digit',
       hour12: true 
     });
+
+    if (paymentDateStart.getTime() === todayStart.getTime()) {
+      return `Today • ${timeStr}`;
+    } else if (paymentDateStart.getTime() === yesterdayStart.getTime()) {
+      return `Yesterday • ${timeStr}`;
+    } else {
+      const dateStr = paymentDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      return `${dateStr} • ${timeStr}`;
+    }
   };
 
   const groupPaymentsByDate = (paymentList: Payment[]): GroupedTransactions[] => {
@@ -200,7 +221,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
               ₹{formatAmount(payment.amount)}
             </Text>
             <Text style={[styles.timeText, { color: theme.colors.textSecondary }]}>
-              {getTimeFromDate(payment.date)}
+              {getDateTimeFromDate(payment.date)}
             </Text>
           </View>
         </View>
