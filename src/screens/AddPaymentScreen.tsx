@@ -12,12 +12,17 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { PaymentCategory, RootStackParamList, DescriptionSuggestion } from '../types';
+import {
+  PaymentCategory,
+  RootStackParamList,
+  DescriptionSuggestion,
+} from '../types';
 import { PaymentService } from '../services/PaymentService';
 import { SuggestionService } from '../services/SuggestionService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
 import { formatAmount } from '../utils/formatting';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -26,23 +31,30 @@ const AddPaymentScreen: React.FC = () => {
   const { theme } = useTheme();
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<PaymentCategory | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<PaymentCategory | null>(null);
   const [suggestions, setSuggestions] = useState<DescriptionSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const categories: PaymentCategory[] = [
-    'Food', 'Travel', 'Clothes', 'Entertainment', 'Bills', 'Healthcare', 'Others'
+    'Food',
+    'Travel',
+    'Clothes',
+    'Entertainment',
+    'Bills',
+    'Healthcare',
+    'Others',
   ];
 
   const getCategoryIcon = (category: PaymentCategory): string => {
     const iconMap: Record<PaymentCategory, string> = {
-      Food: '🍽️',
-      Travel: '✈️',
-      Clothes: '👕',
-      Entertainment: '🎬',
-      Bills: '🧾',
-      Healthcare: '🏥',
-      Others: '📦'
+      Food: 'restaurant',
+      Travel: 'airplane',
+      Clothes: 'shirt',
+      Entertainment: 'film',
+      Bills: 'document-text',
+      Healthcare: 'medical',
+      Others: 'ellipsis-horizontal',
     };
     return iconMap[category];
   };
@@ -50,7 +62,8 @@ const AddPaymentScreen: React.FC = () => {
   useEffect(() => {
     // Load initial suggestions
     if (selectedCategory) {
-      const categorySuggestions = SuggestionService.getSuggestionsByCategory(selectedCategory);
+      const categorySuggestions =
+        SuggestionService.getSuggestionsByCategory(selectedCategory);
       setSuggestions(categorySuggestions.slice(0, 8));
     } else {
       const popularSuggestions = SuggestionService.getPopularSuggestions();
@@ -64,14 +77,15 @@ const AddPaymentScreen: React.FC = () => {
       const filteredSuggestions = SuggestionService.getFilteredSuggestions(
         description,
         selectedCategory || undefined,
-        8
+        8,
       );
       setSuggestions(filteredSuggestions);
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
       if (selectedCategory) {
-        const categorySuggestions = SuggestionService.getSuggestionsByCategory(selectedCategory);
+        const categorySuggestions =
+          SuggestionService.getSuggestionsByCategory(selectedCategory);
         setSuggestions(categorySuggestions.slice(0, 8));
       }
     }
@@ -79,7 +93,7 @@ const AddPaymentScreen: React.FC = () => {
 
   const handleDescriptionChange = (text: string) => {
     setDescription(text);
-    
+
     // Auto-suggest category if none selected
     if (!selectedCategory && text.length > 2) {
       // Category suggestion is handled in render for visual feedback
@@ -124,15 +138,20 @@ const AddPaymentScreen: React.FC = () => {
 
       Alert.alert(
         'Payment Saved! 🎉',
-        `${formatAmount(numAmount, true)} for "${description || `${finalCategory} expense`}" has been saved successfully.`,
+        `${formatAmount(numAmount, true)} for "${
+          description || `${finalCategory} expense`
+        }" has been saved successfully.`,
         [
-          { text: 'Add Another', onPress: () => {
-            setAmount('');
-            setDescription('');
-            setSelectedCategory(null);
-          }},
-          { text: 'Done', onPress: () => navigation.goBack() }
-        ]
+          {
+            text: 'Add Another',
+            onPress: () => {
+              setAmount('');
+              setDescription('');
+              setSelectedCategory(null);
+            },
+          },
+          { text: 'Done', onPress: () => navigation.goBack() },
+        ],
       );
     } catch (error) {
       Alert.alert('Error', 'Failed to save payment. Please try again.');
@@ -201,8 +220,8 @@ const AddPaymentScreen: React.FC = () => {
       borderBottomColor: theme.colors.border,
     },
     suggestionEmoji: {
-      ...textStyles.large,
       marginRight: 12,
+      alignSelf: 'center',
     },
     suggestionText: {
       ...textStyles.small,
@@ -289,11 +308,17 @@ const AddPaymentScreen: React.FC = () => {
       borderWidth: 1,
       borderColor: theme.colors.border,
       minWidth: 80,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    quickSuggestionIcon: {
+      marginRight: 6,
     },
     quickSuggestionText: {
       ...textStyles.caption,
       color: theme.colors.text,
-      textAlign: 'center',
+      flex: 1,
     },
     categoryHeader: {
       flexDirection: 'row',
@@ -312,7 +337,12 @@ const AddPaymentScreen: React.FC = () => {
       style={styles.suggestionItem}
       onPress={() => handleSuggestionPress(item)}
     >
-      <Text style={styles.suggestionEmoji}>{item.icon}</Text>
+      <Ionicons
+        name={item.icon}
+        size={20}
+        color={theme.colors.primary}
+        style={styles.suggestionEmoji}
+      />
       <Text style={styles.suggestionText}>{item.text}</Text>
       <Text style={styles.suggestionCategory}>{item.category}</Text>
     </TouchableOpacity>
@@ -323,7 +353,13 @@ const AddPaymentScreen: React.FC = () => {
       style={styles.quickSuggestionItem}
       onPress={() => handleSuggestionPress(item)}
     >
-      <Text style={styles.quickSuggestionText}>{item.icon} {item.text}</Text>
+      <Ionicons
+        name={item.icon}
+        size={16}
+        color={theme.colors.primary}
+        style={styles.quickSuggestionIcon}
+      />
+      <Text style={styles.quickSuggestionText}>{item.text}</Text>
     </TouchableOpacity>
   );
 
@@ -331,10 +367,6 @@ const AddPaymentScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Add Payment</Text>
-          <Text style={styles.headerSubtitle}>Record your expense quickly</Text>
-        </View>
 
         <View style={styles.form}>
           {/* Amount Input */}
@@ -362,7 +394,7 @@ const AddPaymentScreen: React.FC = () => {
                 onChangeText={handleDescriptionChange}
                 multiline={false}
               />
-              
+
               {showSuggestions && suggestions.length > 0 && (
                 <View style={styles.suggestionsContainer}>
                   <FlatList
@@ -380,7 +412,9 @@ const AddPaymentScreen: React.FC = () => {
           {/* Quick Suggestions */}
           {!showSuggestions && suggestions.length > 0 && (
             <View style={styles.quickSuggestions}>
-              <Text style={styles.quickSuggestionsLabel}>Quick Suggestions</Text>
+              <Text style={styles.quickSuggestionsLabel}>
+                Quick Suggestions
+              </Text>
               <FlatList
                 horizontal
                 data={suggestions}
@@ -396,15 +430,20 @@ const AddPaymentScreen: React.FC = () => {
           <View style={styles.categorySection}>
             <View style={styles.categoryHeader}>
               <Text style={styles.categoryLabel}>Category </Text>
-              <Text style={styles.categoryOptional}>(optional - auto-suggested based on description)</Text>
+              <Text style={styles.categoryOptional}>
+                (optional - auto-suggested based on description)
+              </Text>
             </View>
-            
+
             <View style={styles.categoryGrid}>
-              {categories.map((category) => {
+              {categories.map(category => {
                 const isSelected = selectedCategory === category;
-                const isAutoSuggested = !selectedCategory && description.length > 2 && 
-                  SuggestionService.getCategorySuggestion(description) === category;
-                
+                const isAutoSuggested =
+                  !selectedCategory &&
+                  description.length > 2 &&
+                  SuggestionService.getCategorySuggestion(description) ===
+                    category;
+
                 return (
                   <TouchableOpacity
                     key={category}
@@ -413,10 +452,26 @@ const AddPaymentScreen: React.FC = () => {
                       isSelected && styles.categoryButtonSelected,
                       isAutoSuggested && styles.autoSuggestedCategory,
                     ]}
-                    onPress={() => setSelectedCategory(isSelected ? null : category)}
+                    onPress={() =>
+                      setSelectedCategory(isSelected ? null : category)
+                    }
                   >
-                    <Text style={styles.categoryEmoji}>{getCategoryIcon(category)}</Text>
-                    <Text style={[styles.categoryText, isSelected && styles.categoryTextSelected]}>
+                    <Ionicons
+                      name={getCategoryIcon(category)}
+                      size={20}
+                      color={
+                        isSelected
+                          ? theme.colors.primary
+                          : theme.colors.textSecondary
+                      }
+                      style={styles.categoryEmoji}
+                    />
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        isSelected && styles.categoryTextSelected,
+                      ]}
+                    >
                       {category}
                     </Text>
                   </TouchableOpacity>
@@ -426,7 +481,10 @@ const AddPaymentScreen: React.FC = () => {
           </View>
 
           {/* Save Button */}
-          <TouchableOpacity style={styles.saveButton} onPress={handleSavePayment}>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={handleSavePayment}
+          >
             <Text style={styles.saveButtonText}>💾 Save Payment</Text>
           </TouchableOpacity>
         </View>

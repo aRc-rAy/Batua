@@ -14,6 +14,7 @@ import { PaymentService } from '../services/PaymentService';
 import { SMSService } from '../services/SMSService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface SettingItemProps {
   title: string;
@@ -431,9 +432,9 @@ const SettingsScreen: React.FC = () => {
             style={styles.paymentMethod}
             onPress={() => Linking.openURL('https://paypal.me/anidravi')}
           >
-            <Text style={styles.paymentIcon}>🪙</Text>
+            <Ionicons name="logo-paypal" size={20} color={theme.colors.primary} style={styles.paymentIcon} />
             <Text style={styles.paymentText}>PayPal</Text>
-            <Text style={styles.arrow}>›</Text>
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -444,9 +445,9 @@ const SettingsScreen: React.FC = () => {
               )
             }
           >
-            <Text style={styles.paymentIcon}>📱</Text>
+            <Ionicons name="phone-portrait" size={20} color={theme.colors.primary} style={styles.paymentIcon} />
             <Text style={styles.paymentText}>UPI Payment</Text>
-            <Text style={styles.arrow}>›</Text>
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -457,9 +458,9 @@ const SettingsScreen: React.FC = () => {
               )
             }
           >
-            <Text style={styles.paymentIcon}>💳</Text>
+            <Ionicons name="card" size={20} color={theme.colors.primary} style={styles.paymentIcon} />
             <Text style={styles.paymentText}>Google Pay</Text>
-            <Text style={styles.arrow}>›</Text>
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -472,9 +473,9 @@ const SettingsScreen: React.FC = () => {
             )
           }
         >
-          <Text style={styles.contactIcon}>✉️</Text>
+          <Ionicons name="mail" size={20} color={theme.colors.primary} style={styles.contactIcon} />
           <Text style={styles.contactText}>Write to Developer</Text>
-          <Text style={styles.arrow}>›</Text>
+          <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
         </TouchableOpacity>
 
         {/* About */}

@@ -15,6 +15,7 @@ import { useTheme } from '../context/ThemeContext';
 import { textStyles, fontWeights } from '../utils/typography';
 import { formatAmount, formatAmountChart } from '../utils/formatting';
 import { PieChart, BarChart } from 'react-native-chart-kit';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type ChartType = 'bar' | 'pie';
 type TimeGrouping = 'week' | 'month' | 'year';
@@ -241,7 +242,10 @@ const AnalyticsScreen: React.FC = () => {
         legendFontColor: theme.colors.text,
         legendFontSize: 14,
         percentage: percentage,
-        displayText: `${category}\n${formatAmountChart(amount, true)}\n(${percentage}%)`,
+        displayText: `${category}\n${formatAmountChart(
+          amount,
+          true,
+        )}\n(${percentage}%)`,
       };
     });
 
@@ -401,7 +405,13 @@ const AnalyticsScreen: React.FC = () => {
       ...textStyles.large,
       fontWeight: fontWeights.bold,
       color: theme.colors.text,
-      marginBottom: 12,
+      textAlign: 'center',
+    },
+    insightsHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 16,
     },
     insightItem: {
       flexDirection: 'row',
@@ -586,6 +596,18 @@ const AnalyticsScreen: React.FC = () => {
                   ]}
                   onPress={() => setTimeGrouping(period)}
                 >
+                  <Ionicons
+                    name={
+                      period === 'week'
+                        ? 'calendar-outline'
+                        : period === 'month'
+                        ? 'calendar'
+                        : 'calendar-clear'
+                    }
+                    size={16}
+                    color={periodColor}
+                    style={{ marginRight: 6 }}
+                  />
                   <Text
                     style={[
                       { ...textStyles.smallMedium, color: periodColor },
@@ -612,13 +634,19 @@ const AnalyticsScreen: React.FC = () => {
               ]}
               onPress={() => setChartType('bar')}
             >
+              <Ionicons
+                name="bar-chart"
+                size={16}
+                color={chartBarColor}
+                style={{ marginRight: 6 }}
+              />
               <Text
                 style={[
                   { ...textStyles.bodySemibold, color: chartBarColor },
                   chartType === 'bar' && styles.chartOptionTextActive,
                 ]}
               >
-                📍Bar Chart
+                Bar Chart
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -628,13 +656,19 @@ const AnalyticsScreen: React.FC = () => {
               ]}
               onPress={() => setChartType('pie')}
             >
+              <Ionicons
+                name="pie-chart"
+                size={16}
+                color={chartPieColor}
+                style={{ marginRight: 6 }}
+              />
               <Text
                 style={[
                   { ...textStyles.bodySemibold, color: chartPieColor },
                   chartType === 'pie' && styles.chartOptionTextActive,
                 ]}
               >
-                🧩 Pie Chart
+                Pie Chart
               </Text>
             </TouchableOpacity>
           </View>
@@ -689,7 +723,10 @@ const AnalyticsScreen: React.FC = () => {
                 <View style={styles.pieChartContainer}>
                   <PieChart
                     data={pieChartData.map(item => ({
-                      name: `${item.name} - ${formatAmountChart(item.amount, true)}`,
+                      name: `${item.name} - ${formatAmountChart(
+                        item.amount,
+                        true,
+                      )}`,
                       population: item.amount,
                       color: item.color,
                       legendFontColor: item.legendFontColor,
@@ -720,6 +757,12 @@ const AnalyticsScreen: React.FC = () => {
               chartData.data.some(value => value > 0) && (
                 <View style={styles.highLowContainer}>
                   <View style={styles.highLowCard}>
+                    <Ionicons
+                      name="trending-up"
+                      size={20}
+                      color={theme.colors.error}
+                      style={{ marginBottom: 8 }}
+                    />
                     <Text style={styles.highLowTitle}>Highest Spending</Text>
                     <Text style={styles.highLowValue}>
                       ₹{maxValue.toFixed(0)}
@@ -728,6 +771,12 @@ const AnalyticsScreen: React.FC = () => {
                   </View>
                   {minValue > 0 && minLabel && (
                     <View style={styles.highLowCard}>
+                      <Ionicons
+                        name="trending-down"
+                        size={20}
+                        color={theme.colors.success}
+                        style={{ marginBottom: 8 }}
+                      />
                       <Text style={styles.highLowTitle}>Lowest Spending</Text>
                       <Text style={styles.highLowValue}>
                         ₹{minValue.toFixed(0)}
@@ -741,10 +790,18 @@ const AnalyticsScreen: React.FC = () => {
             {/* Enhanced Spending Insights */}
             {spendingInsights && (
               <View style={styles.insightsContainer}>
-                <Text style={styles.insightsTitle}>📊 Spending Insights</Text>
+                <View style={styles.insightsHeader}>
+                  <Text style={styles.insightsTitle}>Spending Insights</Text>
+                </View>
 
                 <View style={styles.insightsGrid}>
                   <View style={styles.insightCard}>
+                    <Ionicons
+                      name="calendar"
+                      size={16}
+                      color={theme.colors.primary}
+                      style={{ marginBottom: 4 }}
+                    />
                     <Text style={styles.insightCardTitle}>
                       Highest Spending Day
                     </Text>
@@ -754,13 +811,28 @@ const AnalyticsScreen: React.FC = () => {
                   </View>
 
                   <View style={styles.insightCard}>
+                    <Ionicons
+                      name="time"
+                      size={16}
+                      color={theme.colors.primary}
+                      style={{ marginBottom: 4 }}
+                    />
                     <Text style={styles.insightCardTitle}>Average Daily</Text>
                     <Text style={styles.insightCardValue}>
-                      {formatAmount(spendingInsights.averageDailySpending, true)}
+                      {formatAmount(
+                        spendingInsights.averageDailySpending,
+                        true,
+                      )}
                     </Text>
                   </View>
 
                   <View style={styles.insightCard}>
+                    <Ionicons
+                      name="trophy"
+                      size={16}
+                      color={theme.colors.primary}
+                      style={{ marginBottom: 4 }}
+                    />
                     <Text style={styles.insightCardTitle}>Top Category</Text>
                     <Text style={styles.insightCardValue}>
                       {spendingInsights.mostSpentCategory}
@@ -768,6 +840,12 @@ const AnalyticsScreen: React.FC = () => {
                   </View>
 
                   <View style={styles.insightCard}>
+                    <Ionicons
+                      name="swap-horizontal"
+                      size={16}
+                      color={theme.colors.primary}
+                      style={{ marginBottom: 4 }}
+                    />
                     <Text style={styles.insightCardTitle}>
                       Total Transactions
                     </Text>
@@ -777,15 +855,30 @@ const AnalyticsScreen: React.FC = () => {
                   </View>
 
                   <View style={styles.insightCard}>
+                    <Ionicons
+                      name="calculator"
+                      size={16}
+                      color={theme.colors.primary}
+                      style={{ marginBottom: 4 }}
+                    />
                     <Text style={styles.insightCardTitle}>
                       Avg per Transaction
                     </Text>
                     <Text style={styles.insightCardValue}>
-                      {formatAmount(spendingInsights.avgTransactionAmount, true)}
+                      {formatAmount(
+                        spendingInsights.avgTransactionAmount,
+                        true,
+                      )}
                     </Text>
                   </View>
 
                   <View style={styles.insightCard}>
+                    <Ionicons
+                      name="wallet"
+                      size={16}
+                      color={theme.colors.primary}
+                      style={{ marginBottom: 4 }}
+                    />
                     <Text style={styles.insightCardTitle}>Total Spending</Text>
                     <Text style={styles.insightCardValue}>
                       {formatAmount(totalSpending, true)}

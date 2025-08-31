@@ -20,9 +20,10 @@ import { PaymentService } from '../services/PaymentService';
 import { BudgetService } from '../services/BudgetService';
 import { WidgetService } from '../services/WidgetService';
 import { useTheme } from '../context/ThemeContext';
-import { textStyles } from '../utils/typography';
+import { textStyles, fontFamilies } from '../utils/typography';
 import { formatAmount } from '../utils/formatting';
 import TransactionList from '../components/TransactionList';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -89,7 +90,11 @@ const SlideSwitch: React.FC<{
         <Animated.View
           style={[switchStyles.thumb, { transform: [{ translateX }] }]}
         >
-          <Text style={switchStyles.icon}>{value ? '☀️' : '🌙'}</Text>
+          {value ? (
+            <Ionicons name="sunny" size={16} color={theme.colors.primary} />
+          ) : (
+            <Ionicons name="moon" size={16} color={theme.colors.primary} />
+          )}
         </Animated.View>
       </Animated.View>
     </TouchableOpacity>
@@ -131,11 +136,26 @@ const HomeScreen: React.FC = () => {
   const [budgetStatus, setBudgetStatus] = useState<any>(null);
 
   const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
+    weekday: 'short',
+    month: 'short',
     day: 'numeric',
   });
+
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  };
+
+  const getTimeIcon = () => {
+    const hour = new Date().getHours();
+    if (hour < 6) return 'moon';
+    if (hour < 12) return 'sunny';
+    if (hour < 17) return 'sunny';
+    if (hour < 20) return 'partly-sunny';
+    return 'moon';
+  };
 
   const loadData = async () => {
     try {
@@ -241,23 +261,43 @@ const HomeScreen: React.FC = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 12,
+      paddingVertical: 16,
       backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      shadowColor: theme.colors.text,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
     },
     welcomeLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
       flex: 1,
+    },
+    welcomeIcon: {
+      marginRight: 12,
     },
     welcomeRight: {
       alignItems: 'flex-end',
+      backgroundColor: theme.colors.card,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     welcomeText: {
       ...textStyles.large,
       color: theme.colors.text,
-      marginBottom: 2,
+      fontWeight: '600',
     },
     dateText: {
-      ...textStyles.small,
-      color: theme.colors.textSecondary,
+      ...textStyles.caption,
+      color: theme.colors.primary,
+      fontWeight: '500',
+      fontFamily: fontFamilies.regular,
     },
     summaryContainer: {
       flexDirection: 'row',
@@ -298,14 +338,16 @@ const HomeScreen: React.FC = () => {
       flex: 1,
     },
     editBudgetButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      backgroundColor: theme.colors.border,
-      borderRadius: 6,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      backgroundColor: theme.colors.surface,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     editBudgetButtonText: {
       ...textStyles.captionMedium,
-      color: theme.colors.textSecondary,
+      color: theme.colors.primary,
     },
     budgetCardsContainer: {
       flexDirection: 'row',
@@ -340,14 +382,21 @@ const HomeScreen: React.FC = () => {
     },
     setBudgetButton: {
       marginTop: 8,
-      padding: 12,
+      paddingVertical: 14,
+      paddingHorizontal: 24,
       backgroundColor: theme.colors.primary,
-      borderRadius: 8,
+      borderRadius: 12,
       alignItems: 'center',
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 4,
     },
     setBudgetButtonText: {
-      ...textStyles.buttonSmall,
-      color: '#ffffff',
+      ...textStyles.button,
+      color: theme.colors.surface,
+      fontWeight: '600',
     },
     budgetLabelWithMargin: {
       ...textStyles.small,
@@ -366,14 +415,21 @@ const HomeScreen: React.FC = () => {
     },
     actionButton: {
       backgroundColor: theme.colors.primary,
-      paddingVertical: 12,
-      paddingHorizontal: 20,
-      borderRadius: 8,
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+      borderRadius: 12,
       alignItems: 'center',
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 4,
+      marginBottom: 8,
     },
     actionButtonText: {
       ...textStyles.button,
-      color: '#ffffff',
+      color: theme.colors.surface,
+      fontWeight: '600',
     },
     recentContainer: {
       paddingHorizontal: 20,
@@ -497,19 +553,22 @@ const HomeScreen: React.FC = () => {
     },
     modalButton: {
       flex: 1,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+      borderRadius: 10,
       alignItems: 'center',
     },
     modalButtonPrimary: {
       backgroundColor: theme.colors.primary,
     },
     modalButtonSecondary: {
-      backgroundColor: theme.colors.textSecondary,
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     modalButtonText: {
       ...textStyles.buttonSmall,
-      color: '#ffffff',
+      fontWeight: '600',
     },
   });
 
@@ -542,7 +601,13 @@ const HomeScreen: React.FC = () => {
         {/* Welcome Section */}
         <View style={styles.welcomeSection}>
           <View style={styles.welcomeLeft}>
-            <Text style={styles.welcomeText}>Welcome back!</Text>
+            <Ionicons
+              name={getTimeIcon()}
+              size={24}
+              color={theme.colors.primary}
+              style={styles.welcomeIcon}
+            />
+            <Text style={styles.welcomeText}>Good {getTimeOfDay()}!</Text>
           </View>
           <View style={styles.welcomeRight}>
             <Text style={styles.dateText}>{currentDate}</Text>
@@ -553,7 +618,7 @@ const HomeScreen: React.FC = () => {
         {budgetStatus?.budget ? (
           <View style={styles.budgetContainer}>
             <View style={styles.budgetHeader}>
-              <Text style={styles.budgetTitle}>Monthly Budget Plan 🗓️</Text>
+              <Text style={styles.budgetTitle}>Monthly Budget</Text>
               <TouchableOpacity
                 style={styles.editBudgetButton}
                 onPress={() => {
@@ -618,9 +683,9 @@ const HomeScreen: React.FC = () => {
           </View>
         ) : (
           <View style={styles.budgetContainer}>
-            <Text style={styles.budgetTitle}>Plan Your Monthly Budget 💰</Text>
+            <Text style={styles.budgetTitle}>Set Monthly Budget</Text>
             <Text style={styles.budgetLabelWithMargin}>
-              Set a monthly budget to get daily spending suggestions
+              Track spending and get daily insights
             </Text>
 
             {/* Today's and This Month spending cards even without budget */}
@@ -666,7 +731,7 @@ const HomeScreen: React.FC = () => {
         {/* Recent Transactions */}
         <View style={styles.recentContainer}>
           <Text style={styles.sectionTitle}>
-            Recent Transactions ({recentPayments.length})
+            Recent ({recentPayments.length})
           </Text>
           {loading ? (
             <View style={styles.emptyState}>
@@ -675,9 +740,6 @@ const HomeScreen: React.FC = () => {
           ) : recentPayments.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateText}>No transactions yet</Text>
-              <Text style={styles.emptyStateSubtext}>
-                Tap "Add Payment" below to get started
-              </Text>
             </View>
           ) : (
             <View style={styles.transactionListContainer}>
@@ -728,13 +790,15 @@ const HomeScreen: React.FC = () => {
                   setIsEditingBudget(false);
                 }}
               >
-                <Text style={styles.modalButtonText}>Cancel</Text>
+                <Text style={[styles.modalButtonText, { color: theme.colors.primary }]}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.modalButtonPrimary]}
                 onPress={handleSetBudget}
               >
-                <Text style={styles.modalButtonText}>
+                <Text style={[styles.modalButtonText, { color: theme.colors.surface }]}>
                   {isEditingBudget ? 'Update Budget' : 'Set Budget'}
                 </Text>
               </TouchableOpacity>

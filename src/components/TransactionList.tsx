@@ -10,6 +10,7 @@ import { Payment, PaymentCategory } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
 import { formatAmount } from '../utils/formatting';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface GroupedTransactions {
   date: string;
@@ -36,13 +37,13 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
   const getCategoryIcon = (category: PaymentCategory): string => {
     const iconMap: Record<PaymentCategory, string> = {
-      Food: '🍽️',
-      Travel: '✈️',
-      Clothes: '👕',
-      Entertainment: '🎬',
-      Bills: '🧾',
-      Healthcare: '🏥',
-      Others: '📦'
+      Food: 'restaurant',
+      Travel: 'airplane',
+      Clothes: 'shirt',
+      Entertainment: 'film',
+      Bills: 'document-text',
+      Healthcare: 'medical',
+      Others: 'ellipsis-horizontal'
     };
     return iconMap[category];
   };
@@ -160,6 +161,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
           { 
             backgroundColor: isSelected ? theme.colors.primary + '08' : categoryColors.background,
             borderLeftColor: isSelected ? theme.colors.primary : categoryColors.border,
+            borderColor: theme.colors.border + '15',
           },
           isSelected && styles.selectedCard
         ]}
@@ -168,7 +170,12 @@ const TransactionList: React.FC<TransactionListProps> = ({
       >
         <View style={styles.transactionRow}>
           <View style={styles.leftSection}>
-            <Text style={styles.categoryIcon}>{getCategoryIcon(payment.category)}</Text>
+            <Ionicons 
+              name={getCategoryIcon(payment.category)} 
+              size={20} 
+              color={theme.colors.primary} 
+              style={styles.categoryIcon}
+            />
             <View style={styles.transactionDetails}>
               <Text 
                 style={[styles.transactionDescription, { color: theme.colors.text }]} 
@@ -204,7 +211,11 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const renderDateGroup = (group: GroupedTransactions) => {
     return (
       <View key={group.date} style={styles.dateGroup}>
-        <Text style={[styles.dateLabel, { color: theme.colors.text }]}>
+        <Text style={[styles.dateLabel, { 
+          color: theme.colors.textSecondary,
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border + '40'
+        }]}>
           {group.label}
         </Text>
         {group.payments.map(renderTransaction)}
@@ -256,35 +267,44 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dateLabel: {
-  ...textStyles.smallMedium,
-    marginBottom: 6,
-    paddingHorizontal: 4,
+    ...textStyles.smallMedium,
+    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+    borderRadius: 12,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
+    fontWeight: '600',
   },
   transactionItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 4,
-    marginBottom: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 8,
   },
   transactionCard: {
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    marginHorizontal: 4,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    elevation: 0.5,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderWidth: 1,
+    marginHorizontal: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
-    shadowOpacity: 0.02,
-    shadowRadius: 1,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   selectedCard: {
-    elevation: 1,
-    shadowOpacity: 0.04,
+    elevation: 6,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
   },
   transactionRow: {
     flexDirection: 'row',
@@ -300,17 +320,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   categoryIcon: {
-  ...textStyles.heading,
-    marginRight: 14,
-    opacity: 0.8,
+    marginRight: 16,
+    opacity: 0.9,
+    alignSelf: 'center',
   },
   transactionDetails: {
     flex: 1,
   },
   transactionDescription: {
-  ...textStyles.body,
-    marginBottom: 3,
+    ...textStyles.body,
+    marginBottom: 4,
     letterSpacing: 0.2,
+    fontWeight: '500',
   },
   metaRow: {
     flexDirection: 'row',
@@ -327,18 +348,21 @@ const styles = StyleSheet.create({
   ...textStyles.captionMedium,
   },
   amountText: {
-  ...textStyles.bodyMedium,
+    ...textStyles.bodyMedium,
     letterSpacing: 0.3,
+    fontWeight: '600',
+    fontSize: 16,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 60,
   },
   emptyText: {
-  ...textStyles.bodyMedium,
+    ...textStyles.bodyMedium,
     textAlign: 'center',
+    opacity: 0.7,
   },
   bottomSpacing: {
     height: 20,

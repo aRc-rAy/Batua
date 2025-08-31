@@ -38,27 +38,34 @@ const HistoryScreen: React.FC = () => {
   }>({
     visible: false,
     step: 'generating',
-    cancelled: false
+    cancelled: false,
   });
 
   // Function to filter payments without loading state
-  const applyFilter = useCallback((allPayments: Payment[], filterType: FilterType) => {
-    let filtered = allPayments;
-    if (filterType === 'manual') {
-      filtered = allPayments.filter(payment => payment.type === 'manual' && !payment.isFromSMS);
-    } else if (filterType === 'sms') {
-      filtered = allPayments.filter(payment => payment.type === 'sms' || payment.isFromSMS);
-    }
-    return filtered;
-  }, []);
+  const applyFilter = useCallback(
+    (allPayments: Payment[], filterType: FilterType) => {
+      let filtered = allPayments;
+      if (filterType === 'manual') {
+        filtered = allPayments.filter(
+          payment => payment.type === 'manual' && !payment.isFromSMS,
+        );
+      } else if (filterType === 'sms') {
+        filtered = allPayments.filter(
+          payment => payment.type === 'sms' || payment.isFromSMS,
+        );
+      }
+      return filtered;
+    },
+    [],
+  );
 
   const loadPayments = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       const allPayments = await PaymentService.getAllPayments();
       setPayments(allPayments);
-      
+
       // Apply all filter will be handled by useEffect
       setFilteredPayments(allPayments);
     } catch (error) {
@@ -84,10 +91,8 @@ const HistoryScreen: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       loadPayments();
-    }, [loadPayments])
+    }, [loadPayments]),
   );
-
-
 
   const handleExportAll = async () => {
     try {
@@ -95,12 +100,12 @@ const HistoryScreen: React.FC = () => {
       setExportProgress({
         visible: true,
         step: 'generating',
-        cancelled: false
+        cancelled: false,
       });
 
       // Simulate some processing time for better UX
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Check if user cancelled during generation
       if (exportProgress.cancelled) {
         setExportProgress(prev => ({ ...prev, visible: false }));
@@ -115,9 +120,8 @@ const HistoryScreen: React.FC = () => {
         ...prev,
         step: 'ready',
         filePath,
-        fileName
+        fileName,
       }));
-
     } catch (error) {
       setExportProgress(prev => ({ ...prev, visible: false }));
       Alert.alert('Error', 'Failed to generate Excel file');
@@ -127,40 +131,42 @@ const HistoryScreen: React.FC = () => {
   const handleDownload = async () => {
     try {
       setExportProgress(prev => ({ ...prev, step: 'downloading' }));
-      
+
       if (!exportProgress.filePath) {
         throw new Error('No file path available');
       }
 
       // Add a small delay to show the downloading state
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Check if file exists
       const fileExists = await RNFS.exists(exportProgress.filePath);
-      
+
       if (fileExists) {
         setExportProgress(prev => ({ ...prev, visible: false }));
-        
+
         Alert.alert(
           'Download Complete! 🎉',
           `Excel file successfully saved!\n\n📁 Location: Downloads/${exportProgress.fileName}\n\n💡 You can find it in your device's Downloads folder or File Manager`,
           [
-            { 
-              text: 'Open File Manager', 
+            {
+              text: 'Open File Manager',
               onPress: () => {
                 // Try to open Downloads folder
                 if (Platform.OS === 'android') {
-                  Linking.openURL('content://com.android.externalstorage.documents/document/primary%3ADownload')
-                    .catch(() => {
-                      // Fallback to generic file manager intent
-                      Linking.openURL('content://com.android.providers.downloads.documents/root/downloads')
-                        .catch(() => console.log('Cannot open file manager'));
-                    });
+                  Linking.openURL(
+                    'content://com.android.externalstorage.documents/document/primary%3ADownload',
+                  ).catch(() => {
+                    // Fallback to generic file manager intent
+                    Linking.openURL(
+                      'content://com.android.providers.downloads.documents/root/downloads',
+                    ).catch(() => console.log('Cannot open file manager'));
+                  });
                 }
-              }
+              },
             },
-            { text: 'Great!', style: 'default' }
-          ]
+            { text: 'Great!', style: 'default' },
+          ],
         );
       } else {
         throw new Error('File was not created successfully');
@@ -170,7 +176,7 @@ const HistoryScreen: React.FC = () => {
       Alert.alert(
         'Download Error',
         'There was an issue saving the file. Please try again.',
-        [{ text: 'OK' }]
+        [{ text: 'OK' }],
       );
     }
   };
@@ -524,24 +530,30 @@ const HistoryScreen: React.FC = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>History</Text>
       </View>
-      
+
       {/* Filter Options */}
       <View style={styles.filterSection}>
         <View style={styles.filterContainer}>
-          {(['all', 'manual', 'sms'] as FilterType[]).map((filterType) => (
+          {(['all', 'manual', 'sms'] as FilterType[]).map(filterType => (
             <TouchableOpacity
               key={filterType}
               style={[
                 styles.filterButton,
-                filter === filterType && styles.filterButtonActive
+                filter === filterType && styles.filterButtonActive,
               ]}
               onPress={() => handleFilterChange(filterType)}
             >
-              <Text style={[
-                styles.filterButtonText,
-                filter === filterType && styles.filterButtonTextActive
-              ]}>
-                {filterType === 'all' ? 'All' : filterType === 'manual' ? 'Manual' : 'SMS'}
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  filter === filterType && styles.filterButtonTextActive,
+                ]}
+              >
+                {filterType === 'all'
+                  ? 'All'
+                  : filterType === 'manual'
+                  ? 'Manual'
+                  : 'SMS'}
               </Text>
             </TouchableOpacity>
           ))}
@@ -550,13 +562,13 @@ const HistoryScreen: React.FC = () => {
 
       {/* Action Buttons */}
       <View style={styles.actionButtonsContainer}>
-          <TouchableOpacity
-            style={[styles.exportButton, styles.actionButtonPrimary]}
-            onPress={handleExportAll}
-          >
-            <Text style={styles.exportButtonText}>Download Excel</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[styles.exportButton, styles.actionButtonPrimary]}
+          onPress={handleExportAll}
+        >
+          <Text style={styles.exportButtonText}>Download Excel</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Separator */}
       <View style={styles.actionSeparator} />
@@ -570,14 +582,16 @@ const HistoryScreen: React.FC = () => {
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>No payment history found</Text>
           <Text style={styles.emptyStateSubtext}>
-            {filter !== 'all' ? `No ${filter} payments found` : 'Add some payments to see history'}
+            {filter !== 'all'
+              ? `No ${filter} payments found`
+              : 'Add some payments to see history'}
           </Text>
         </View>
       ) : (
         <View style={styles.transactionContainer}>
           <TransactionList
             payments={filteredPayments}
-            onPaymentPress={(payment) => {
+            onPaymentPress={payment => {
               navigation.navigate('PaymentActions', { payment });
             }}
             selectedPaymentId={null}
@@ -598,28 +612,56 @@ const HistoryScreen: React.FC = () => {
             {exportProgress.step === 'generating' && (
               <>
                 <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>🔄 Generating Excel File</Text>
+                  <Text style={styles.modalTitle}>
+                    🔄 Generating Excel File
+                  </Text>
                 </View>
                 <View style={styles.progressContent}>
                   <View style={styles.progressIndicator}>
                     <Text style={styles.progressEmoji}>📊</Text>
                   </View>
-                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                  <Text
+                    style={[styles.progressText, { color: theme.colors.text }]}
+                  >
                     Preparing your payment data for Excel export
                   </Text>
-                  <Text style={[styles.progressSubtext, { color: theme.colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.progressSubtext,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
                     Processing {payments.length} transactions...
                   </Text>
                   <View style={styles.progressBar}>
-                    <View style={[styles.progressBarFill, { backgroundColor: theme.colors.primary }]} />
+                    <View
+                      style={[
+                        styles.progressBarFill,
+                        { backgroundColor: theme.colors.primary },
+                      ]}
+                    />
                   </View>
                 </View>
                 <View style={styles.modalButtons}>
                   <TouchableOpacity
-                    style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.error + '20', borderColor: theme.colors.error }]}
+                    style={[
+                      styles.modalButton,
+                      styles.cancelButton,
+                      {
+                        backgroundColor: theme.colors.error + '20',
+                        borderColor: theme.colors.error,
+                      },
+                    ]}
                     onPress={handleCancelExport}
                   >
-                    <Text style={[styles.modalButtonText, { color: theme.colors.error }]}>Cancel</Text>
+                    <Text
+                      style={[
+                        styles.modalButtonText,
+                        { color: theme.colors.error },
+                      ]}
+                    >
+                      Cancel
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </>
@@ -634,25 +676,52 @@ const HistoryScreen: React.FC = () => {
                   <View style={styles.progressIndicator}>
                     <Text style={styles.progressEmoji}>🎉</Text>
                   </View>
-                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                  <Text
+                    style={[styles.progressText, { color: theme.colors.text }]}
+                  >
                     {exportProgress.fileName}
                   </Text>
-                  <Text style={[styles.progressSubtext, { color: theme.colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.progressSubtext,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
                     Ready to download to Downloads folder
                   </Text>
                   <View style={styles.successBadge}>
-                    <Text style={styles.successText}>📋 {payments.length} transactions included</Text>
+                    <Text style={styles.successText}>
+                      📋 {payments.length} transactions included
+                    </Text>
                   </View>
                 </View>
                 <View style={styles.modalButtons}>
                   <TouchableOpacity
-                    style={[styles.modalButton, styles.cancelButton, { backgroundColor: theme.colors.textSecondary + '20', borderColor: theme.colors.textSecondary }]}
+                    style={[
+                      styles.modalButton,
+                      styles.cancelButton,
+                      {
+                        backgroundColor: theme.colors.textSecondary + '20',
+                        borderColor: theme.colors.textSecondary,
+                      },
+                    ]}
                     onPress={handleCancelExport}
                   >
-                    <Text style={[styles.modalButtonText, { color: theme.colors.textSecondary }]}>Cancel</Text>
+                    <Text
+                      style={[
+                        styles.modalButtonText,
+                        { color: theme.colors.textSecondary },
+                      ]}
+                    >
+                      Cancel
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.modalButton, styles.downloadButton, { backgroundColor: theme.colors.primary }]}
+                    style={[
+                      styles.modalButton,
+                      styles.downloadButton,
+                      { backgroundColor: theme.colors.primary },
+                    ]}
                     onPress={handleDownload}
                   >
                     <Text style={styles.modalButtonTextWhite}>💾 Download</Text>
@@ -670,14 +739,27 @@ const HistoryScreen: React.FC = () => {
                   <View style={styles.progressIndicator}>
                     <Text style={styles.progressEmoji}>⬇️</Text>
                   </View>
-                  <Text style={[styles.progressText, { color: theme.colors.text }]}>
+                  <Text
+                    style={[styles.progressText, { color: theme.colors.text }]}
+                  >
                     Saving to Downloads folder
                   </Text>
-                  <Text style={[styles.progressSubtext, { color: theme.colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.progressSubtext,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
                     Almost done...
                   </Text>
                   <View style={styles.progressBar}>
-                    <View style={[styles.progressBarFill, styles.downloadingAnimation, { backgroundColor: theme.colors.primary }]} />
+                    <View
+                      style={[
+                        styles.progressBarFill,
+                        styles.downloadingAnimation,
+                        { backgroundColor: theme.colors.primary },
+                      ]}
+                    />
                   </View>
                 </View>
               </>
