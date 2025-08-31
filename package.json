@@ -30,6 +30,7 @@
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-svg": "^15.12.1",
     "react-native-vector-icons": "^10.3.0",
+    "victory-native": "^41.19.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

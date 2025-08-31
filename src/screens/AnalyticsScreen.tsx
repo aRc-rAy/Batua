@@ -14,7 +14,8 @@ import { PaymentService } from '../services/PaymentService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles, fontWeights } from '../utils/typography';
 import { formatAmount, formatAmountChart } from '../utils/formatting';
-import { PieChart, BarChart } from 'react-native-chart-kit';
+import { PieChart } from 'react-native-chart-kit';
+import { BarChart } from 'react-native-gifted-charts';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type ChartType = 'bar' | 'pie';
@@ -57,7 +58,7 @@ const AnalyticsScreen: React.FC = () => {
         return `${year}-${month}-${day}`;
       };
     } else if (grouping === 'month') {
-      periods = 6; // Last 6 months (as requested)
+      periods = 12; // Last 12 months
       formatLabel = (date: Date) => {
         return date.toLocaleDateString('en-US', {
           month: 'short',
@@ -66,7 +67,7 @@ const AnalyticsScreen: React.FC = () => {
       };
       getKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}`;
     } else {
-      periods = 6; // Last 6 years (same as monthly)
+      periods = 4; // Last 4 years
       formatLabel = (date: Date) => {
         return date.getFullYear().toString();
       };
@@ -115,19 +116,19 @@ const AnalyticsScreen: React.FC = () => {
 
         return paymentDate >= monday && paymentDate <= sunday;
       } else if (grouping === 'month') {
-        const sixMonthsAgo = new Date(today);
-        sixMonthsAgo.setMonth(today.getMonth() - 5);
-        sixMonthsAgo.setDate(1);
-        sixMonthsAgo.setHours(0, 0, 0, 0);
+        const twelveMonthsAgo = new Date(today);
+        twelveMonthsAgo.setMonth(today.getMonth() - 11);
+        twelveMonthsAgo.setDate(1);
+        twelveMonthsAgo.setHours(0, 0, 0, 0);
 
-        return paymentDate >= sixMonthsAgo;
+        return paymentDate >= twelveMonthsAgo;
       } else {
-        const sixYearsAgo = new Date(today);
-        sixYearsAgo.setFullYear(today.getFullYear() - 5);
-        sixYearsAgo.setMonth(0, 1);
-        sixYearsAgo.setHours(0, 0, 0, 0);
+        const fourYearsAgo = new Date(today);
+        fourYearsAgo.setFullYear(today.getFullYear() - 3);
+        fourYearsAgo.setMonth(0, 1);
+        fourYearsAgo.setHours(0, 0, 0, 0);
 
-        return paymentDate >= sixYearsAgo;
+        return paymentDate >= fourYearsAgo;
       }
     });
 
@@ -140,11 +141,26 @@ const AnalyticsScreen: React.FC = () => {
       }
     });
 
-    const data = labels.map(label => {
-      const key = [...dataMap.keys()].find(
-        (_, index) => labels[index] === label,
-      );
-      return key ? dataMap.get(key) || 0 : 0;
+    const data = labels.map((label, index) => {
+      // Find the corresponding key for this label by recreating the date
+      let date = new Date();
+      if (grouping === 'week') {
+        const today = new Date(now);
+        const dayOfWeek = (today.getDay() + 6) % 7;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() - dayOfWeek);
+        date = new Date(monday);
+        date.setDate(monday.getDate() + index);
+      } else if (grouping === 'month') {
+        date.setMonth(now.getMonth() - (periods - 1 - index));
+        date.setDate(1);
+      } else {
+        date.setFullYear(now.getFullYear() - (periods - 1 - index));
+        date.setMonth(0, 1);
+      }
+
+      const key = getKey(date);
+      return dataMap.get(key) || 0;
     });
 
     return { labels, data };
@@ -200,6 +216,83 @@ const AnalyticsScreen: React.FC = () => {
   const hasData = payments.length > 0;
   const totalSpending = chartData.data.reduce((sum, value) => sum + value, 0);
 
+  // Filter payments by time period for pie chart
+  const getFilteredPaymentsForPieChart = (paymentsData: Payment[], grouping: TimeGrouping) => {
+    const now = new Date();
+
+    if (grouping === 'week') {
+      const dayOfWeek = (now.getDay() + 6) % 7;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - dayOfWeek);
+      monday.setHours(0, 0, 0, 0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23, 59, 59, 999);
+
+      return paymentsData.filter(payment => {
+        const paymentDate = new Date(payment.date);
+        return paymentDate >= monday && paymentDate <= sunday;
+      });
+    } else if (grouping === 'month') {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+      return paymentsData.filter(payment => {
+        const paymentDate = new Date(payment.date);
+        return paymentDate >= startOfMonth && paymentDate <= endOfMonth;
+      });
+    } else { // year
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+
+      return paymentsData.filter(payment => {
+        const paymentDate = new Date(payment.date);
+        return paymentDate >= startOfYear && paymentDate <= endOfYear;
+      });
+    }
+  };
+
+  // Get filtered category data for pie chart
+  const getFilteredCategoryData = (paymentsData: Payment[], grouping: TimeGrouping) => {
+    const filteredPayments = getFilteredPaymentsForPieChart(paymentsData, grouping);
+    return getCategoryData(filteredPayments);
+  };
+
+  // Get period display name
+  const getPeriodDisplayName = (grouping: TimeGrouping) => {
+    const now = new Date();
+
+    if (grouping === 'week') {
+      return 'This Week';
+    } else if (grouping === 'month') {
+      return now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } else {
+      return now.getFullYear().toString();
+    }
+  };
+
+  // Generate formatted y-axis labels
+  const getYAxisLabels = (data: number[]) => {
+    const maxVal = Math.max(...data) * 1.2;
+    const sections = 6;
+    const step = maxVal / sections;
+    const labels = [];
+
+    for (let i = 0; i <= sections; i++) {
+      const value = step * i;
+      if (value >= 100000) {
+        labels.push(`${(value / 100000).toFixed(1)}L`);
+      } else if (value >= 1000) {
+        labels.push(`${(value / 1000).toFixed(1)}k`);
+      } else {
+        labels.push(value.toFixed(0));
+      }
+    }
+
+    return labels;
+  };
+
   // Find highest and lowest spending periods
   let maxValue = 0;
   let minValue = 0;
@@ -221,7 +314,7 @@ const AnalyticsScreen: React.FC = () => {
   }
 
   // Prepare pie chart data with enhanced formatting
-  const pieChartData = Object.entries(categoryData)
+  const pieChartData = Object.entries(chartType === 'pie' ? getFilteredCategoryData(payments, timeGrouping) : categoryData)
     .filter(([_, value]) => value > 0)
     .map(([category, amount], index) => {
       const colors = [
@@ -233,8 +326,9 @@ const AnalyticsScreen: React.FC = () => {
         '#FF9F40',
         '#FF6384',
       ];
-      const percentage =
-        totalSpending > 0 ? ((amount / totalSpending) * 100).toFixed(1) : '0';
+      const filteredPayments = chartType === 'pie' ? getFilteredPaymentsForPieChart(payments, timeGrouping) : payments;
+      const periodTotal = filteredPayments.reduce((sum, payment) => sum + payment.amount, 0);
+      const percentage = periodTotal > 0 ? ((amount / periodTotal) * 100).toFixed(1) : '0';
       return {
         name: category,
         amount: amount,
@@ -253,43 +347,71 @@ const AnalyticsScreen: React.FC = () => {
     return screenWidth - 30; // Consistent width for all charts
   };
 
+  // Calculate dynamic bar width based on number of data points
+  const getDynamicBarWidth = (dataLength: number) => {
+    // Get the actual chart width used in BarChart component
+    const chartWidth = getChartWidth() - 40; // This matches the width prop in BarChart
+    const spacing = getDynamicSpacing(dataLength);
+
+    // Calculate total space needed for spacing
+    const totalSpacingWidth = (dataLength - 1) * spacing;
+
+    // Calculate remaining space for bars
+    const availableBarSpace = chartWidth - totalSpacingWidth;
+
+    // Divide equally among all bars
+    const barWidth = availableBarSpace / dataLength;
+
+    // Ensure minimum and maximum reasonable widths
+    return Math.max(15, Math.min(70, Math.floor(barWidth)));
+  };
+
+  // Calculate dynamic spacing based on number of data points
+  const getDynamicSpacing = (dataLength: number) => {
+    if (dataLength <= 5) return 10; // Few data points: more spacing
+    if (dataLength <= 7) return 4; // Weekly: comfortable spacing
+    if (dataLength <= 12) return 2; // Monthly: tighter spacing to fit all 12 bars
+    return 4; // More data: minimal spacing
+  };
+
+  // Transform data for gifted-charts
+  const getGiftedChartData = (labels: string[], data: number[]) => {
+    const colors = theme.isDark
+      ? [
+          '#60A5FA', // Blue - good contrast on dark
+          '#34D399', // Green - good contrast on dark
+          '#FBBF24', // Yellow - good contrast on dark
+          '#F87171', // Red - good contrast on dark
+          '#A78BFA', // Purple - good contrast on dark
+          '#22D3EE', // Cyan - good contrast on dark
+          '#FB923C', // Orange - good contrast on dark
+        ]
+      : [
+          '#3B82F6', // Dark blue - good contrast on light
+          '#10B981', // Dark green - good contrast on light
+          '#D97706', // Dark orange - good contrast on light
+          '#DC2626', // Dark red - good contrast on light
+          '#7C3AED', // Dark purple - good contrast on light
+          '#0891B2', // Dark cyan - good contrast on light
+          '#EA580C', // Dark orange - good contrast on light
+        ];
+
+    return data.map((value, index) => {
+      return {
+        value: value, // Keep numeric for chart calculations
+        label: labels[index] || `Day ${index + 1}`,
+        frontColor: colors[index % colors.length],
+        // Remove topLabel to let showValuesAsTopLabel handle it
+      };
+    });
+  };
+
   const chartConfig = {
     backgroundColor: theme.colors.surface,
     backgroundGradientFrom: theme.colors.surface,
     backgroundGradientTo: theme.colors.surface,
-    decimalPlaces: 0,
-    color: (opacity = 1) =>
-      theme.isDark
-        ? `rgba(52, 152, 219, ${opacity})`
-        : `rgba(41, 128, 185, ${opacity})`,
-    labelColor: (opacity = 1) =>
-      `${theme.colors.text}${Math.round(opacity * 255)
-        .toString(16)
-        .padStart(2, '0')}`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForLabels: {
-      fontSize: 11,
-      fontWeight: '600',
-    },
-    propsForVerticalLabels: {
-      fontSize: 11,
-      fontWeight: '600',
-    },
-    formatYLabel: (yValue: string) => {
-      const value = parseInt(yValue, 10);
-      if (value >= 1000) {
-        return `₹${(value / 1000).toFixed(1)}k`;
-      } else if (value >= 100) {
-        return `₹${Math.round(value / 10) * 10}`;
-      } else if (value > 0) {
-        return `₹${value}`;
-      } else {
-        return '₹0';
-      }
-    },
-    barPercentage: timeGrouping === 'week' ? 0.7 : 0.6, // Reduced bar padding
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: () => theme.colors.text,
   };
 
   const styles = StyleSheet.create({
@@ -322,7 +444,7 @@ const AnalyticsScreen: React.FC = () => {
       backgroundColor: theme.colors.surface,
       borderRadius: 12,
       padding: 4,
-      marginBottom: 16,
+      marginBottom: 12,
       elevation: 1,
       shadowColor: theme.colors.text,
       shadowOffset: { width: 0, height: 1 },
@@ -379,21 +501,21 @@ const AnalyticsScreen: React.FC = () => {
       color: '#ffffff',
     },
     chartContainer: {
-      paddingHorizontal: 15,
-      paddingVertical: 20,
+      paddingHorizontal: 10,
+      paddingVertical: 15,
       alignItems: 'center',
-      marginHorizontal: 10,
-      marginVertical: 10,
+      marginHorizontal: 5,
+      marginVertical: 5,
     },
     chartTitle: {
       ...textStyles.large,
       color: theme.colors.text,
-      marginBottom: 20,
+      marginBottom: 15,
       textAlign: 'center',
       fontWeight: fontWeights.bold,
     },
     emptyState: {
-      paddingVertical: 60,
+      paddingVertical: 40,
       alignItems: 'center',
     },
     emptyStateText: {
@@ -411,13 +533,13 @@ const AnalyticsScreen: React.FC = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 16,
+      marginBottom: 12,
     },
     insightItem: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: 6,
+      paddingVertical: 4,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
     },
@@ -433,14 +555,14 @@ const AnalyticsScreen: React.FC = () => {
     highLowContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      margin: 20,
-      gap: 15,
-      paddingHorizontal: 10,
+      margin: 15,
+      gap: 10,
+      paddingHorizontal: 5,
     },
     highLowCard: {
       flex: 1,
       backgroundColor: theme.colors.surface,
-      padding: 12,
+      padding: 8,
       borderRadius: 16,
       alignItems: 'center',
       elevation: 3,
@@ -469,8 +591,8 @@ const AnalyticsScreen: React.FC = () => {
       textAlign: 'center',
     },
     spendingInsights: {
-      margin: 20,
-      padding: 16,
+      margin: 15,
+      padding: 12,
       backgroundColor: theme.colors.surface,
       borderRadius: 12,
       elevation: 2,
@@ -479,11 +601,11 @@ const AnalyticsScreen: React.FC = () => {
       ...textStyles.large,
       fontWeight: fontWeights.bold,
       color: theme.colors.text,
-      marginBottom: 12,
+      marginBottom: 8,
     },
     insightsContainer: {
-      margin: 20,
-      padding: 20,
+      margin: 15,
+      padding: 15,
       backgroundColor: theme.colors.surface,
       borderRadius: 16,
       elevation: 3,
@@ -503,9 +625,9 @@ const AnalyticsScreen: React.FC = () => {
     insightCard: {
       width: '48%',
       backgroundColor: theme.colors.card || theme.colors.surface,
-      padding: 12,
+      padding: 8,
       borderRadius: 12,
-      marginBottom: 12,
+      marginBottom: 8,
       alignItems: 'center',
       elevation: 2,
       shadowColor: theme.colors.text,
@@ -530,8 +652,8 @@ const AnalyticsScreen: React.FC = () => {
       alignItems: 'center',
       backgroundColor: theme.colors.surface,
       borderRadius: 16,
-      margin: 15,
-      padding: 20,
+      margin: 10,
+      padding: 15,
       elevation: 3,
       shadowColor: theme.colors.text,
       shadowOffset: { width: 0, height: 2 },
@@ -543,8 +665,25 @@ const AnalyticsScreen: React.FC = () => {
     chartStyle: {
       borderRadius: 16,
     },
+    barChartContainer: {
+      backgroundColor: theme.isDark ? '#2A2A2A' : '#F8F9FA',
+      borderRadius: 16,
+      margin: 5,
+      padding: 5,
+      elevation: 3,
+      shadowColor: theme.colors.text,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: theme.isDark ? 0.2 : 0.1,
+      shadowRadius: 4,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    enhancedChartStyle: {
+      borderRadius: 16,
+      marginVertical: 8,
+    },
     legendContainer: {
-      marginTop: 16,
+      marginTop: 12,
     },
     legendItem: {
       flexDirection: 'row',
@@ -688,30 +827,59 @@ const AnalyticsScreen: React.FC = () => {
             {/* Main Chart */}
             <View style={styles.chartContainer}>
               <Text style={{ ...textStyles.large, color: theme.colors.text }}>
-                {timeGrouping === 'week'
-                  ? 'Weekly'
-                  : timeGrouping === 'month'
-                  ? 'Monthly'
-                  : 'Yearly'}{' '}
-                Spending Trends
+                {chartType === 'pie'
+                  ? `${getPeriodDisplayName(timeGrouping)} - Category Breakdown`
+                  : `${timeGrouping === 'week'
+                      ? 'Weekly'
+                      : timeGrouping === 'month'
+                      ? 'Monthly'
+                      : 'Yearly'} Spending Trends`}
               </Text>
 
               {chartType === 'bar' ? (
                 chartData.data.some(value => value > 0) ? (
-                  <BarChart
-                    data={{
-                      labels: chartData.labels,
-                      datasets: [{ data: chartData.data }],
-                    }}
-                    width={getChartWidth()}
-                    height={220}
-                    yAxisLabel=""
-                    yAxisSuffix=""
-                    chartConfig={chartConfig}
-                    style={styles.chartStyle}
-                    showValuesOnTopOfBars
-                    fromZero
-                  />
+                  <View style={styles.barChartContainer}>
+                    <BarChart
+                      data={getGiftedChartData(
+                        chartData.labels,
+                        chartData.data,
+                      )}
+                      width={getChartWidth()}
+                      height={260}
+                      barWidth={getDynamicBarWidth(chartData.data.length)}
+                      spacing={getDynamicSpacing(chartData.data.length)}
+                      // roundedTop
+                      roundedBottom={false}
+                      isAnimated
+                      animationDuration={800}
+                      yAxisThickness={1}
+                      xAxisThickness={1}
+                      yAxisTextStyle={{
+                        color: theme.colors.textSecondary,
+                        fontSize: 8,
+                      }}
+                      xAxisLabelTextStyle={{
+                        color: theme.colors.textSecondary,
+                        fontSize: timeGrouping === 'year' ? 12 : 8,
+                      }}
+                      noOfSections={6}
+                      maxValue={Math.max(...chartData.data) * 1.2}
+                      rulesColor={theme.colors.border}
+                      rulesType="solid"
+                      yAxisColor={theme.colors.border}
+                      xAxisColor={theme.colors.border}
+                      showValuesAsTopLabel
+                      topLabelTextStyle={{
+                        color: theme.colors.text,
+                        fontSize:
+                          timeGrouping === 'year'
+                            ? textStyles.small.fontSize
+                            : 10,
+                        marginBottom: 6,
+                      }}
+                      yAxisLabelTexts={getYAxisLabels(chartData.data)}
+                    />
+                  </View>
                 ) : (
                   <View style={styles.emptyState}>
                     <Text style={styles.emptyStateText}>
@@ -730,7 +898,7 @@ const AnalyticsScreen: React.FC = () => {
                       population: item.amount,
                       color: item.color,
                       legendFontColor: item.legendFontColor,
-                      legendFontSize: 12,
+                      legendFontSize: 9,
                     }))}
                     width={getChartWidth() - 40}
                     height={200}
@@ -765,7 +933,7 @@ const AnalyticsScreen: React.FC = () => {
                     />
                     <Text style={styles.highLowTitle}>Highest Spending</Text>
                     <Text style={styles.highLowValue}>
-                      ₹{maxValue.toFixed(0)}
+                      {formatAmountChart(maxValue, true)}
                     </Text>
                     <Text style={styles.highLowLabel}>{maxLabel}</Text>
                   </View>
@@ -779,7 +947,7 @@ const AnalyticsScreen: React.FC = () => {
                       />
                       <Text style={styles.highLowTitle}>Lowest Spending</Text>
                       <Text style={styles.highLowValue}>
-                        ₹{minValue.toFixed(0)}
+                        {formatAmountChart(minValue, true)}
                       </Text>
                       <Text style={styles.highLowLabel}>{minLabel}</Text>
                     </View>
