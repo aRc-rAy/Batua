@@ -9,6 +9,8 @@ import {
   Switch,
   Linking,
   ActivityIndicator,
+  Modal,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PaymentService } from '../services/PaymentService';
@@ -138,6 +140,21 @@ const SettingsScreen: React.FC = () => {
     null,
   ); // null = loading
   const [isTogglingSms, setIsTogglingSms] = useState(false);
+  const [qrModalVisible, setQrModalVisible] = useState(false);
+  const [selectedQrType, setSelectedQrType] = useState<'upi' | 'gpay' | null>(
+    null,
+  );
+
+  // Handle QR modal display
+  const showQrModal = (type: 'upi' | 'gpay') => {
+    setSelectedQrType(type);
+    setQrModalVisible(true);
+  };
+
+  const hideQrModal = () => {
+    setQrModalVisible(false);
+    setSelectedQrType(null);
+  };
 
   const handleClearAllData = () => {
     Alert.alert(
@@ -400,6 +417,48 @@ const SettingsScreen: React.FC = () => {
       color: theme.colors.text,
       flex: 1,
     },
+    // Modal styles
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: 12,
+      marginHorizontal: 20,
+      maxWidth: 400,
+      width: '90%',
+      maxHeight: '80%',
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    modalTitle: {
+      ...textStyles.heading,
+      color: theme.colors.text,
+      fontSize: 18,
+    },
+    closeButton: {
+      padding: 4,
+    },
+    qrContainer: {
+      padding: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    qrImage: {
+      width: 250,
+      height: 250,
+      borderRadius: 8,
+    },
   });
 
   return (
@@ -488,11 +547,7 @@ const SettingsScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.paymentMethod}
-            onPress={() =>
-              Linking.openURL(
-                'upi://pay?pa=anidravi@upi&pn=Dilip%20Kumar%20Yadav&tn=Support%20SpendBook&cu=INR',
-              )
-            }
+            onPress={() => showQrModal('upi')}
           >
             <Ionicons
               name="phone-portrait"
@@ -510,11 +565,7 @@ const SettingsScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.paymentMethod}
-            onPress={() =>
-              Linking.openURL(
-                'tez://upi/pay?pa=anidravi@upi&pn=Dilip%20Kumar%20Yadav&tn=Support%20SpendBook&cu=INR',
-              )
-            }
+            onPress={() => showQrModal('gpay')}
           >
             <Ionicons
               name="card"
@@ -621,6 +672,42 @@ const SettingsScreen: React.FC = () => {
         {/* Footer spacing */}
         <View style={styles.footerSpacer} />
       </ScrollView>
+
+      {/* QR Code Modal */}
+      <Modal
+        visible={qrModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={hideQrModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {selectedQrType === 'upi' ? 'UPI Payment' : 'Google Pay'}
+              </Text>
+              <TouchableOpacity
+                onPress={hideQrModal}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.qrContainer}>
+              <Image
+                source={
+                  selectedQrType === 'upi'
+                    ? require('../assets/upi_qr.jpg')
+                    : require('../assets/qr_gpay.png')
+                }
+                style={styles.qrImage}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
