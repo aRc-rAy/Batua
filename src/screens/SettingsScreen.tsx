@@ -420,8 +420,8 @@ const SettingsScreen: React.FC = () => {
               : smsParsingEnabled === null
               ? 'Loading...'
               : smsParsingEnabled
-              ? 'Active - detecting payments from SMS'
-              : 'Disabled - manual entry only'
+              ? 'Enabled'
+              : 'Disabled'
           }
           rightComponent={
             <View style={styles.switchContainer}>
