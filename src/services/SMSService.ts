@@ -9,6 +9,8 @@ export class SMSService {
   private static processedSmsIds: Set<string> = new Set();
   private static readonly PROCESSED_SMS_STORAGE_KEY = 'processed_sms_ids';
   private static readonly MAX_PROCESSED_SMS_TO_KEEP = 1000; // Keep track of last 1000 SMS to prevent storage bloat
+  private static readonly SMS_MONITORING_START_TIME_KEY = 'sms_monitoring_start_time';
+  private static monitoringStartTime: number | null = null;
 
   // Load processed SMS IDs from storage
   private static async loadProcessedSmsIds(): Promise<void> {
@@ -22,6 +24,37 @@ export class SMSService {
     } catch (error) {
       console.error('Error loading processed SMS IDs:', error);
       this.processedSmsIds = new Set();
+    }
+  }
+
+  // Load monitoring start time from storage
+  private static async loadMonitoringStartTime(): Promise<void> {
+    try {
+      const stored = await AsyncStorage.getItem(this.SMS_MONITORING_START_TIME_KEY);
+      if (stored) {
+        this.monitoringStartTime = JSON.parse(stored);
+        console.log(`Loaded SMS monitoring start time: ${this.monitoringStartTime ? new Date(this.monitoringStartTime).toLocaleString() : 'null'}`);
+      } else {
+        this.monitoringStartTime = null;
+      }
+    } catch (error) {
+      console.error('Error loading monitoring start time:', error);
+      this.monitoringStartTime = null;
+    }
+  }
+
+  // Save monitoring start time to storage
+  private static async saveMonitoringStartTime(): Promise<void> {
+    try {
+      if (this.monitoringStartTime) {
+        await AsyncStorage.setItem(this.SMS_MONITORING_START_TIME_KEY, JSON.stringify(this.monitoringStartTime));
+        console.log(`Saved SMS monitoring start time: ${new Date(this.monitoringStartTime).toLocaleString()}`);
+      } else {
+        await AsyncStorage.removeItem(this.SMS_MONITORING_START_TIME_KEY);
+        console.log('Cleared SMS monitoring start time');
+      }
+    } catch (error) {
+      console.error('Error saving monitoring start time:', error);
     }
   }
 
@@ -284,6 +317,20 @@ export class SMSService {
     const hasPermission = await this.requestSmsPermissions();
     if (!hasPermission) return;
 
+    // Load monitoring start time if not already loaded
+    if (this.monitoringStartTime === null) {
+      await this.loadMonitoringStartTime();
+    }
+
+    // Set monitoring start time if this is the first time enabling
+    if (this.monitoringStartTime === null) {
+      this.monitoringStartTime = Date.now();
+      await this.saveMonitoringStartTime();
+      console.log('📅 Set new SMS monitoring start time - will only process future messages');
+    } else {
+      console.log('📅 Using existing SMS monitoring start time - will only process messages after this time');
+    }
+
     this.isListening = true;
     console.log('SMS monitoring started');
 
@@ -311,6 +358,12 @@ export class SMSService {
       } else {
         await AsyncStorage.setItem('smsParsingEnabled', JSON.stringify(false));
         this.stopSmsMonitoring();
+
+        // Clear monitoring start time when disabling SMS parsing
+        this.monitoringStartTime = null;
+        await this.saveMonitoringStartTime();
+        console.log('🧹 Cleared SMS monitoring start time when disabling');
+
         return true;
       }
     } catch (e) {
@@ -329,9 +382,14 @@ export class SMSService {
         await this.loadProcessedSmsIds();
       }
 
+      // Ensure monitoring start time is loaded
+      if (this.monitoringStartTime === null) {
+        await this.loadMonitoringStartTime();
+      }
+
       const filter = {
         box: 'inbox',
-        maxCount: 20, // Check last 20 messages to catch any missed ones
+        maxCount: 50, // Check more messages to ensure we don't miss any
       };
 
       SmsAndroid.list(
@@ -344,12 +402,25 @@ export class SMSService {
             const messages = JSON.parse(smsList);
             let processedCount = 0;
             let skippedCount = 0;
+            let oldMessageCount = 0;
 
             console.log(`📱 Checking ${messages.length} SMS messages for payments...`);
+            if (this.monitoringStartTime) {
+              console.log(`📅 Only processing messages after: ${new Date(this.monitoringStartTime).toLocaleString()}`);
+            }
 
             for (const sms of messages) {
               const smsId = this.generateSmsId(sms);
-              console.log(`🔍 Checking SMS ID: ${smsId.substring(0, 20)}...`);
+              const smsTimestamp = sms.date;
+
+              // Skip messages that are older than when monitoring started
+              if (this.monitoringStartTime && smsTimestamp < this.monitoringStartTime) {
+                console.log(`⏰ SMS too old (${new Date(smsTimestamp).toLocaleString()}), skipping: ${smsId.substring(0, 20)}`);
+                oldMessageCount++;
+                continue;
+              }
+
+              console.log(`🔍 Checking SMS ID: ${smsId.substring(0, 20)}... (${new Date(smsTimestamp).toLocaleString()})`);
 
               // Skip if already processed
               if (this.isSmsProcessed(smsId)) {
@@ -372,7 +443,7 @@ export class SMSService {
               }
             }
 
-            console.log(`� SMS Check Summary: ${processedCount} processed, ${skippedCount} skipped, ${messages.length - processedCount - skippedCount} no payment found`);
+            console.log(`📊 SMS Check Summary: ${processedCount} processed, ${skippedCount} skipped, ${oldMessageCount} too old, ${messages.length - processedCount - skippedCount - oldMessageCount} no payment found`);
           } catch (error) {
             console.error('Error processing SMS messages:', error);
           }
@@ -394,6 +465,9 @@ export class SMSService {
       // Load processed SMS IDs
       await this.loadProcessedSmsIds();
 
+      // Load monitoring start time
+      await this.loadMonitoringStartTime();
+
       const isEnabled = await this.isSmsParsingEnabled();
       if (isEnabled) {
         await this.startSmsMonitoring();
@@ -414,6 +488,11 @@ export class SMSService {
         await this.loadProcessedSmsIds();
       }
 
+      // Load monitoring start time if not already loaded
+      if (this.monitoringStartTime === null) {
+        await this.loadMonitoringStartTime();
+      }
+
       const hasPermission = await this.requestSmsPermissions();
       if (!hasPermission) {
         console.log('❌ SMS permission not granted');
@@ -422,7 +501,7 @@ export class SMSService {
 
       const filter = {
         box: 'inbox',
-        maxCount: 10, // Check last 10 messages
+        maxCount: 20, // Check last 20 messages
       };
 
       SmsAndroid.list(
@@ -433,12 +512,26 @@ export class SMSService {
         async (count: number, smsList: string) => {
           try {
             console.log(`📱 Found ${count} recent SMS messages`);
+            if (this.monitoringStartTime) {
+              console.log(`📅 Only processing messages after: ${new Date(this.monitoringStartTime).toLocaleString()}`);
+            }
+
             const messages = JSON.parse(smsList);
             let processedCount = 0;
             let skippedCount = 0;
+            let oldMessageCount = 0;
 
             for (const sms of messages) {
               const smsId = this.generateSmsId(sms);
+              const smsTimestamp = sms.date;
+
+              // Skip messages that are older than when monitoring started
+              if (this.monitoringStartTime && smsTimestamp < this.monitoringStartTime) {
+                console.log(`⏰ SMS too old (${new Date(smsTimestamp).toLocaleString()}), skipping: ${smsId.substring(0, 20)}`);
+                oldMessageCount++;
+                continue;
+              }
+
               console.log(`\nChecking SMS from ${sms.address}:`);
               console.log(`Body: ${sms.body.substring(0, 100)}...`);
 
@@ -463,7 +556,7 @@ export class SMSService {
               }
             }
 
-            console.log(`\n📊 Summary: ${processedCount} new payments processed, ${skippedCount} skipped`);
+            console.log(`\n📊 Summary: ${processedCount} new payments processed, ${skippedCount} skipped, ${oldMessageCount} too old`);
             console.log('\n=== Force Check Complete ===');
           } catch (error) {
             console.error('Error processing SMS messages:', error);
@@ -486,6 +579,17 @@ export class SMSService {
     }
   }
 
+  // Clear monitoring start time (for testing/debugging)
+  static async clearMonitoringStartTime(): Promise<void> {
+    try {
+      this.monitoringStartTime = null;
+      await AsyncStorage.removeItem(this.SMS_MONITORING_START_TIME_KEY);
+      console.log('🧹 Cleared SMS monitoring start time');
+    } catch (error) {
+      console.error('Error clearing monitoring start time:', error);
+    }
+  }
+
   // Get statistics about processed SMS
   static getProcessedSmsStats(): { totalProcessed: number; storageKey: string } {
     return {
@@ -498,6 +602,8 @@ export class SMSService {
   static async debugProcessedSms(): Promise<void> {
     console.log('=== SMS Processing Debug Info ===');
     console.log(`Total processed SMS in memory: ${this.processedSmsIds.size}`);
+    console.log(`SMS monitoring is listening: ${this.isListening}`);
+    console.log(`SMS monitoring start time: ${this.monitoringStartTime ? new Date(this.monitoringStartTime).toLocaleString() : 'Not set'}`);
 
     try {
       const stored = await AsyncStorage.getItem(this.PROCESSED_SMS_STORAGE_KEY);
@@ -510,6 +616,14 @@ export class SMSService {
         });
       } else {
         console.log('No processed SMS found in storage');
+      }
+
+      const startTimeStored = await AsyncStorage.getItem(this.SMS_MONITORING_START_TIME_KEY);
+      if (startTimeStored) {
+        const startTime = JSON.parse(startTimeStored);
+        console.log(`Monitoring start time in storage: ${new Date(startTime).toLocaleString()}`);
+      } else {
+        console.log('No monitoring start time found in storage');
       }
     } catch (error) {
       console.error('Error reading processed SMS from storage:', error);

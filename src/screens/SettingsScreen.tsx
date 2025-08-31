@@ -8,6 +8,7 @@ import {
   Alert,
   Switch,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PaymentService } from '../services/PaymentService';
@@ -204,30 +205,52 @@ const SettingsScreen: React.FC = () => {
   const handleSmsParsingToggle = async (value: boolean) => {
     if (smsParsingEnabled === null || isTogglingSms) return;
 
+    // Show confirmation dialog before proceeding
+    const confirmationMessage = value
+      ? 'Enable automatic SMS payment detection?'
+      : 'Disable automatic SMS payment detection?';
+
+    const confirmed = await new Promise<boolean>(resolve => {
+      Alert.alert(
+        value ? 'Enable SMS Detection' : 'Disable SMS Detection',
+        confirmationMessage,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => resolve(false),
+          },
+          {
+            text: value ? 'Enable' : 'Disable',
+            style: value ? 'default' : 'destructive',
+            onPress: () => resolve(true),
+          },
+        ],
+      );
+    });
+
+    // If user cancelled, don't proceed
+    if (!confirmed) return;
+
     setIsTogglingSms(true);
     try {
       const ok = await SMSService.setSmsParsingEnabled(value);
       if (ok) {
         // Only update state after success
         setSmsParsingEnabled(value);
-        Alert.alert(
-          value ? 'SMS Parsing Enabled' : 'SMS Parsing Disabled',
-          value
-            ? 'SMS parsing has been enabled.'
-            : 'SMS parsing has been disabled.',
-        );
+        // No success alert - keep it smooth
       } else {
         Alert.alert(
           value ? 'Permission Required' : 'Error',
           value
-            ? 'SMS permission is required to enable SMS parsing.'
-            : 'Failed to update SMS parsing setting.',
+            ? 'SMS permission is required to enable detection.'
+            : 'Failed to update SMS detection setting.',
         );
         // Do not update toggle, just leave as is
       }
     } catch (e) {
       console.error('Error toggling SMS parsing', e);
-      Alert.alert('Error', 'An unexpected error occurred');
+      Alert.alert('Error', 'Failed to update SMS detection.');
       // Do not update toggle, just leave as is
     } finally {
       setIsTogglingSms(false);
@@ -269,7 +292,11 @@ const SettingsScreen: React.FC = () => {
       textTransform: 'uppercase',
     },
     switchContainer: {
-      marginLeft: 'auto',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 60,
+      minHeight: 30,
     },
     footerSpacer: {
       height: 30,
@@ -387,18 +414,31 @@ const SettingsScreen: React.FC = () => {
         <SectionHeader title="SMS Parsing" />
         <SettingItem
           title="SMS Detection"
+          subtitle={
+            isTogglingSms
+              ? 'Processing...'
+              : smsParsingEnabled === null
+              ? 'Loading...'
+              : smsParsingEnabled
+              ? 'Active - detecting payments from SMS'
+              : 'Disabled - manual entry only'
+          }
           rightComponent={
             <View style={styles.switchContainer}>
-              <Switch
-                value={smsParsingEnabled ?? false}
-                onValueChange={handleSmsParsingToggle}
-                disabled={smsParsingEnabled === null || isTogglingSms}
-                trackColor={{
-                  false: theme.colors.border,
-                  true: theme.colors.primary,
-                }}
-                thumbColor={theme.isDark ? '#ffffff' : theme.colors.surface}
-              />
+              {isTogglingSms ? (
+                <ActivityIndicator size="small" color={theme.colors.primary} />
+              ) : (
+                <Switch
+                  value={smsParsingEnabled ?? false}
+                  onValueChange={handleSmsParsingToggle}
+                  disabled={smsParsingEnabled === null || isTogglingSms}
+                  trackColor={{
+                    false: theme.colors.border,
+                    true: theme.colors.primary,
+                  }}
+                  thumbColor={theme.isDark ? '#ffffff' : theme.colors.surface}
+                />
+              )}
             </View>
           }
         />
@@ -432,9 +472,18 @@ const SettingsScreen: React.FC = () => {
             style={styles.paymentMethod}
             onPress={() => Linking.openURL('https://paypal.me/anidravi')}
           >
-            <Ionicons name="logo-paypal" size={20} color={theme.colors.primary} style={styles.paymentIcon} />
+            <Ionicons
+              name="logo-paypal"
+              size={20}
+              color={theme.colors.primary}
+              style={styles.paymentIcon}
+            />
             <Text style={styles.paymentText}>PayPal</Text>
-            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={theme.colors.textSecondary}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -445,9 +494,18 @@ const SettingsScreen: React.FC = () => {
               )
             }
           >
-            <Ionicons name="phone-portrait" size={20} color={theme.colors.primary} style={styles.paymentIcon} />
+            <Ionicons
+              name="phone-portrait"
+              size={20}
+              color={theme.colors.primary}
+              style={styles.paymentIcon}
+            />
             <Text style={styles.paymentText}>UPI Payment</Text>
-            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={theme.colors.textSecondary}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -458,9 +516,18 @@ const SettingsScreen: React.FC = () => {
               )
             }
           >
-            <Ionicons name="card" size={20} color={theme.colors.primary} style={styles.paymentIcon} />
+            <Ionicons
+              name="card"
+              size={20}
+              color={theme.colors.primary}
+              style={styles.paymentIcon}
+            />
             <Text style={styles.paymentText}>Google Pay</Text>
-            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={theme.colors.textSecondary}
+            />
           </TouchableOpacity>
         </View>
 
@@ -473,9 +540,18 @@ const SettingsScreen: React.FC = () => {
             )
           }
         >
-          <Ionicons name="mail" size={20} color={theme.colors.primary} style={styles.contactIcon} />
+          <Ionicons
+            name="mail"
+            size={20}
+            color={theme.colors.primary}
+            style={styles.contactIcon}
+          />
           <Text style={styles.contactText}>Write to Developer</Text>
-          <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
+          <Ionicons
+            name="chevron-forward"
+            size={16}
+            color={theme.colors.textSecondary}
+          />
         </TouchableOpacity>
 
         {/* About */}
