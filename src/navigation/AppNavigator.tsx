@@ -39,7 +39,7 @@ const TabNavigator: React.FC = () => {
               iconName = focused ? 'settings' : 'settings-outline';
               break;
           }
-          return <Ionicons name={iconName} size={22} color={color} />;
+          return <Ionicons name={iconName} size={20} color={color} />;
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.tabInactive,
@@ -56,7 +56,7 @@ const TabNavigator: React.FC = () => {
         },
         tabBarLabelStyle: {
           ...textStyles.caption,
-          fontSize: 16,
+          fontSize: 12,
           marginBottom: 4,
         },
         headerShown: false,
