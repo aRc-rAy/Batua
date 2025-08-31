@@ -56,7 +56,7 @@ const TabNavigator: React.FC = () => {
         },
         tabBarLabelStyle: {
           ...textStyles.caption,
-          fontSize: 11,
+          fontSize: 16,
           marginBottom: 4,
         },
         headerShown: false,
@@ -95,7 +95,7 @@ const AppNavigator: React.FC = () => {
             },
             headerTitleStyle: {
               ...textStyles.heading,
-              fontSize: 18,
+              fontSize: 16,
               color: theme.colors.text,
             },
             headerTintColor: theme.colors.primary,
@@ -113,6 +113,7 @@ const AppNavigator: React.FC = () => {
             },
             headerTitleStyle: {
               ...textStyles.heading,
+              fontSize: 16,
               color: theme.colors.text,
             },
             headerTintColor: theme.colors.primary,
@@ -122,21 +123,20 @@ const AppNavigator: React.FC = () => {
           name="PaymentActions"
           component={PaymentActionsScreen}
           options={{
-            headerShown: false,
-            presentation: 'modal',
-            gestureEnabled: true,
-            cardStyleInterpolator: ({ current, layouts }) => ({
-              cardStyle: {
-                transform: [
-                  {
-                    translateY: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [layouts.screen.height, 0],
-                    }),
-                  },
-                ],
-              },
-            }),
+            headerShown: true,
+            headerTitle: 'Payment Details',
+            headerTitleAlign: 'center',
+            headerStyle: {
+              backgroundColor: theme.colors.surface,
+              shadowOpacity: 0,
+              elevation: 0,
+            },
+            headerTitleStyle: {
+              ...textStyles.heading,
+              fontSize: 16,
+              color: theme.colors.text,
+            },
+            headerTintColor: theme.colors.primary,
           }}
         />
       </Stack.Navigator>

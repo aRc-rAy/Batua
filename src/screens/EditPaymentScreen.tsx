@@ -23,15 +23,23 @@ const EditPaymentScreen: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
-  
+
   const { payment } = route.params;
-  
+
   const [amount, setAmount] = useState(payment.amount.toString());
   const [description, setDescription] = useState(payment.description);
-  const [selectedCategory, setSelectedCategory] = useState<PaymentCategory>(payment.category);
+  const [selectedCategory, setSelectedCategory] = useState<PaymentCategory>(
+    payment.category,
+  );
 
   const categories: PaymentCategory[] = [
-    'Food', 'Travel', 'Clothes', 'Entertainment', 'Bills', 'Healthcare', 'Others'
+    'Food',
+    'Travel',
+    'Clothes',
+    'Entertainment',
+    'Bills',
+    'Healthcare',
+    'Others',
   ];
 
   const getCategoryIcon = (category: PaymentCategory): string => {
@@ -42,20 +50,69 @@ const EditPaymentScreen: React.FC = () => {
       Entertainment: '🎬',
       Bills: '🧾',
       Healthcare: '🏥',
-      Others: '📦'
+      Others: '📦',
     };
     return iconMap[category];
   };
 
-  const getDescriptionRecommendations = (category: PaymentCategory): string[] => {
+  const getDescriptionRecommendations = (
+    category: PaymentCategory,
+  ): string[] => {
     const recommendations: Record<PaymentCategory, string[]> = {
-      Food: ['Breakfast', 'Lunch', 'Dinner', 'Snacks', 'Coffee', 'Groceries', 'Restaurant'],
-      Travel: ['Local Bus', 'Metro', 'Train', 'Flight', 'Taxi', 'Auto', 'Fuel', 'Parking'],
-      Clothes: ['Shirt', 'Jeans', 'Shoes', 'Accessories', 'Formal Wear', 'Casual Wear'],
-      Entertainment: ['Movie', 'Concert', 'Game', 'Books', 'Music', 'Sports', 'Party'],
-      Bills: ['Electricity', 'Water', 'Internet', 'Mobile', 'Gas', 'Insurance', 'Rent'],
-      Healthcare: ['Doctor Visit', 'Medicines', 'Lab Tests', 'Dental', 'Eye Care', 'Checkup'],
-      Others: ['Gifts', 'Donation', 'Repairs', 'Maintenance', 'Miscellaneous']
+      Food: [
+        'Breakfast',
+        'Lunch',
+        'Dinner',
+        'Snacks',
+        'Coffee',
+        'Groceries',
+        'Restaurant',
+      ],
+      Travel: [
+        'Local Bus',
+        'Metro',
+        'Train',
+        'Flight',
+        'Taxi',
+        'Auto',
+        'Fuel',
+        'Parking',
+      ],
+      Clothes: [
+        'Shirt',
+        'Jeans',
+        'Shoes',
+        'Accessories',
+        'Formal Wear',
+        'Casual Wear',
+      ],
+      Entertainment: [
+        'Movie',
+        'Concert',
+        'Game',
+        'Books',
+        'Music',
+        'Sports',
+        'Party',
+      ],
+      Bills: [
+        'Electricity',
+        'Water',
+        'Internet',
+        'Mobile',
+        'Gas',
+        'Insurance',
+        'Rent',
+      ],
+      Healthcare: [
+        'Doctor Visit',
+        'Medicines',
+        'Lab Tests',
+        'Dental',
+        'Eye Care',
+        'Checkup',
+      ],
+      Others: ['Gifts', 'Donation', 'Repairs', 'Maintenance', 'Miscellaneous'],
     };
     return recommendations[category];
   };
@@ -64,12 +121,18 @@ const EditPaymentScreen: React.FC = () => {
     const parsedAmount = parseFloat(amount);
 
     if (!amount || isNaN(parsedAmount) || parsedAmount <= 0) {
-      Alert.alert('Invalid Amount', 'Please enter a valid amount greater than 0');
+      Alert.alert(
+        'Invalid Amount',
+        'Please enter a valid amount greater than 0',
+      );
       return;
     }
 
     if (parsedAmount > 1000000) {
-      Alert.alert('Amount Too High', 'Please enter an amount less than ₹10,00,000');
+      Alert.alert(
+        'Amount Too High',
+        'Please enter an amount less than ₹10,00,000',
+      );
       return;
     }
 
@@ -82,16 +145,12 @@ const EditPaymentScreen: React.FC = () => {
       };
 
       await PaymentService.updatePayment(payment.id, updatedPayment);
-      Alert.alert(
-        'Success', 
-        'Payment updated successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack()
-          }
-        ]
-      );
+      Alert.alert('Success', 'Payment updated successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
     } catch (error) {
       console.error('Error updating payment:', error);
       Alert.alert('Error', 'Failed to update payment. Please try again.');
@@ -246,18 +305,6 @@ const EditPaymentScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonText}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Edit Payment</Text>
-          <Text style={styles.headerSubtitle}>Update your expense details</Text>
-        </View>
-
         {/* Amount Input */}
         <View style={styles.section}>
           <Text style={styles.label}>Amount (₹)</Text>
@@ -275,22 +322,25 @@ const EditPaymentScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.label}>Category</Text>
           <View style={styles.categoriesContainer}>
-            {categories.map((category) => (
+            {categories.map(category => (
               <TouchableOpacity
                 key={category}
                 style={[
                   styles.categoryButton,
-                  selectedCategory === category && styles.selectedCategory
+                  selectedCategory === category && styles.selectedCategory,
                 ]}
                 onPress={() => setSelectedCategory(category)}
               >
                 <Text style={styles.categoryIcon}>
                   {getCategoryIcon(category)}
                 </Text>
-                <Text style={[
-                  styles.categoryText,
-                  selectedCategory === category && styles.selectedCategoryText
-                ]}>
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory === category &&
+                      styles.selectedCategoryText,
+                  ]}
+                >
                   {category}
                 </Text>
               </TouchableOpacity>
@@ -305,7 +355,9 @@ const EditPaymentScreen: React.FC = () => {
             style={styles.descriptionInput}
             value={description}
             onChangeText={setDescription}
-            placeholder={`What did you spend on? (e.g., ${getDescriptionRecommendations(selectedCategory)[0]})`}
+            placeholder={`What did you spend on? (e.g., ${
+              getDescriptionRecommendations(selectedCategory)[0]
+            })`}
             placeholderTextColor="#bdc3c7"
             multiline
           />
@@ -314,23 +366,27 @@ const EditPaymentScreen: React.FC = () => {
           <View style={styles.recommendationsContainer}>
             <Text style={styles.recommendationsLabel}>Quick suggestions:</Text>
             <View style={styles.recommendationsGrid}>
-              {getDescriptionRecommendations(selectedCategory).slice(0, 6).map((recommendation, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.recommendationChip}
-                  onPress={() => handleRecommendationPress(recommendation)}
-                >
-                  <Text style={styles.recommendationText}>{recommendation}</Text>
-                </TouchableOpacity>
-              ))}
+              {getDescriptionRecommendations(selectedCategory)
+                .slice(0, 6)
+                .map((recommendation, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.recommendationChip}
+                    onPress={() => handleRecommendationPress(recommendation)}
+                  >
+                    <Text style={styles.recommendationText}>
+                      {recommendation}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
             </View>
           </View>
         </View>
 
         {/* Update Button */}
         <View style={styles.saveButtonSection}>
-          <TouchableOpacity 
-            style={styles.saveButton} 
+          <TouchableOpacity
+            style={styles.saveButton}
             onPress={validateAndSave}
             activeOpacity={0.8}
           >

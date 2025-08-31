@@ -90,30 +90,6 @@ const PaymentActionsScreen: React.FC = () => {
       flex: 1,
       backgroundColor: theme.colors.background,
     },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: 20,
-      paddingVertical: 16,
-      backgroundColor: theme.colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border + '30',
-    },
-    backButton: {
-      padding: 8,
-      marginRight: 12,
-      borderRadius: 8,
-      backgroundColor: theme.colors.background,
-    },
-    backButtonText: {
-      ...textStyles.large,
-      color: theme.colors.text,
-    },
-    headerTitle: {
-      ...textStyles.large,
-      color: theme.colors.text,
-      flex: 1,
-    },
     content: {
       flex: 1,
       paddingHorizontal: 20,
@@ -216,17 +192,7 @@ const PaymentActionsScreen: React.FC = () => {
         barStyle={theme.isDark ? 'light-content' : 'dark-content'}
         backgroundColor={theme.colors.surface}
       />
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Payment Details</Text>
-      </View>
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.paymentCard}>
           <View style={styles.paymentHeader}>

@@ -249,8 +249,15 @@ const HomeScreen: React.FC = () => {
     appIcon: {
       width: 32,
       height: 32,
+      resizeMode: 'cover',
+    },
+    appIconContainer: {
+      width: 32,
+      height: 32,
       marginRight: 12,
-      resizeMode: 'contain',
+      borderRadius: 16,
+      backgroundColor: theme.colors.surface,
+      overflow: 'hidden',
     },
     appName: {
       ...textStyles.heading,
@@ -583,10 +590,12 @@ const HomeScreen: React.FC = () => {
       <View style={styles.appHeader}>
         <View style={styles.appTitleRow}>
           <View style={styles.appTitleLeft}>
-            <Image
-              source={require('../assets/spendbook_icon.png')}
-              style={styles.appIcon}
-            />
+            <View style={styles.appIconContainer}>
+              <Image
+                source={require('../assets/spendbook_icon.png')}
+                style={styles.appIcon}
+              />
+            </View>
             <Text style={styles.appName}>SpendBook</Text>
           </View>
           <SlideSwitch
