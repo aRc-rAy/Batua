@@ -297,9 +297,9 @@ const HomeScreen: React.FC = () => {
       fontWeight: '600',
     },
     dateText: {
-      ...textStyles.caption,
+      ...textStyles.body,
       color: theme.colors.primary,
-      fontWeight: '500',
+      fontWeight: '600',
       fontFamily: fontFamilies.regular,
     },
     summaryContainer: {
