@@ -216,10 +216,8 @@ export class PaymentService {
   static async clearSmsPayments(): Promise<void> {
     try {
       const payments = await this.getAllPayments();
-      // Keep only manual payments, remove SMS payments
       const manualPayments = payments.filter(payment => payment.type !== 'sms');
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(manualPayments));
-      console.log(`Cleared ${payments.length - manualPayments.length} SMS payments, kept ${manualPayments.length} manual payments`);
     } catch (error) {
       console.error('Error clearing SMS payments:', error);
       throw error;

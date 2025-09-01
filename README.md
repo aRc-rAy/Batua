@@ -8,23 +8,27 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 ## ✨ Features
 
 ### 💰 **Expense Tracking**
+
 - � **Manual Entry**: Add payments with amount, description, and category
 - � **SMS Auto-Detection**: Automatically detect payments from bank SMS
 - 🏷️ **Smart Categories**: 7 predefined categories with icons (Food 🍽️, Travel ✈️, Clothes 👕, Entertainment 🎬, Bills 📄, Healthcare 🏥, Others 📦)
 - ✏️ **Edit & Delete**: Modify or remove transactions easily
 
 ### 📊 **Analytics & Insights**
+
 - 📈 **Visual Charts**: Bar charts and pie charts for spending analysis
 - 📅 **Time-based Analytics**: Daily, weekly, monthly, and yearly insights
 - 🎯 **Smart Insights**: Top spending categories, daily averages, and trends
 - 📊 **Dashboard**: Professional insights dashboard with spending patterns
 
 ### 💾 **Data Management**
+
 - 📄 **Excel Export**: Export transaction data for external analysis
 - 💾 **Local Storage**: Secure local data storage with AsyncStorage
 - 🔄 **Data Persistence**: All data saved locally on device
 
 ### 🎨 **User Experience**
+
 - 🌙 **Dark/Light Theme**: Professional theme support
 - 📱 **Responsive Design**: Optimized for Android devices
 - 🎯 **Intuitive Navigation**: Bottom tab navigation with stack navigation
@@ -33,9 +37,11 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 ## 📥 Download & Installation
 
 ### Latest Release: v2.0.1
+
 **[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v2.0.1/spendbook-v2.0.1.apk)** (27.9 MB)
 
 ### Installation Instructions:
+
 1. **Enable Unknown Sources**: Go to Settings → Security → Unknown Sources → Enable
 2. **Download APK**: Click the download link above
 3. **Install App**: Open the downloaded APK file and tap "Install"
@@ -43,6 +49,7 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 5. **Launch App**: Tap "Open" to start using SpendBook
 
 ### System Requirements:
+
 - **Android Version**: 5.0 (API 21) or higher
 - **Storage**: 50 MB free space
 - **Permissions**: SMS, Storage, Network
@@ -69,6 +76,7 @@ The app requires the following permissions for full functionality:
 ## 🚀 Getting Started (For Developers)
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm or yarn
 - Android Studio (for Android development)
@@ -76,6 +84,7 @@ The app requires the following permissions for full functionality:
 - Android SDK (API 21+)
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/aRc-rAy/Batua.git
@@ -89,6 +98,7 @@ cd ios && bundle exec pod install && cd ..
 ```
 
 ### Running the App
+
 ```bash
 # Start Metro bundler
 npm start
@@ -107,6 +117,7 @@ npx react-native run-ios
 ```
 
 ### Building APK
+
 ```bash
 # Navigate to android directory
 cd android
@@ -162,17 +173,20 @@ SpendBook/
 ## 🎨 Design System
 
 ### Typography
+
 - **Primary Font**: System font with optimized sizes
 - **Consistent Scaling**: Readable text across all screen sizes
 - **Accessibility**: WCAG compliant contrast ratios
 
 ### Color Scheme
+
 - **Primary**: Professional blue tones
 - **Secondary**: Clean grays and whites
 - **Accent**: Category-specific colors
 - **Dark Mode**: Full dark theme support
 
 ### Components
+
 - **Card-based Layout**: Clean, modern card designs
 - **Consistent Spacing**: 8px grid system
 - **Touch Targets**: Minimum 44px touch targets
@@ -189,6 +203,7 @@ Available VS Code tasks for development:
 ## 📊 App Capabilities
 
 ### Core Functionality
+
 - ✅ Manual payment entry with categories
 - ✅ SMS transaction auto-detection
 - ✅ Transaction history with filtering
@@ -200,6 +215,7 @@ Available VS Code tasks for development:
 - ✅ Professional UI/UX
 
 ### Future Enhancements
+
 - 🔄 Cloud backup and sync
 - 📊 Advanced analytics and reporting
 - 🔔 Push notifications for budgets
@@ -212,22 +228,26 @@ Available VS Code tasks for development:
 ### Common Issues
 
 **Metro Bundler Issues:**
+
 ```bash
 # Clear Metro cache
 npx react-native start --reset-cache
 ```
 
 **Android Build Issues:**
+
 ```bash
 # Clean Android build
 cd android && ./gradlew clean && cd ..
 ```
 
 **Permission Issues:**
+
 - Ensure SMS permissions are granted in Android settings
 - Check storage permissions for CSV export
 
 ### Debug Mode
+
 - Shake device or press `Ctrl+M` (Android) / `Cmd+D` (iOS) for dev menu
 - Enable "Debug JS Remotely" for Chrome debugging
 - Check console logs for error messages
@@ -260,4 +280,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ using React Native and TypeScript**
 
-*Download SpendBook today and take control of your personal finances!* 📱💰
+_Download SpendBook today and take control of your personal finances!_ 📱💰

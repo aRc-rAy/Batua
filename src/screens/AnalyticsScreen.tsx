@@ -217,7 +217,10 @@ const AnalyticsScreen: React.FC = () => {
   const totalSpending = chartData.data.reduce((sum, value) => sum + value, 0);
 
   // Filter payments by time period for pie chart
-  const getFilteredPaymentsForPieChart = (paymentsData: Payment[], grouping: TimeGrouping) => {
+  const getFilteredPaymentsForPieChart = (
+    paymentsData: Payment[],
+    grouping: TimeGrouping,
+  ) => {
     const now = new Date();
 
     if (grouping === 'week') {
@@ -236,13 +239,22 @@ const AnalyticsScreen: React.FC = () => {
       });
     } else if (grouping === 'month') {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      const endOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+      );
 
       return paymentsData.filter(payment => {
         const paymentDate = new Date(payment.date);
         return paymentDate >= startOfMonth && paymentDate <= endOfMonth;
       });
-    } else { // year
+    } else {
+      // year
       const startOfYear = new Date(now.getFullYear(), 0, 1);
       const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
 
@@ -254,8 +266,14 @@ const AnalyticsScreen: React.FC = () => {
   };
 
   // Get filtered category data for pie chart
-  const getFilteredCategoryData = (paymentsData: Payment[], grouping: TimeGrouping) => {
-    const filteredPayments = getFilteredPaymentsForPieChart(paymentsData, grouping);
+  const getFilteredCategoryData = (
+    paymentsData: Payment[],
+    grouping: TimeGrouping,
+  ) => {
+    const filteredPayments = getFilteredPaymentsForPieChart(
+      paymentsData,
+      grouping,
+    );
     return getCategoryData(filteredPayments);
   };
 
@@ -266,7 +284,10 @@ const AnalyticsScreen: React.FC = () => {
     if (grouping === 'week') {
       return 'This Week';
     } else if (grouping === 'month') {
-      return now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      return now.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric',
+      });
     } else {
       return now.getFullYear().toString();
     }
@@ -314,7 +335,11 @@ const AnalyticsScreen: React.FC = () => {
   }
 
   // Prepare pie chart data with enhanced formatting
-  const pieChartData = Object.entries(chartType === 'pie' ? getFilteredCategoryData(payments, timeGrouping) : categoryData)
+  const pieChartData = Object.entries(
+    chartType === 'pie'
+      ? getFilteredCategoryData(payments, timeGrouping)
+      : categoryData,
+  )
     .filter(([_, value]) => value > 0)
     .map(([category, amount], index) => {
       const colors = [
@@ -326,9 +351,16 @@ const AnalyticsScreen: React.FC = () => {
         '#FF9F40',
         '#FF6384',
       ];
-      const filteredPayments = chartType === 'pie' ? getFilteredPaymentsForPieChart(payments, timeGrouping) : payments;
-      const periodTotal = filteredPayments.reduce((sum, payment) => sum + payment.amount, 0);
-      const percentage = periodTotal > 0 ? ((amount / periodTotal) * 100).toFixed(1) : '0';
+      const filteredPayments =
+        chartType === 'pie'
+          ? getFilteredPaymentsForPieChart(payments, timeGrouping)
+          : payments;
+      const periodTotal = filteredPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0,
+      );
+      const percentage =
+        periodTotal > 0 ? ((amount / periodTotal) * 100).toFixed(1) : '0';
       return {
         name: category,
         amount: amount,
@@ -829,11 +861,13 @@ const AnalyticsScreen: React.FC = () => {
               <Text style={{ ...textStyles.large, color: theme.colors.text }}>
                 {chartType === 'pie'
                   ? `${getPeriodDisplayName(timeGrouping)} - Category Breakdown`
-                  : `${timeGrouping === 'week'
-                      ? 'Weekly'
-                      : timeGrouping === 'month'
-                      ? 'Monthly'
-                      : 'Yearly'} Spending Trends`}
+                  : `${
+                      timeGrouping === 'week'
+                        ? 'Weekly'
+                        : timeGrouping === 'month'
+                        ? 'Monthly'
+                        : 'Yearly'
+                    } Spending Trends`}
               </Text>
 
               {chartType === 'bar' ? (

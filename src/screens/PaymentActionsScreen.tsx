@@ -34,7 +34,7 @@ const PaymentActionsScreen: React.FC = () => {
       Entertainment: '🎬',
       Bills: '🧾',
       Healthcare: '🏥',
-      Others: '📦'
+      Others: '📦',
     };
     return iconMap[category];
   };
@@ -63,7 +63,7 @@ const PaymentActionsScreen: React.FC = () => {
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -203,27 +203,27 @@ const PaymentActionsScreen: React.FC = () => {
               {payment.description}
             </Text>
           </View>
-          
+
           <Text style={styles.paymentAmount}>
             {formatAmount(payment.amount, true)}
           </Text>
-          
+
           <View style={styles.paymentDetails}>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Category</Text>
               <Text style={styles.detailValue}>{payment.category}</Text>
             </View>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Date</Text>
               <Text style={styles.detailValue}>{formatDate(payment.date)}</Text>
             </View>
-            
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Time</Text>
               <Text style={styles.detailValue}>{formatTime(payment.date)}</Text>
             </View>
-            
+
             {payment.isFromSMS && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Source</Text>
@@ -234,7 +234,7 @@ const PaymentActionsScreen: React.FC = () => {
             )}
           </View>
         </View>
-        
+
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={styles.editButton}
@@ -243,7 +243,7 @@ const PaymentActionsScreen: React.FC = () => {
           >
             <Text style={styles.editButtonText}>Edit Payment</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={handleDeletePayment}

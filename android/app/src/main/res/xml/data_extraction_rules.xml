@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Include app data for cloud backup -->
+        <include domain="database" path="SpendBook.db" />
+        <include domain="sharedpref" path="SpendBook_preferences.xml" />
+
+        <!-- Exclude sensitive data from cloud backup -->
+        <exclude domain="sharedpref" path="auth_prefs.xml" />
+        <exclude domain="database" path="temp_cache.db" />
+    </cloud-backup>
+
+    <device-transfer>
+        <!-- Include all data for device transfer -->
+        <include domain="database" path="SpendBook.db" />
+        <include domain="sharedpref" path="SpendBook_preferences.xml" />
+        <include domain="file" path="assets/" />
+    </device-transfer>
+</data-extraction-rules>

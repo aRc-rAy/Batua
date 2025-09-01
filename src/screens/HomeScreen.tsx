@@ -105,16 +105,15 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { theme, toggleTheme } = useTheme();
 
-  // Calculate available height for transactions
   const screenHeight = Dimensions.get('window').height;
-  const tabBarHeight = 65; // From AppNavigator tabBarStyle
-  const safeAreaBottom = 30; // Estimated SafeArea bottom padding
-  const appHeaderHeight = 65; // App header with logo
-  const welcomeSectionHeight = 60; // Welcome section
-  const summaryHeight = 80; // Summary cards
-  const actionButtonHeight = 60; // Add Payment button
-  const sectionTitleHeight = 30; // Recent Transactions title
-  const extraPadding = 50; // Extra padding for better spacing
+  const tabBarHeight = 65;
+  const safeAreaBottom = 30;
+  const appHeaderHeight = 65;
+  const welcomeSectionHeight = 60;
+  const summaryHeight = 80;
+  const actionButtonHeight = 60;
+  const sectionTitleHeight = 30;
+  const extraPadding = 50;
   const availableHeight =
     screenHeight -
     tabBarHeight -
@@ -143,18 +142,18 @@ const HomeScreen: React.FC = () => {
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
+    if (hour >= 19 || hour < 5) return 'night';
+    if (hour >= 5 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 17) return 'noon';
     return 'evening';
   };
 
   const getTimeIcon = () => {
     const hour = new Date().getHours();
-    if (hour < 6) return 'moon';
-    if (hour < 12) return 'sunny';
-    if (hour < 17) return 'sunny';
-    if (hour < 20) return 'partly-sunny';
-    return 'moon';
+    if (hour >= 19 || hour < 5) return 'moon';
+    if (hour >= 5 && hour < 12) return 'sunny';
+    if (hour >= 12 && hour < 17) return 'sunny';
+    return 'partly-sunny';
   };
 
   const loadData = async () => {
@@ -162,20 +161,18 @@ const HomeScreen: React.FC = () => {
       setLoading(true);
       const [spending, payments] = await Promise.all([
         PaymentService.getTotalSpending(),
-        PaymentService.getRecentPayments(3), // Get last 3 payments only
+        PaymentService.getRecentPayments(3),
       ]);
 
       setTodaySpending(spending.today);
       setMonthSpending(spending.month);
       setRecentPayments(payments);
 
-      // Update budget status with current spending
       const budgetStatusWithSpending = await BudgetService.getBudgetStatus(
         spending.month,
       );
       setBudgetStatus(budgetStatusWithSpending);
 
-      // Update Android widget with latest spending data
       WidgetService.updateWidget(spending.today, spending.month).catch(
         console.warn,
       );
@@ -209,7 +206,7 @@ const HomeScreen: React.FC = () => {
       setBudgetModalVisible(false);
       setBudgetAmount('');
       setIsEditingBudget(false);
-      loadData(); // Reload to show budget info
+      loadData();
       Alert.alert(
         'Success',
         isEditingBudget
@@ -247,17 +244,16 @@ const HomeScreen: React.FC = () => {
       alignItems: 'center',
     },
     appIcon: {
-      width: 32,
-      height: 32,
+      width: 42,
+      height: 42,
       resizeMode: 'cover',
     },
     appIconContainer: {
-      width: 32,
-      height: 32,
+      width: 42,
+      height: 42,
       marginRight: 12,
-      borderRadius: 16,
-      backgroundColor: theme.colors.surface,
-      overflow: 'hidden',
+      backgroundColor: 'transparent',
+      overflow: 'visible',
     },
     appName: {
       ...textStyles.heading,
@@ -592,7 +588,7 @@ const HomeScreen: React.FC = () => {
           <View style={styles.appTitleLeft}>
             <View style={styles.appIconContainer}>
               <Image
-                source={require('../assets/spendbook_icon.png')}
+                source={require('../assets/app_icon.png')}
                 style={styles.appIcon}
               />
             </View>
@@ -799,7 +795,12 @@ const HomeScreen: React.FC = () => {
                   setIsEditingBudget(false);
                 }}
               >
-                <Text style={[styles.modalButtonText, { color: theme.colors.primary }]}>
+                <Text
+                  style={[
+                    styles.modalButtonText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
                   Cancel
                 </Text>
               </TouchableOpacity>
@@ -807,7 +808,12 @@ const HomeScreen: React.FC = () => {
                 style={[styles.modalButton, styles.modalButtonPrimary]}
                 onPress={handleSetBudget}
               >
-                <Text style={[styles.modalButtonText, { color: theme.colors.surface }]}>
+                <Text
+                  style={[
+                    styles.modalButtonText,
+                    { color: theme.colors.surface },
+                  ]}
+                >
                   {isEditingBudget ? 'Update Budget' : 'Set Budget'}
                 </Text>
               </TouchableOpacity>

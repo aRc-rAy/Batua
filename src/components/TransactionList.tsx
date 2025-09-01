@@ -43,49 +43,52 @@ const TransactionList: React.FC<TransactionListProps> = ({
       Entertainment: 'film',
       Bills: 'document-text',
       Healthcare: 'medical',
-      Others: 'ellipsis-horizontal'
+      Others: 'ellipsis-horizontal',
     };
     return iconMap[category];
   };
 
   // Clean and modern category colors - not too dull, not too bright
   const getCategoryColors = (category: PaymentCategory) => {
-    const categoryColorMap: Record<PaymentCategory, { background: string; border: string; text: string }> = {
-      Food: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+    const categoryColorMap: Record<
+      PaymentCategory,
+      { background: string; border: string; text: string }
+    > = {
+      Food: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#10B981' : '#10B981',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
       },
-      Travel: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+      Travel: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#3B82F6' : '#3B82F6',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
       },
-      Clothes: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+      Clothes: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#8B5CF6' : '#8B5CF6',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
       },
-      Entertainment: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+      Entertainment: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#F59E0B' : '#F59E0B',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
       },
-      Bills: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+      Bills: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#EF4444' : '#EF4444',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
       },
-      Healthcare: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+      Healthcare: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#06B6D4' : '#06B6D4',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
       },
-      Others: { 
-        background: theme.isDark ? '#1F2937' : '#FFFFFF', 
+      Others: {
+        background: theme.isDark ? '#1F2937' : '#FFFFFF',
         border: theme.isDark ? '#6B7280' : '#6B7280',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280'
-      }
+        text: theme.isDark ? '#A3A3A3' : '#6B7280',
+      },
     };
     return categoryColorMap[category];
   };
@@ -97,19 +100,31 @@ const TransactionList: React.FC<TransactionListProps> = ({
     yesterday.setDate(today.getDate() - 1);
 
     // Create new date objects for comparison without modifying originals
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const yesterdayStart = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
-    const paymentDateStart = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const yesterdayStart = new Date(
+      yesterday.getFullYear(),
+      yesterday.getMonth(),
+      yesterday.getDate(),
+    );
+    const paymentDateStart = new Date(
+      paymentDate.getFullYear(),
+      paymentDate.getMonth(),
+      paymentDate.getDate(),
+    );
 
     if (paymentDateStart.getTime() === todayStart.getTime()) {
       return 'Today';
     } else if (paymentDateStart.getTime() === yesterdayStart.getTime()) {
       return 'Yesterday';
     } else {
-      return paymentDate.toLocaleDateString('en-US', { 
+      return paymentDate.toLocaleDateString('en-US', {
         weekday: 'long',
-        month: 'short', 
-        day: 'numeric' 
+        month: 'short',
+        day: 'numeric',
       });
     }
   };
@@ -121,14 +136,26 @@ const TransactionList: React.FC<TransactionListProps> = ({
     yesterday.setDate(today.getDate() - 1);
 
     // Create new date objects for comparison without modifying originals
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const yesterdayStart = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
-    const paymentDateStart = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const yesterdayStart = new Date(
+      yesterday.getFullYear(),
+      yesterday.getMonth(),
+      yesterday.getDate(),
+    );
+    const paymentDateStart = new Date(
+      paymentDate.getFullYear(),
+      paymentDate.getMonth(),
+      paymentDate.getDate(),
+    );
 
-    const timeStr = paymentDate.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    const timeStr = paymentDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
     });
 
     if (paymentDateStart.getTime() === todayStart.getTime()) {
@@ -136,17 +163,19 @@ const TransactionList: React.FC<TransactionListProps> = ({
     } else if (paymentDateStart.getTime() === yesterdayStart.getTime()) {
       return `Yesterday • ${timeStr}`;
     } else {
-      const dateStr = paymentDate.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric' 
+      const dateStr = paymentDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
       });
       return `${dateStr} • ${timeStr}`;
     }
   };
 
-  const groupPaymentsByDate = (paymentList: Payment[]): GroupedTransactions[] => {
+  const groupPaymentsByDate = (
+    paymentList: Payment[],
+  ): GroupedTransactions[] => {
     const grouped: { [key: string]: Payment[] } = {};
-    
+
     paymentList.forEach(payment => {
       const dateKey = payment.date.split('T')[0]; // Get YYYY-MM-DD format
       if (!grouped[dateKey]) {
@@ -161,9 +190,9 @@ const TransactionList: React.FC<TransactionListProps> = ({
       .map(dateKey => ({
         date: dateKey,
         label: getDateLabel(dateKey),
-        payments: grouped[dateKey].sort((a, b) => 
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        )
+        payments: grouped[dateKey].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        ),
       }));
   };
 
@@ -172,44 +201,61 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const renderTransaction = (payment: Payment) => {
     const isSelected = selectedPaymentId === payment.id;
     const categoryColors = getCategoryColors(payment.category);
-    
+
     return (
       <TouchableOpacity
         key={payment.id}
         style={[
           styles.transactionItem,
           styles.transactionCard,
-          { 
-            backgroundColor: isSelected ? theme.colors.primary + '08' : categoryColors.background,
-            borderLeftColor: isSelected ? theme.colors.primary : categoryColors.border,
+          {
+            backgroundColor: isSelected
+              ? theme.colors.primary + '08'
+              : categoryColors.background,
+            borderLeftColor: isSelected
+              ? theme.colors.primary
+              : categoryColors.border,
             borderColor: theme.colors.border + '15',
           },
-          isSelected && styles.selectedCard
+          isSelected && styles.selectedCard,
         ]}
         onPress={() => onPaymentPress?.(payment)}
         activeOpacity={0.7}
       >
         <View style={styles.transactionRow}>
           <View style={styles.leftSection}>
-            <Ionicons 
-              name={getCategoryIcon(payment.category)} 
-              size={20} 
-              color={theme.colors.primary} 
+            <Ionicons
+              name={getCategoryIcon(payment.category)}
+              size={20}
+              color={theme.colors.primary}
               style={styles.categoryIcon}
             />
             <View style={styles.transactionDetails}>
-              <Text 
-                style={[styles.transactionDescription, { color: theme.colors.text }]} 
+              <Text
+                style={[
+                  styles.transactionDescription,
+                  { color: theme.colors.text },
+                ]}
                 numberOfLines={1}
               >
                 {payment.description}
               </Text>
               <View style={styles.metaRow}>
-                <Text style={[styles.categoryText, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.categoryText,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   {payment.category}
                 </Text>
                 {payment.isFromSMS && (
-                  <Text style={[styles.smsIndicator, { color: theme.colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.smsIndicator,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
                     • SMS
                   </Text>
                 )}
@@ -220,7 +266,9 @@ const TransactionList: React.FC<TransactionListProps> = ({
             <Text style={[styles.amountText, { color: theme.colors.primary }]}>
               ₹{formatAmount(payment.amount)}
             </Text>
-            <Text style={[styles.timeText, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.timeText, { color: theme.colors.textSecondary }]}
+            >
               {getDateTimeFromDate(payment.date)}
             </Text>
           </View>
@@ -232,11 +280,16 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const renderDateGroup = (group: GroupedTransactions) => {
     return (
       <View key={group.date} style={styles.dateGroup}>
-        <Text style={[styles.dateLabel, { 
-          color: theme.colors.textSecondary,
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border + '40'
-        }]}>
+        <Text
+          style={[
+            styles.dateLabel,
+            {
+              color: theme.colors.textSecondary,
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.border + '40',
+            },
+          ]}
+        >
           {group.label}
         </Text>
         {group.payments.map(renderTransaction)}
@@ -248,7 +301,9 @@ const TransactionList: React.FC<TransactionListProps> = ({
     <View style={styles.container}>
       {groupedTransactions.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
+          <Text
+            style={[styles.emptyText, { color: theme.colors.textSecondary }]}
+          >
             No transactions found
           </Text>
         </View>
@@ -260,11 +315,8 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
   if (showScrollView) {
     return (
-      <ScrollView 
-        style={[
-          styles.scrollContainer, 
-          ...(maxHeight ? [{ maxHeight }] : [])
-        ]}
+      <ScrollView
+        style={[styles.scrollContainer, ...(maxHeight ? [{ maxHeight }] : [])]}
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}
       >
@@ -359,14 +411,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   categoryText: {
-  ...textStyles.captionMedium,
+    ...textStyles.captionMedium,
     textTransform: 'capitalize',
   },
   timeText: {
-  ...textStyles.caption,
+    ...textStyles.caption,
   },
   smsIndicator: {
-  ...textStyles.captionMedium,
+    ...textStyles.captionMedium,
   },
   amountText: {
     ...textStyles.bodyMedium,
