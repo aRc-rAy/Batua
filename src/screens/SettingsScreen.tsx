@@ -704,6 +704,17 @@ const SettingsScreen: React.FC = () => {
                 style={styles.qrImage}
                 resizeMode="contain"
               />
+              {/* add msg "take screenshot to download qr code" */}
+              <Text
+                style={{
+                  ...textStyles.small,
+                  color: theme.colors.textSecondary,
+                  marginTop: 12,
+                  fontStyle: 'italic',
+                }}
+              >
+                (Take a screenshot to save the QR code)
+              </Text>
             </View>
           </View>
         </View>
