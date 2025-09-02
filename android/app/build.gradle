@@ -115,8 +115,6 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             // Additional security for release builds
             debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
             zipAlignEnabled true
         }
     }

@@ -173,9 +173,8 @@ const HomeScreen: React.FC = () => {
       );
       setBudgetStatus(budgetStatusWithSpending);
 
-      WidgetService.updateWidget(spending.today, spending.month).catch(
-        console.warn,
-      );
+      // Update widget with all spending data
+      WidgetService.refreshWidget().catch(console.warn);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -244,8 +243,8 @@ const HomeScreen: React.FC = () => {
       alignItems: 'center',
     },
     appIcon: {
-      width: 42,
-      height: 42,
+      width: 46,
+      height: 46,
       resizeMode: 'cover',
     },
     appIconContainer: {

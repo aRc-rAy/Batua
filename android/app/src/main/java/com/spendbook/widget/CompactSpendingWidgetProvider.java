@@ -16,10 +16,10 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Implementation of App Widget functionality for SpendBook Payment Tracker.
- * Displays daily, weekly, and monthly spending totals with action buttons.
+ * Implementation of Compact App Widget functionality for SpendBook Payment Tracker.
+ * Displays daily, weekly, and monthly spending totals in a compact layout.
  */
-public class SpendingWidgetProvider extends AppWidgetProvider {
+public class CompactSpendingWidgetProvider extends AppWidgetProvider {
     
     private static final String PREFS_NAME = "SpendBookWidgetPrefs";
     private static final String PREF_TODAY_SPENDING = "todaySpending";
@@ -28,8 +28,7 @@ public class SpendingWidgetProvider extends AppWidgetProvider {
     private static final String PREF_LAST_UPDATED = "lastUpdated";
     
     // Action constants
-    private static final String ACTION_ADD_PAYMENT = "com.spendbook.widget.ADD_PAYMENT";
-    private static final String ACTION_OPEN_APP = "com.spendbook.widget.OPEN_APP";
+    private static final String ACTION_ADD_PAYMENT = "com.spendbook.widget.ADD_PAYMENT_COMPACT";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -50,22 +49,7 @@ public class SpendingWidgetProvider extends AppWidgetProvider {
             addPaymentIntent.putExtra("screen", "AddPayment");
             addPaymentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             context.startActivity(addPaymentIntent);
-        } else if (ACTION_OPEN_APP.equals(action)) {
-            // Open app normally
-            Intent openAppIntent = new Intent(context, com.spendbook.MainActivity.class);
-            openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            context.startActivity(openAppIntent);
         }
-    }
-
-    @Override
-    public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-    }
-
-    @Override
-    public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
     }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
@@ -74,10 +58,10 @@ public class SpendingWidgetProvider extends AppWidgetProvider {
         double todaySpending = prefs.getFloat(PREF_TODAY_SPENDING, 0.0f);
         double weekSpending = prefs.getFloat(PREF_WEEK_SPENDING, 0.0f);
         double monthSpending = prefs.getFloat(PREF_MONTH_SPENDING, 0.0f);
-        String lastUpdated = prefs.getString(PREF_LAST_UPDATED, "Never");
 
-        // Format currency values
+        // Format currency values (same as main widget)
         DecimalFormat currencyFormat = new DecimalFormat("#,##0.00");
+        
         String todayText = "₹" + currencyFormat.format(todaySpending);
         String weekText = "₹" + currencyFormat.format(weekSpending);
         String monthText = "₹" + currencyFormat.format(monthSpending);
@@ -87,30 +71,21 @@ public class SpendingWidgetProvider extends AppWidgetProvider {
         String currentDate = dateFormat.format(new Date());
 
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.spending_widget);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.spending_widget_small);
         
         // Update widget content
-        views.setTextViewText(R.id.widget_date, currentDate);
-        views.setTextViewText(R.id.widget_today_amount, todayText);
-        views.setTextViewText(R.id.widget_week_amount, weekText);
-        views.setTextViewText(R.id.widget_month_amount, monthText);
+        views.setTextViewText(R.id.widget_date_small, currentDate);
+        views.setTextViewText(R.id.widget_today_amount_small, todayText);
+        views.setTextViewText(R.id.widget_week_amount_small, weekText);
+        views.setTextViewText(R.id.widget_month_amount_small, monthText);
 
-        // Set up button click handlers
-        Intent addPaymentIntent = new Intent(context, SpendingWidgetProvider.class);
+        // Set up button click handler
+        Intent addPaymentIntent = new Intent(context, CompactSpendingWidgetProvider.class);
         addPaymentIntent.setAction(ACTION_ADD_PAYMENT);
         PendingIntent addPaymentPendingIntent = PendingIntent.getBroadcast(
             context, 0, addPaymentIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
-        views.setOnClickPendingIntent(R.id.widget_add_payment_btn, addPaymentPendingIntent);
-
-        Intent openAppIntent = new Intent(context, SpendingWidgetProvider.class);
-        openAppIntent.setAction(ACTION_OPEN_APP);
-        PendingIntent openAppPendingIntent = PendingIntent.getBroadcast(
-            context, 1, openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        // Set the main container to open the app
-        views.setOnClickPendingIntent(R.id.widget_container, openAppPendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_add_payment_btn_small, addPaymentPendingIntent);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -120,7 +95,7 @@ public class SpendingWidgetProvider extends AppWidgetProvider {
      * Update widget data from React Native
      */
     public static void updateWidgetData(Context context, double todaySpending, double weekSpending, double monthSpending) {
-        // Store data in SharedPreferences
+        // Use the same SharedPreferences as the main widget
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putFloat(PREF_TODAY_SPENDING, (float) todaySpending);
@@ -133,9 +108,9 @@ public class SpendingWidgetProvider extends AppWidgetProvider {
         editor.putString(PREF_LAST_UPDATED, currentTime);
         editor.apply();
 
-        // Update all widgets
+        // Update all compact widgets
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName component = new ComponentName(context, SpendingWidgetProvider.class);
+        ComponentName component = new ComponentName(context, CompactSpendingWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(component);
         
         for (int appWidgetId : appWidgetIds) {

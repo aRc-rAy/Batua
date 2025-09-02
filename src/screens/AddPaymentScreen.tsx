@@ -19,6 +19,7 @@ import {
 } from '../types';
 import { PaymentService } from '../services/PaymentService';
 import { SuggestionService } from '../services/SuggestionService';
+import { WidgetService } from '../services/WidgetService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
 import { formatAmount } from '../utils/formatting';
@@ -135,6 +136,9 @@ const AddPaymentScreen: React.FC = () => {
         description: description.trim() || `${finalCategory} expense`,
         category: finalCategory,
       });
+
+      // Update widget with new spending data
+      WidgetService.refreshWidget().catch(console.warn);
 
       Alert.alert(
         'Payment Saved! 🎉',
