@@ -24,6 +24,7 @@ interface TransactionListProps {
   selectedPaymentId?: string | null;
   showScrollView?: boolean;
   maxHeight?: number;
+  removeHorizontalMargins?: boolean;
 }
 
 const TransactionList: React.FC<TransactionListProps> = ({
@@ -32,6 +33,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
   selectedPaymentId,
   showScrollView = true,
   maxHeight,
+  removeHorizontalMargins = false,
 }) => {
   const { theme } = useTheme();
 
@@ -46,51 +48,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
       Others: 'ellipsis-horizontal',
     };
     return iconMap[category];
-  };
-
-  // Clean and modern category colors - not too dull, not too bright
-  const getCategoryColors = (category: PaymentCategory) => {
-    const categoryColorMap: Record<
-      PaymentCategory,
-      { background: string; border: string; text: string }
-    > = {
-      Food: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#10B981' : '#10B981',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-      Travel: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#3B82F6' : '#3B82F6',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-      Clothes: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#8B5CF6' : '#8B5CF6',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-      Entertainment: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#F59E0B' : '#F59E0B',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-      Bills: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#EF4444' : '#EF4444',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-      Healthcare: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#06B6D4' : '#06B6D4',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-      Others: {
-        background: theme.isDark ? '#1F2937' : '#FFFFFF',
-        border: theme.isDark ? '#6B7280' : '#6B7280',
-        text: theme.isDark ? '#A3A3A3' : '#6B7280',
-      },
-    };
-    return categoryColorMap[category];
   };
 
   const getDateLabel = (dateString: string): string => {
@@ -200,75 +157,61 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
   const renderTransaction = (payment: Payment) => {
     const isSelected = selectedPaymentId === payment.id;
-    const categoryColors = getCategoryColors(payment.category);
 
     return (
       <TouchableOpacity
         key={payment.id}
         style={[
-          styles.transactionItem,
           styles.transactionCard,
+          removeHorizontalMargins && styles.noHorizontalMargins,
           {
-            backgroundColor: isSelected
-              ? theme.colors.primary + '08'
-              : categoryColors.background,
-            borderLeftColor: isSelected
-              ? theme.colors.primary
-              : categoryColors.border,
-            borderColor: theme.colors.border + '15',
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.border,
           },
-          isSelected && styles.selectedCard,
+          isSelected && {
+            backgroundColor: theme.colors.primary + '08',
+            borderColor: theme.colors.primary + '40',
+          },
         ]}
         onPress={() => onPaymentPress?.(payment)}
-        activeOpacity={0.7}
+        activeOpacity={0.6}
       >
-        <View style={styles.transactionRow}>
-          <View style={styles.leftSection}>
-            <Ionicons
-              name={getCategoryIcon(payment.category)}
-              size={20}
-              color={theme.colors.primary}
-              style={styles.categoryIcon}
-            />
-            <View style={styles.transactionDetails}>
-              <Text
+        <View style={styles.cardContent}>
+          {/* Top Row: Icon, Description, Amount */}
+          <View style={styles.topRow}>
+            <View style={styles.iconDescriptionContainer}>
+              <View
                 style={[
-                  styles.transactionDescription,
-                  { color: theme.colors.text },
+                  styles.iconContainer,
+                  { backgroundColor: theme.colors.primary + '12' },
                 ]}
+              >
+                <Ionicons
+                  name={getCategoryIcon(payment.category)}
+                  size={18}
+                  color={theme.colors.primary}
+                />
+              </View>
+              <Text
+                style={[styles.description, { color: theme.colors.text }]}
                 numberOfLines={1}
               >
                 {payment.description}
               </Text>
-              <View style={styles.metaRow}>
-                <Text
-                  style={[
-                    styles.categoryText,
-                    { color: theme.colors.textSecondary },
-                  ]}
-                >
-                  {payment.category}
-                </Text>
-                {payment.isFromSMS && (
-                  <Text
-                    style={[
-                      styles.smsIndicator,
-                      { color: theme.colors.textSecondary },
-                    ]}
-                  >
-                    • SMS
-                  </Text>
-                )}
-              </View>
             </View>
-          </View>
-          <View style={styles.rightSection}>
-            <Text style={[styles.amountText, { color: theme.colors.primary }]}>
+            <Text style={[styles.amount, { color: theme.colors.text }]}>
               ₹{formatAmount(payment.amount)}
             </Text>
+          </View>
+
+          {/* Bottom Row: Category, Time */}
+          <View style={styles.bottomRow}>
             <Text
-              style={[styles.timeText, { color: theme.colors.textSecondary }]}
+              style={[styles.category, { color: theme.colors.textSecondary }]}
             >
+              {payment.category}
+            </Text>
+            <Text style={[styles.time, { color: theme.colors.textSecondary }]}>
               {getDateTimeFromDate(payment.date)}
             </Text>
           </View>
@@ -351,80 +294,73 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   transactionItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   transactionCard: {
-    borderRadius: 12,
-    borderLeftWidth: 4,
+    backgroundColor: 'white',
+    borderRadius: 16,
     borderWidth: 1,
+    borderColor: '#f0f0f0',
     marginHorizontal: 8,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    elevation: 3,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.05,
+    marginTop: 4,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  selectedCard: {
-    elevation: 6,
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+  noHorizontalMargins: {
+    marginHorizontal: 0,
   },
-  transactionRow: {
+  cardContent: {
+    gap: 8,
+  },
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  leftSection: {
+  iconDescriptionContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    marginRight: 12,
   },
-  rightSection: {
-    alignItems: 'flex-end',
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
-  categoryIcon: {
-    marginRight: 16,
-    opacity: 0.9,
-    alignSelf: 'center',
-  },
-  transactionDetails: {
+  description: {
+    ...textStyles.bodyMedium,
+    fontWeight: '600',
     flex: 1,
   },
-  transactionDescription: {
-    ...textStyles.body,
-    marginBottom: 4,
-    letterSpacing: 0.2,
+  amount: {
+    ...textStyles.large,
+    fontWeight: '700',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  category: {
+    ...textStyles.caption,
+    textTransform: 'capitalize',
     fontWeight: '500',
   },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  categoryText: {
-    ...textStyles.captionMedium,
-    textTransform: 'capitalize',
-  },
-  timeText: {
+  time: {
     ...textStyles.caption,
-  },
-  smsIndicator: {
-    ...textStyles.captionMedium,
-  },
-  amountText: {
-    ...textStyles.bodyMedium,
-    letterSpacing: 0.3,
-    fontWeight: '600',
-    fontSize: 16,
+    fontWeight: '500',
   },
   emptyContainer: {
     flex: 1,

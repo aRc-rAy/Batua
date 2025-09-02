@@ -13,7 +13,7 @@ import { Payment, PaymentCategory } from '../types';
 import { PaymentService } from '../services/PaymentService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles, fontWeights } from '../utils/typography';
-import { formatAmount, formatAmountChart } from '../utils/formatting';
+import { formatAmount, formatAmountChart, formatAmountCompact } from '../utils/formatting';
 import { PieChart } from 'react-native-chart-kit';
 import { BarChart } from 'react-native-gifted-charts';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -433,7 +433,28 @@ const AnalyticsScreen: React.FC = () => {
         value: value, // Keep numeric for chart calculations
         label: labels[index] || `Day ${index + 1}`,
         frontColor: colors[index % colors.length],
-        // Remove topLabel to let showValuesAsTopLabel handle it
+        topLabelComponent: () => (
+          <Text
+            style={{
+              color: theme.colors.text,
+              fontSize: timeGrouping === 'year' ? 10 : 9,
+              fontWeight: '600',
+              textAlign: 'center',
+              backgroundColor: theme.colors.surface,
+              paddingHorizontal: 4,
+              paddingVertical: 2,
+              borderRadius: 4,
+              marginBottom: 4,
+              overflow: 'hidden',
+              elevation: 2,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.2,
+              shadowRadius: 2,
+            }}>
+            ₹{timeGrouping === 'month' ? formatAmountCompact(value) : formatAmountChart(value)}
+          </Text>
+        ),
       };
     });
   };
@@ -461,15 +482,25 @@ const AnalyticsScreen: React.FC = () => {
       color: theme.colors.textSecondary,
     },
     header: {
+      flexDirection: 'row',
+      alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 20,
+      paddingVertical: 16,
       backgroundColor: theme.colors.surface,
-      borderBottomWidth: 1,
+      borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: theme.colors.border,
     },
     headerTitle: {
       ...textStyles.heading,
       color: theme.colors.text,
+      marginLeft: 16,
+    },
+    contentHeader: {
+      paddingHorizontal: 20,
+      paddingVertical: 20,
+      backgroundColor: theme.colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
     },
     periodSelector: {
       flexDirection: 'row',
@@ -747,10 +778,11 @@ const AnalyticsScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <Ionicons name="bar-chart-outline" size={24} color={theme.colors.text} />
         <Text style={styles.headerTitle}>Analytics</Text>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
+        <View style={styles.contentHeader}>
           {/* Time Grouping Selection */}
           <View style={styles.periodSelector}>
             {(['week', 'month', 'year'] as TimeGrouping[]).map(period => {
@@ -902,15 +934,6 @@ const AnalyticsScreen: React.FC = () => {
                       rulesType="solid"
                       yAxisColor={theme.colors.border}
                       xAxisColor={theme.colors.border}
-                      showValuesAsTopLabel
-                      topLabelTextStyle={{
-                        color: theme.colors.text,
-                        fontSize:
-                          timeGrouping === 'year'
-                            ? textStyles.small.fontSize
-                            : 10,
-                        marginBottom: 6,
-                      }}
                       yAxisLabelTexts={getYAxisLabels(chartData.data)}
                     />
                   </View>

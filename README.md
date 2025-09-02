@@ -68,9 +68,13 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 
 ### **System Requirements:**
 
-- Android 7.0 (API level 24) or higher
-- 50 MB free storage space
-- Optional: SMS permission for auto-detection
+- **Android Version**: 7.0 (API 24) or higher
+- **Target**: Android 14 (API 34)
+- **Storage**: 50 MB free storage space
+- **RAM**: 2 GB minimum, 4 GB recommended
+- **Permissions**: SMS (optional), Storage (for exports)
+- **Play Store**: Fully compatible with Google Play Store
+- **Security**: Enhanced privacy controls and Google Play Protect ready
 
 ## 🏦 **Supported Banks & Services**
 
@@ -102,24 +106,36 @@ The app requires the following permissions for full functionality:
 
 ## 🏗️ Technical Stack
 
-- **Framework**: React Native 0.80.2 with TypeScript
-- **Language**: TypeScript for type safety
+- **Framework**: React Native 0.74.1 with TypeScript
+- **Language**: TypeScript for type safety and better development experience
 - **Database**: AsyncStorage for local data persistence
-- **Charts**: react-native-chart-kit for data visualization
-- **Navigation**: React Navigation (Bottom Tabs + Stack)
-- **Icons**: react-native-vector-icons
-- **Platform**: Android (primary), iOS (compatible)
-- **Build Tool**: Gradle with Android Gradle Plugin
+- **Charts**: react-native-chart-kit for data visualization and analytics
+- **Navigation**: React Navigation (Bottom Tabs + Stack Navigation)
+- **Icons**: react-native-vector-icons for consistent iconography
+- **SMS**: react-native-sms-android for SMS reading capabilities
+- **Excel**: react-native-csv for data export functionality
+- **Platform**: Android (primary target), iOS (compatible)
+- **Build Tool**: Gradle with Android Gradle Plugin 8.3.0
+- **Minimum Android**: API 24 (Android 7.0)
+- **Target Android**: API 34 (Android 14)
+- **Security**: ProGuard obfuscation for release builds
 
 ## 🚀 Getting Started (For Developers)
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
-- Android Studio (for Android development)
-- React Native CLI
-- Android SDK (API 21+)
+- **Node.js**: v18 or higher (LTS recommended)
+- **npm**: v8 or higher (or yarn as alternative)
+- **Android Studio**: Latest version with Android SDK
+- **React Native CLI**: `npm install -g @react-native-community/cli`
+- **Android SDK**: API 24-34 (Android 7.0 to Android 14)
+- **Java**: OpenJDK 17 (required for Android builds)
+- **VS Code**: Recommended IDE with React Native extensions
+
+### Optional (for iOS development)
+- **macOS**: Required for iOS development
+- **Xcode**: Latest version from Mac App Store
+- **CocoaPods**: `gem install cocoapods`
 
 ### Installation
 
@@ -132,7 +148,7 @@ cd Batua
 npm install
 
 # For iOS (if developing on macOS)
-cd ios && bundle exec pod install && cd ..
+cd ios && pod install && cd ..
 ```
 
 ### Running the App
@@ -143,49 +159,87 @@ npm start
 # OR
 npx react-native start
 
-# Run on Android
+# Run on Android (recommended)
 npm run android
 # OR
 npx react-native run-android
 
-# Run on iOS (macOS only)
+# Run on iOS (macOS only, requires Xcode)
 npm run ios
 # OR
 npx react-native run-ios
 ```
 
-### Building APK
+### Building for Release
 
 ```bash
-# Navigate to android directory
-cd android
+# Build Android APK (debug)
+cd android && ./gradlew assembleDebug
 
-# Build debug APK
-./gradlew assembleDebug
+# Build Android APK (release) - Play Store ready
+cd android && ./gradlew assembleRelease
+
+# Build Android App Bundle (AAB) - for Play Store
+cd android && ./gradlew bundleRelease
+
+# Output locations:
+# Debug APK: android/app/build/outputs/apk/debug/
+# Release APK: android/app/build/outputs/apk/release/
+# Release AAB: android/app/build/outputs/bundle/release/
+```
+
+### Windows Build Scripts
+
+For Windows users, convenient batch files are available:
+
+```bash
+# Start development server
+npm start
 
 # Build release APK
-./gradlew assembleRelease
+build-release-apk.bat
 
-# APK locations:
-# Debug: android/app/build/outputs/apk/debug/app-debug.apk
-# Release: android/app/build/outputs/apk/release/app-release.apk
+# Build Play Store bundle
+create-play-store-build.bat
 ```
 
 ## 📁 Project Structure
 
 ```
-SpendBook/
+PaymentTracker/
 ├── android/                    # Android native code
 │   ├── app/
 │   │   ├── build.gradle       # Android app configuration
+│   │   ├── debug.keystore     # Debug signing keystore
+│   │   ├── proguard-rules.pro # ProGuard configuration
 │   │   └── src/main/
-│   │       ├── AndroidManifest.xml
+│   │       ├── AndroidManifest.xml # App permissions and metadata
 │   │       ├── java/          # Native Android code
-│   │       └── res/           # Android resources
-│   └── gradle.properties      # Gradle configuration
-├── ios/                       # iOS native code (if needed)
+│   │       ├── res/           # Android resources
+│   │       │   ├── xml/       # Backup and security rules
+│   │       │   ├── mipmap/    # App icons
+│   │       │   └── values/    # Styles and strings
+│   │       └── assets/        # Static assets
+│   ├── build.gradle           # Project-level build configuration
+│   ├── gradle.properties      # Gradle configuration
+│   └── settings.gradle        # Gradle settings
+├── ios/                       # iOS native code
+│   ├── PaymentTracker/        # iOS app configuration
+│   │   ├── Info.plist         # iOS app metadata
+│   │   ├── LaunchScreen.storyboard
+│   │   └── Images.xcassets/   # iOS app icons
+│   └── Podfile                # iOS dependencies
 ├── src/                       # React Native source code
+│   ├── assets/                # App assets
+│   │   ├── app_icon.png       # App icon
+│   │   ├── qr_gpay.png        # QR code for donations
+│   │   └── upi_qr.jpg         # UPI QR code
 │   ├── components/            # Reusable UI components
+│   │   ├── PaymentActions.tsx # Payment action buttons
+│   │   ├── PrivacyInfo.tsx    # Privacy information component
+│   │   └── TransactionList.tsx # Transaction list component
+│   ├── context/               # React Context
+│   │   └── ThemeContext.tsx   # Theme management
 │   ├── navigation/            # Navigation configuration
 │   │   └── AppNavigator.tsx   # Main navigation setup
 │   ├── screens/               # Screen components
@@ -194,17 +248,37 @@ SpendBook/
 │   │   ├── HistoryScreen.tsx  # Transaction history
 │   │   ├── AnalyticsScreen.tsx # Analytics dashboard
 │   │   ├── EditPaymentScreen.tsx # Edit transactions
-│   │   └── SettingsScreen.tsx # App settings
+│   │   ├── PaymentActionsScreen.tsx # Payment actions
+│   │   ├── SettingsScreen.tsx # App settings
+│   │   └── SMSScreen.tsx      # SMS configuration
 │   ├── services/              # Business logic
-│   │   └── PaymentService.ts  # Payment data management
-│   └── types/                 # TypeScript definitions
-│       └── index.ts           # Type definitions
-├── __tests__/                 # Test files
-├── android/app/build/outputs/apk/release/ # Built APKs
-├── spendbook-v1.0.0.apk       # Latest release APK
+│   │   ├── AIAssistantService.ts # AI assistant integration
+│   │   ├── BudgetService.ts   # Budget management
+│   │   ├── PaymentService.ts  # Payment data management
+│   │   ├── SMSService.ts      # SMS parsing and detection
+│   │   ├── SuggestionService.ts # Smart suggestions
+│   │   └── WidgetService.ts   # Widget functionality
+│   ├── types/                 # TypeScript definitions
+│   │   ├── index.ts           # Core type definitions
+│   │   └── sms-android.d.ts   # SMS Android types
+│   └── utils/                 # Utility functions
+│       ├── formatting.ts      # Data formatting utilities
+│       └── typography.ts      # Typography utilities
+├── release-files/             # Release artifacts
+│   └── app-release.aab        # Previous AAB build
+├── build-*.bat                # Windows build scripts
+├── SpendBook-v3.0.1.apk      # Latest release APK (20.6MB)
+├── SpendBook-v3.0.1.aab      # Latest release AAB (13.1MB)
+├── app-release.apk            # Previous release APK
 ├── App.tsx                    # Main app component
 ├── package.json               # Dependencies and scripts
 ├── tsconfig.json              # TypeScript configuration
+├── metro.config.js            # Metro bundler configuration
+├── babel.config.js            # Babel configuration
+├── index.js                   # Entry point
+├── PRIVACY_POLICY.md          # Privacy policy
+├── PROJECT_STRUCTURE.md       # Detailed project structure
+├── RELEASE_NOTES.md           # Release notes
 └── README.md                  # This file
 ```
 
@@ -234,9 +308,17 @@ SpendBook/
 
 Available VS Code tasks for development:
 
-- **Start Metro Bundler**: `npm start` - Development server
-- **Build and Run Android**: `npm run android` - Launch on Android
-- **Build Release APK**: `./gradlew assembleRelease` - Production build
+- **Start Metro Bundler**: `npm start` - Development server with hot reload
+- **Build and Run Android**: `npm run android` - Launch on connected Android device/emulator
+- **Build Release APK**: Windows batch scripts available for quick builds
+- **Play Store Build**: `create-play-store-build.bat` - Generate AAB for Play Store submission
+
+### Build Scripts (Windows)
+
+- `build-release-apk.bat` - Quick release APK build
+- `create-play-store-build.bat` - Generate Play Store AAB
+- `build-with-icon.bat` - Build with updated app icons
+- `check-play-protect.bat` - Validate Play Protect compliance
 
 ## 📊 App Capabilities
 
@@ -266,29 +348,55 @@ Available VS Code tasks for development:
 ### Common Issues
 
 **Metro Bundler Issues:**
-
 ```bash
-# Clear Metro cache
+# Clear Metro cache and restart
 npx react-native start --reset-cache
+
+# Clear all caches
+npm start -- --reset-cache
 ```
 
 **Android Build Issues:**
-
 ```bash
 # Clean Android build
 cd android && ./gradlew clean && cd ..
+
+# Clean and rebuild
+cd android && ./gradlew clean && ./gradlew assembleDebug
+```
+
+**Gradle Issues:**
+```bash
+# Update Gradle wrapper
+cd android && ./gradlew wrapper --gradle-version=8.3
+
+# Clean Gradle cache
+./gradlew --stop && ./gradlew clean
 ```
 
 **Permission Issues:**
+- Ensure SMS permissions are granted in Android Settings → Apps → SpendBook → Permissions
+- Check storage permissions for Excel export functionality
+- For development: Enable Developer Options and USB Debugging
 
-- Ensure SMS permissions are granted in Android settings
-- Check storage permissions for CSV export
+**Play Store Build Issues:**
+- Ensure you're building with `bundleRelease` for AAB format
+- Check ProGuard rules if getting obfuscation errors
+- Verify signing configuration in `android/app/build.gradle`
 
 ### Debug Mode
 
-- Shake device or press `Ctrl+M` (Android) / `Cmd+D` (iOS) for dev menu
-- Enable "Debug JS Remotely" for Chrome debugging
-- Check console logs for error messages
+- **Device**: Shake device to open React Native dev menu
+- **Emulator**: Press `Ctrl+M` (Windows) / `Cmd+M` (Mac) for dev menu
+- **Browser**: Enable "Debug JS Remotely" for Chrome debugging
+- **Logs**: Use `npx react-native log-android` for real-time logs
+- **VSCode**: Use React Native debugger extension
+
+### Performance Tips
+
+- Use `--variant=release` for performance testing
+- Enable Hermes JS engine for better performance
+- Check memory usage with Android Studio's profiler
 
 ## 📄 License
 

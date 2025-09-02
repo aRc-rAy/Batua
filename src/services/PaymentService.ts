@@ -24,28 +24,17 @@ export class PaymentService {
     amount: number;
     description: string;
     category: PaymentCategory;
-  } | Payment): Promise<Payment> {
+  }): Promise<Payment> {
     try {
       const payments = await this.getAllPayments();
       
-      let newPayment: Payment;
-      
-      // Check if it's already a complete Payment object (from SMS)
-      if ('id' in paymentData && 'date' in paymentData && 'type' in paymentData) {
-        newPayment = paymentData as Payment;
-      } else {
-        // Create new manual payment
-        const data = paymentData as { amount: number; description: string; category: PaymentCategory };
-        newPayment = {
-          id: Date.now().toString(),
-          amount: data.amount,
-          description: data.description,
-          category: data.category,
-          date: new Date().toISOString(),
-          type: 'manual',
-          isFromSMS: false
-        };
-      }
+      const newPayment: Payment = {
+        id: Date.now().toString(),
+        amount: paymentData.amount,
+        description: paymentData.description,
+        category: paymentData.category,
+        date: new Date().toISOString(),
+      };
 
       payments.push(newPayment);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payments));
@@ -127,24 +116,13 @@ export class PaymentService {
     }
   }
 
-  static async getFilteredPayments(filter: 'all' | 'manual' | 'sms'): Promise<Payment[]> {
-    try {
-      const payments = await this.getAllPayments();
-      if (filter === 'all') return payments;
-      return payments.filter(payment => payment.type === filter);
-    } catch (error) {
-      console.error('Error filtering payments:', error);
-      return [];
-    }
-  }
-
   static async exportToCSV(): Promise<string> {
     try {
       const payments = await this.getAllPayments();
-      const headers = 'Date,Amount,Category,Description,Type\n';
+      const headers = 'Date,Amount,Category,Description\n';
       const rows = payments.map(payment => {
         const date = new Date(payment.date).toLocaleDateString();
-        return `${date},₹${payment.amount},${payment.category},"${payment.description}",${payment.type}`;
+        return `${date},₹${payment.amount},${payment.category},"${payment.description}"`;
       }).join('\n');
       
       return headers + rows;
@@ -165,7 +143,6 @@ export class PaymentService {
         Amount: `₹${payment.amount.toFixed(2)}`,
         Category: payment.category,
         Description: payment.description,
-        Type: payment.isFromSMS ? 'SMS' : 'Manual',
         'Payment ID': payment.id
       }));
 
@@ -181,7 +158,6 @@ export class PaymentService {
         { wch: 12 }, // Amount
         { wch: 15 }, // Category
         { wch: 30 }, // Description
-        { wch: 8 },  // Type
         { wch: 15 }  // Payment ID
       ];
       ws['!cols'] = colWidths;
@@ -213,31 +189,15 @@ export class PaymentService {
     }
   }
 
-  static async clearSmsPayments(): Promise<void> {
+  static async getPaymentStats(): Promise<{ total: number }> {
     try {
       const payments = await this.getAllPayments();
-      const manualPayments = payments.filter(payment => payment.type !== 'sms');
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(manualPayments));
-    } catch (error) {
-      console.error('Error clearing SMS payments:', error);
-      throw error;
-    }
-  }
-
-  static async getPaymentStats(): Promise<{ total: number; manual: number; sms: number }> {
-    try {
-      const payments = await this.getAllPayments();
-      const manual = payments.filter(payment => payment.type === 'manual').length;
-      const sms = payments.filter(payment => payment.type === 'sms').length;
-
       return {
-        total: payments.length,
-        manual,
-        sms
+        total: payments.length
       };
     } catch (error) {
       console.error('Error getting payment stats:', error);
-      return { total: 0, manual: 0, sms: 0 };
+      return { total: 0 };
     }
   }
 
@@ -296,10 +256,10 @@ export class PaymentService {
   static async exportMonthlyCSV(year: number, month: number): Promise<string> {
     try {
       const payments = await this.getPaymentsByMonth(year, month);
-      const headers = 'Date,Amount,Category,Description,Type\n';
+      const headers = 'Date,Amount,Category,Description\n';
       const rows = payments.map(payment => {
         const date = new Date(payment.date).toLocaleDateString();
-        return `${date},₹${payment.amount},"${payment.category}","${payment.description}",${payment.type}`;
+        return `${date},₹${payment.amount},"${payment.category}","${payment.description}"`;
       }).join('\n');
       
       return headers + rows;

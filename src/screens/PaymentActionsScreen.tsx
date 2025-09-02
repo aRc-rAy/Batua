@@ -142,17 +142,6 @@ const PaymentActionsScreen: React.FC = () => {
       ...textStyles.bodyMedium,
       color: theme.colors.text,
     },
-    smsIndicator: {
-      backgroundColor: theme.colors.primary + '20',
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 12,
-      alignSelf: 'flex-start',
-    },
-    smsText: {
-      ...textStyles.caption,
-      color: theme.colors.primary,
-    },
     actionsContainer: {
       gap: 16,
       paddingBottom: 40,
@@ -223,15 +212,6 @@ const PaymentActionsScreen: React.FC = () => {
               <Text style={styles.detailLabel}>Time</Text>
               <Text style={styles.detailValue}>{formatTime(payment.date)}</Text>
             </View>
-
-            {payment.isFromSMS && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Source</Text>
-                <View style={styles.smsIndicator}>
-                  <Text style={styles.smsText}>SMS Auto-detected</Text>
-                </View>
-              </View>
-            )}
           </View>
         </View>
 

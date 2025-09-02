@@ -8,8 +8,6 @@ export interface Payment {
   description: string;
   category: PaymentCategory;
   date: string; // ISO date string for JSON serialization
-  type: 'manual' | 'sms'; // Payment type for filtering
-  isFromSMS: boolean;
 }
 
 // Enhanced description suggestions
@@ -27,6 +25,7 @@ export type RootStackParamList = {
   PaymentActions: { payment: Payment };
   Analytics: undefined;
   Settings: undefined;
+  Export: undefined;
 };
 
 export type TabParamList = {

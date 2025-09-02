@@ -51,3 +51,29 @@ export const formatAmountInput = (amount: number): string => {
     }).format(amount);
   }
 };
+
+/**
+ * Formats amounts in compact form for charts (1.5k, 2.3L, etc.)
+ * @param amount - The numeric amount to format
+ * @param includeCurrency - Whether to include the ₹ symbol (default: false)
+ * @returns Formatted string in compact form
+ */
+export const formatAmountCompact = (amount: number, includeCurrency: boolean = false): string => {
+  let formattedValue: string;
+  
+  if (amount >= 10000000) { // 1 crore and above
+    const crores = amount / 10000000;
+    formattedValue = `${crores % 1 === 0 ? crores.toString() : crores.toFixed(1)}Cr`;
+  } else if (amount >= 100000) { // 1 lakh and above
+    const lakhs = amount / 100000;
+    formattedValue = `${lakhs % 1 === 0 ? lakhs.toString() : lakhs.toFixed(1)}L`;
+  } else if (amount >= 1000) { // 1 thousand and above
+    const thousands = amount / 1000;
+    formattedValue = `${thousands % 1 === 0 ? thousands.toString() : thousands.toFixed(1)}k`;
+  } else {
+    // Less than 1000, show full amount
+    formattedValue = amount.toString();
+  }
+  
+  return includeCurrency ? `₹${formattedValue}` : formattedValue;
+};

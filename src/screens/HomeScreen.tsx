@@ -22,6 +22,7 @@ import { WidgetService } from '../services/WidgetService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles, fontFamilies } from '../utils/typography';
 import { formatAmount } from '../utils/formatting';
+import { createPaymentPressHandler } from '../utils/navigationHelpers';
 import TransactionList from '../components/TransactionList';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -104,6 +105,7 @@ const SlideSwitch: React.FC<{
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { theme, toggleTheme } = useTheme();
+  const handlePaymentPress = createPaymentPressHandler(navigation);
 
   const screenHeight = Dimensions.get('window').height;
   const tabBarHeight = 65;
@@ -749,12 +751,11 @@ const HomeScreen: React.FC = () => {
             <View style={styles.transactionListContainer}>
               <TransactionList
                 payments={recentPayments}
-                onPaymentPress={payment => {
-                  navigation.navigate('PaymentActions', { payment });
-                }}
+                onPaymentPress={handlePaymentPress}
                 selectedPaymentId={null}
                 showScrollView={true}
                 maxHeight={availableHeight}
+                removeHorizontalMargins={true}
               />
             </View>
           )}

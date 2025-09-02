@@ -6,18 +6,20 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Switch,
   Linking,
-  ActivityIndicator,
   Modal,
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PaymentService } from '../services/PaymentService';
-import { SMSService } from '../services/SMSService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { RootStackParamList } from '../types';
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface SettingItemProps {
   title: string;
@@ -49,81 +51,69 @@ const SettingItem: React.FC<SettingItemProps> = ({
       borderBottomColor: theme.colors.border,
       borderBottomWidth: StyleSheet.hairlineWidth,
     },
-    settingLeft: {
+    itemLeft: {
       flexDirection: 'row',
       alignItems: 'center',
       flex: 1,
     },
-    settingIconContainer: {
-      width: 32,
-      height: 32,
-      borderRadius: 8,
+    iconContainer: {
+      width: 30,
       alignItems: 'center',
-      justifyContent: 'center',
       marginRight: 12,
-      backgroundColor:
-        type === 'danger' ? '#ff4444' + '20' : theme.colors.primary + '20',
     },
-    settingIcon: {
-      ...textStyles.body,
-      color: type === 'danger' ? '#ff4444' : theme.colors.text,
-    },
-    settingText: {
+    textContainer: {
       flex: 1,
     },
-    settingTitle: {
-      ...textStyles.bodyMedium,
-      color: type === 'danger' ? '#ff4444' : theme.colors.text,
-    },
-    settingSubtitle: {
-      ...textStyles.small,
-      marginTop: 2,
-      color: theme.colors.textSecondary,
-    },
-    settingArrow: {
+    title: {
       ...textStyles.body,
-      marginLeft: 8,
+      color: type === 'danger' ? '#dc3545' : theme.colors.text,
+      fontWeight: '500',
+    },
+    subtitle: {
+      ...textStyles.caption,
       color: theme.colors.textSecondary,
+      marginTop: 2,
     },
   });
 
   return (
-    <TouchableOpacity
-      style={settingItemStyles.settingItem}
-      onPress={onPress}
-      disabled={!onPress && !rightComponent}
-    >
-      <View style={settingItemStyles.settingLeft}>
+    <TouchableOpacity style={settingItemStyles.settingItem} onPress={onPress}>
+      <View style={settingItemStyles.itemLeft}>
         {icon && (
-          <View style={settingItemStyles.settingIconContainer}>
-            <Text style={settingItemStyles.settingIcon}>{icon}</Text>
+          <View style={settingItemStyles.iconContainer}>
+            <Ionicons name={icon} size={20} color={theme.colors.textSecondary} />
           </View>
         )}
-        <View style={settingItemStyles.settingText}>
-          <Text style={settingItemStyles.settingTitle}>{title}</Text>
-          {subtitle && (
-            <Text style={settingItemStyles.settingSubtitle}>{subtitle}</Text>
-          )}
+        <View style={settingItemStyles.textContainer}>
+          <Text style={settingItemStyles.title}>{title}</Text>
+          {subtitle && <Text style={settingItemStyles.subtitle}>{subtitle}</Text>}
         </View>
       </View>
-      {rightComponent || <Text style={settingItemStyles.settingArrow}>›</Text>}
+      {rightComponent}
     </TouchableOpacity>
   );
 };
 
-const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
+interface SectionHeaderProps {
+  title: string;
+}
+
+const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => {
   const { theme } = useTheme();
 
   const sectionHeaderStyles = StyleSheet.create({
     sectionHeader: {
       paddingHorizontal: 20,
-      paddingTop: 20,
+      paddingTop: 24,
       paddingBottom: 8,
+      backgroundColor: theme.colors.background,
     },
     sectionHeaderText: {
-      ...textStyles.captionMedium,
-      textTransform: 'uppercase',
+      ...textStyles.caption,
       color: theme.colors.textSecondary,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
     },
   });
 
@@ -136,14 +126,9 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => {
 
 const SettingsScreen: React.FC = () => {
   const { theme } = useTheme();
-  const [smsParsingEnabled, setSmsParsingEnabled] = useState<boolean | null>(
-    null,
-  ); // null = loading
-  const [isTogglingSms, setIsTogglingSms] = useState(false);
+  const navigation = useNavigation<NavigationProp>();
   const [qrModalVisible, setQrModalVisible] = useState(false);
-  const [selectedQrType, setSelectedQrType] = useState<'upi' | 'gpay' | null>(
-    null,
-  );
+  const [selectedQrType, setSelectedQrType] = useState<'upi' | 'gpay' | null>(null);
 
   // Handle QR modal display
   const showQrModal = (type: 'upi' | 'gpay') => {
@@ -151,66 +136,47 @@ const SettingsScreen: React.FC = () => {
     setQrModalVisible(true);
   };
 
-  const hideQrModal = () => {
-    setQrModalVisible(false);
-    setSelectedQrType(null);
+  // Export functionality
+  const handleExportAll = () => {
+    navigation.navigate('Export');
   };
 
-  const handleClearAllData = () => {
-    Alert.alert(
-      'Clear All Data? 🗑️',
-      'This will permanently delete all your payment records. This action cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete All',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await PaymentService.clearAllPayments();
-              Alert.alert('Success! ✅', 'All payment data has been cleared');
-            } catch (error) {
-              Alert.alert('Error', 'Failed to clear data');
-            }
-          },
-        },
-      ],
-    );
-  };
-
-  const handleClearSmsPayments = async () => {
+  const handleClearAllPayments = async () => {
     try {
       const stats = await PaymentService.getPaymentStats();
-
-      if (stats.sms === 0) {
+      
+      if (stats.total === 0) {
         Alert.alert(
-          'No SMS Payments',
-          "You don't have any SMS-detected payments to clear.",
+          'No Payments',
+          "You don't have any payments to clear.",
+          [{ text: 'OK' }]
         );
         return;
       }
 
       Alert.alert(
-        'Clear SMS Payments? 📱',
-        `You have ${stats.sms} SMS payments and ${stats.manual} manual payments.\n\nThis will permanently delete all ${stats.sms} SMS-detected payments. Manual payments will be kept.`,
+        'Clear All Payments? 🗑️',
+        `You have ${stats.total} payments.\n\nThis will permanently delete all your payment history. This action cannot be undone.`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
-            text: 'Clear SMS Payments',
+            text: 'Clear All',
             style: 'destructive',
             onPress: async () => {
               try {
-                await PaymentService.clearSmsPayments();
+                await PaymentService.clearAllPayments();
                 Alert.alert(
-                  'Success! ✅',
-                  `Cleared ${stats.sms} SMS payments. ${stats.manual} manual payments preserved.`,
+                  'Success',
+                  `Cleared all ${stats.total} payments.`,
+                  [{ text: 'OK' }]
                 );
               } catch (error) {
-                Alert.alert('Error', 'Failed to clear SMS payments');
+                console.error('Error clearing payments:', error);
+                Alert.alert('Error', 'Failed to clear payments');
               }
             },
           },
-        ],
+        ]
       );
     } catch (error) {
       console.error('Error getting payment stats:', error);
@@ -218,504 +184,199 @@ const SettingsScreen: React.FC = () => {
     }
   };
 
-  // Handle SMS parsing toggle: single alert per action, processing lock to avoid duplicates
-  const handleSmsParsingToggle = async (value: boolean) => {
-    if (smsParsingEnabled === null || isTogglingSms) return;
-
-    // Show confirmation dialog before proceeding
-    const confirmationMessage = value
-      ? 'Enable automatic SMS payment detection?'
-      : 'Disable automatic SMS payment detection?';
-
-    const confirmed = await new Promise<boolean>(resolve => {
-      Alert.alert(
-        value ? 'Enable SMS Detection' : 'Disable SMS Detection',
-        confirmationMessage,
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-            onPress: () => resolve(false),
-          },
-          {
-            text: value ? 'Enable' : 'Disable',
-            style: value ? 'default' : 'destructive',
-            onPress: () => resolve(true),
-          },
-        ],
-      );
-    });
-
-    // If user cancelled, don't proceed
-    if (!confirmed) return;
-
-    setIsTogglingSms(true);
-    try {
-      const ok = await SMSService.setSmsParsingEnabled(value);
-      if (ok) {
-        // Only update state after success
-        setSmsParsingEnabled(value);
-        // No success alert - keep it smooth
-      } else {
-        Alert.alert(
-          value ? 'Permission Required' : 'Error',
-          value
-            ? 'SMS permission is required to enable detection.'
-            : 'Failed to update SMS detection setting.',
-        );
-        // Do not update toggle, just leave as is
-      }
-    } catch (e) {
-      console.error('Error toggling SMS parsing', e);
-      Alert.alert('Error', 'Failed to update SMS detection.');
-      // Do not update toggle, just leave as is
-    } finally {
-      setIsTogglingSms(false);
-    }
-  };
-
-  // Load SMS parsing setting on mount
-  React.useEffect(() => {
-    (async () => {
-      setSmsParsingEnabled(null); // loading
-      const enabled = await SMSService.isSmsParsingEnabled();
-      setSmsParsingEnabled(enabled);
-      if (enabled) {
-        await SMSService.startSmsMonitoring();
-      } else {
-        SMSService.stopSmsMonitoring();
-      }
-    })();
-  }, []);
-
-  const styles = StyleSheet.create({
+  const settingsStyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
     },
     header: {
+      flexDirection: 'row',
+      alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 20,
+      paddingVertical: 16,
       backgroundColor: theme.colors.surface,
-      borderBottomWidth: 1,
+      borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: theme.colors.border,
     },
     headerTitle: {
       ...textStyles.heading,
       color: theme.colors.text,
+      marginLeft: 16,
     },
-    sectionHeaderText: {
-      ...textStyles.smallMedium,
-      textTransform: 'uppercase',
-    },
-    switchContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: 60,
-      minHeight: 30,
-    },
-    footerSpacer: {
-      height: 30,
-    },
-    footerContainer: {
-      marginTop: 20,
-      paddingHorizontal: 20,
-      paddingVertical: 24,
-    },
-    footerDivider: {
-      height: 1,
-      backgroundColor: theme.colors.border,
-      marginBottom: 20,
-      opacity: 0.3,
-    },
-    footerContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 8,
-    },
-    footerEmoji: {
-      ...textStyles.large,
-      marginRight: 8,
-    },
-    footerText: {
-      ...textStyles.body,
-      color: theme.colors.text,
-      textAlign: 'center',
-      fontWeight: '500',
-    },
-    footerFlag: {
-      ...textStyles.large,
-      marginLeft: 8,
-    },
-    footerSubtext: {
-      ...textStyles.small,
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-      fontStyle: 'italic',
-    },
-    // Support section styles
-    supportContainer: {
-      paddingHorizontal: 20,
-      paddingVertical: 12,
-    },
-    supportText: {
-      ...textStyles.body,
-      color: theme.colors.text,
-      textAlign: 'center',
-      fontStyle: 'italic',
-    },
-    paymentContainer: {
-      marginHorizontal: 20,
-      marginBottom: 8,
-    },
-    paymentMethod: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
+    section: {
       backgroundColor: theme.colors.surface,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: theme.colors.border,
+      marginBottom: 1,
     },
-    paymentIcon: {
-      ...textStyles.body,
-      marginRight: 12,
-      fontSize: 18,
-    },
-    paymentText: {
-      ...textStyles.body,
-      color: theme.colors.text,
-      flex: 1,
-    },
-    arrow: {
-      ...textStyles.body,
-      color: theme.colors.textSecondary,
-      fontSize: 16,
-    },
-    contactMethod: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginHorizontal: 20,
-      marginBottom: 20,
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      backgroundColor: theme.colors.surface,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: theme.colors.border,
-    },
-    contactIcon: {
-      ...textStyles.body,
-      marginRight: 12,
-      fontSize: 18,
-    },
-    contactText: {
-      ...textStyles.body,
-      color: theme.colors.text,
-      flex: 1,
-    },
-    // Modal styles
+    // QR Modal Styles
     modalOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
       justifyContent: 'center',
       alignItems: 'center',
     },
     modalContent: {
       backgroundColor: theme.colors.surface,
-      borderRadius: 12,
-      marginHorizontal: 20,
-      maxWidth: 400,
-      width: '90%',
-      maxHeight: '80%',
-    },
-    modalHeader: {
-      flexDirection: 'row',
+      borderRadius: 20,
+      padding: 20,
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 20,
-      paddingVertical: 16,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      margin: 20,
+      maxWidth: 320,
+      minHeight: 200,
+      justifyContent: 'center',
     },
     modalTitle: {
-      ...textStyles.heading,
+      ...textStyles.subheading,
       color: theme.colors.text,
-      fontSize: 18,
+      marginBottom: 16,
+      textAlign: 'center',
     },
-    closeButton: {
-      padding: 4,
+    qrImage: {
+      width: 200,
+      height: 200,
+      marginBottom: 16,
     },
-    qrContainer: {
-      padding: 20,
+    modalDescription: {
+      ...textStyles.body,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 20,
+      lineHeight: 20,
+    },
+    modalButton: {
+      backgroundColor: theme.colors.primary,
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 25,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    qrImage: {
-      width: 250,
-      height: 250,
-      borderRadius: 8,
+    modalButtonText: {
+      ...textStyles.body,
+      color: theme.colors.surface,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    footer: {
+      padding: 20,
+      alignItems: 'center',
+      marginTop: 20,
+      marginBottom: 40,
+    },
+    footerText: {
+      ...textStyles.body,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      fontStyle: 'italic',
     },
   });
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Settings</Text>
+    <SafeAreaView style={settingsStyles.container}>
+      <View style={settingsStyles.header}>
+        <Ionicons name="settings-outline" size={24} color={theme.colors.text} />
+        <Text style={settingsStyles.headerTitle}>Settings</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* SMS Parsing Card */}
-        <SectionHeader title="SMS Parsing" />
-        <SettingItem
-          title="SMS Detection"
-          subtitle={
-            isTogglingSms
-              ? 'Processing...'
-              : smsParsingEnabled === null
-              ? 'Loading...'
-              : smsParsingEnabled
-              ? 'Enabled'
-              : 'Disabled'
-          }
-          rightComponent={
-            <View style={styles.switchContainer}>
-              {isTogglingSms ? (
-                <ActivityIndicator size="small" color={theme.colors.primary} />
-              ) : (
-                <Switch
-                  value={smsParsingEnabled ?? false}
-                  onValueChange={handleSmsParsingToggle}
-                  disabled={smsParsingEnabled === null || isTogglingSms}
-                  trackColor={{
-                    false: theme.colors.border,
-                    true: theme.colors.primary,
-                  }}
-                  thumbColor={theme.isDark ? '#ffffff' : theme.colors.surface}
-                />
-              )}
-            </View>
-          }
-        />
-
-        {/* Data Management */}
+        {/* Data Management Card */}
         <SectionHeader title="Data Management" />
-        <SettingItem
-          title="Clear SMS Data"
-          type="danger"
-          onPress={handleClearSmsPayments}
-        />
-        <SettingItem
-          title="Clear All Data"
-          type="danger"
-          onPress={handleClearAllData}
-        />
+        <View style={settingsStyles.section}>
+          <SettingItem
+            title="Export to Excel"
+            subtitle="Download payment history as Excel file"
+            icon="document-text-outline"
+            onPress={handleExportAll}
+          />
+          <SettingItem
+            title="Clear All Payments"
+            subtitle="Permanently delete all payment records"
+            icon="trash-outline"
+            onPress={handleClearAllPayments}
+            type="danger"
+          />
+        </View>
 
-        {/* Support Developer */}
+        {/* Support & Information Card */}
         <SectionHeader title="Support" />
-
-        {/* Support Message */}
-        <View style={styles.supportContainer}>
-          <Text style={styles.supportText}>
-            Enjoying SpendBook? Consider supporting the Developer! 💝
-          </Text>
-        </View>
-
-        {/* Payment Methods */}
-        <View style={styles.paymentContainer}>
-          <TouchableOpacity
-            style={styles.paymentMethod}
-            onPress={() => Linking.openURL('https://paypal.me/anidravi')}
-          >
-            <Ionicons
-              name="logo-paypal"
-              size={20}
-              color={theme.colors.primary}
-              style={styles.paymentIcon}
-            />
-            <Text style={styles.paymentText}>PayPal</Text>
-            <Ionicons
-              name="chevron-forward"
-              size={16}
-              color={theme.colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.paymentMethod}
+        <View style={settingsStyles.section}>
+          <SettingItem
+            title="Donate via UPI"
+            subtitle="Support the development with UPI payment"
+            icon="card-outline"
             onPress={() => showQrModal('upi')}
-          >
-            <Ionicons
-              name="phone-portrait"
-              size={20}
-              color={theme.colors.primary}
-              style={styles.paymentIcon}
-            />
-            <Text style={styles.paymentText}>UPI Payment</Text>
-            <Ionicons
-              name="chevron-forward"
-              size={16}
-              color={theme.colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.paymentMethod}
+          />
+          <SettingItem
+            title="Donate via Google Pay"
+            subtitle="Support the development with Google Pay"
+            icon="logo-google"
             onPress={() => showQrModal('gpay')}
-          >
-            <Ionicons
-              name="card"
-              size={20}
-              color={theme.colors.primary}
-              style={styles.paymentIcon}
-            />
-            <Text style={styles.paymentText}>Google Pay</Text>
-            <Ionicons
-              name="chevron-forward"
-              size={16}
-              color={theme.colors.textSecondary}
-            />
-          </TouchableOpacity>
+          />
         </View>
 
-        {/* Contact */}
-        <TouchableOpacity
-          style={styles.contactMethod}
-          onPress={() =>
-            Linking.openURL(
-              'mailto:fuleliji@gmail.com?subject=Appreciation%20for%20SpendBook',
-            )
-          }
-        >
-          <Ionicons
-            name="mail"
-            size={20}
-            color={theme.colors.primary}
-            style={styles.contactIcon}
+        {/* Privacy & Security */}
+        <SectionHeader title="Privacy & Security" />
+        <View style={settingsStyles.section}>
+          <SettingItem
+            title="Privacy Policy"
+            subtitle="Your data stays on your device only"
+            icon="shield-checkmark-outline"
           />
-          <Text style={styles.contactText}>Write to Developer</Text>
-          <Ionicons
-            name="chevron-forward"
-            size={16}
-            color={theme.colors.textSecondary}
+        </View>
+
+        {/* App Info Card */}
+        <SectionHeader title="App Information" />
+        <View style={settingsStyles.section}>
+          <SettingItem
+            title="About"
+            subtitle="SpendBook helps you track expenses easily"
+            icon="information-circle-outline"
           />
-        </TouchableOpacity>
+          <SettingItem
+            title="App Version"
+            subtitle="3.0.1"
+            icon="code-outline"
+          />
+        </View>
 
-        {/* About */}
-        <SectionHeader title="About" />
-        <SettingItem
-          title="Privacy Policy"
-          onPress={() =>
-            Alert.alert(
-              'Privacy Policy',
-              'Privacy Policy for SpendBook\n\n' +
-                'Last updated: August 30, 2025\n\n' +
-                '🔒 Your Privacy is Protected\n\n' +
-                'SpendBook stores ALL your data locally on your device. ' +
-                'No data is sent to external servers or shared with third parties.\n\n' +
-                'What We Store Locally:\n' +
-                '• Payment records you enter manually\n' +
-                '• SMS messages (only if you enable SMS detection)\n' +
-                '• App preferences and settings\n\n' +
-                "What We DON'T Do:\n" +
-                '• ❌ No data sent to internet/cloud\n' +
-                '• ❌ No tracking or analytics\n' +
-                '• ❌ No data sharing with anyone\n' +
-                '• ❌ No account creation required\n\n' +
-                'Your Control:\n' +
-                '• Delete SMS data anytime\n' +
-                '• Clear all data anytime\n' +
-                '• Data stays on your device only\n\n' +
-                'Permissions:\n' +
-                '• SMS permission (optional for auto-detection)\n' +
-                '• No internet permission needed\n\n',
-            )
-          }
-        />
-        <SettingItem
-          title="About SpendBook"
-          onPress={() =>
-            Alert.alert(
-              'About SpendBook',
-              'SpendBook - Payment Tracker\n\n' +
-                'A simple payment tracking app for Android.\n\n' +
-                'Features:\n' +
-                '• SMS payment detection\n' +
-                '• Manual payment entry\n' +
-                '• Payment analytics\n' +
-                '• Data export\n\n' +
-                'Version: 2.0.1\n' +
-                'Made in India 🇮🇳\n\n' +
-                '💝 Support: If you find SpendBook helpful,\n' +
-                'consider supporting the development!',
-            )
-          }
-        />
-
-        {/* Footer Message */}
-        <View style={styles.footerContainer}>
-          <View style={styles.footerDivider} />
-          <View style={styles.footerContent}>
-            <Text style={styles.footerEmoji}>💝</Text>
-            <Text style={styles.footerText}>Made with love in India</Text>
-            <Text style={styles.footerFlag}>🇮🇳</Text>
-          </View>
-          <Text style={styles.footerSubtext}>
-            Crafting beautiful experiences
+        {/* Footer */}
+        <View style={settingsStyles.footer}>
+          <Text style={settingsStyles.footerText}>
+            Made with ❤️ in India
           </Text>
         </View>
-
-        {/* Footer spacing */}
-        <View style={styles.footerSpacer} />
       </ScrollView>
 
       {/* QR Code Modal */}
       <Modal
-        visible={qrModalVisible}
+        animationType="fade"
         transparent={true}
-        animationType="slide"
-        onRequestClose={hideQrModal}
+        visible={qrModalVisible}
+        onRequestClose={() => setQrModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                {selectedQrType === 'upi' ? 'UPI Payment' : 'Google Pay'}
-              </Text>
-              <TouchableOpacity
-                onPress={hideQrModal}
-                style={styles.closeButton}
-              >
-                <Ionicons name="close" size={24} color={theme.colors.text} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.qrContainer}>
-              <Image
-                source={
-                  selectedQrType === 'upi'
-                    ? require('../assets/upi_qr.jpg')
-                    : require('../assets/qr_gpay.png')
-                }
-                style={styles.qrImage}
-                resizeMode="contain"
-              />
-              {/* add msg "take screenshot to download qr code" */}
-              <Text
-                style={{
-                  ...textStyles.small,
-                  color: theme.colors.textSecondary,
-                  marginTop: 12,
-                  fontStyle: 'italic',
-                }}
-              >
-                (Take a screenshot to save the QR code)
-              </Text>
-            </View>
+        <View style={settingsStyles.modalOverlay}>
+          <View style={settingsStyles.modalContent}>
+            <Text style={settingsStyles.modalTitle}>
+              {selectedQrType === 'upi' ? 'UPI Payment' : 'Google Pay'}
+            </Text>
+            <Image
+              source={
+                selectedQrType === 'upi'
+                  ? require('../assets/upi_qr.jpg')
+                  : require('../assets/qr_gpay.png')
+              }
+              style={settingsStyles.qrImage}
+              resizeMode="contain"
+            />
+            <Text style={settingsStyles.modalDescription}>
+              Scan this QR code with your {selectedQrType === 'upi' ? 'UPI app' : 'Google Pay'} to support SpendBook development.{'\n\n'}
+              Thank you for your support! 🙏
+            </Text>
+            <TouchableOpacity
+              style={settingsStyles.modalButton}
+              onPress={() => setQrModalVisible(false)}
+            >
+              <Text style={settingsStyles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

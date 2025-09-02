@@ -10,6 +10,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AddPaymentScreen from '../screens/AddPaymentScreen';
 import EditPaymentScreen from '../screens/EditPaymentScreen';
 import PaymentActionsScreen from '../screens/PaymentActionsScreen';
+import ExportScreen from '../screens/ExportScreen';
 import { TabParamList, RootStackParamList } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
@@ -94,8 +95,7 @@ const AppNavigator: React.FC = () => {
               elevation: 0,
             },
             headerTitleStyle: {
-              ...textStyles.heading,
-              fontSize: 16,
+              ...textStyles.large,
               color: theme.colors.text,
             },
             headerTintColor: theme.colors.primary,
@@ -110,10 +110,11 @@ const AppNavigator: React.FC = () => {
             headerTitleAlign: 'center',
             headerStyle: {
               backgroundColor: theme.colors.surface,
+              shadowOpacity: 0,
+              elevation: 0,
             },
             headerTitleStyle: {
-              ...textStyles.heading,
-              fontSize: 16,
+              ...textStyles.large,
               color: theme.colors.text,
             },
             headerTintColor: theme.colors.primary,
@@ -132,11 +133,17 @@ const AppNavigator: React.FC = () => {
               elevation: 0,
             },
             headerTitleStyle: {
-              ...textStyles.heading,
-              fontSize: 16,
+              ...textStyles.large,
               color: theme.colors.text,
             },
             headerTintColor: theme.colors.primary,
+          }}
+        />
+        <Stack.Screen
+          name="Export"
+          component={ExportScreen}
+          options={{
+            headerShown: false,
           }}
         />
       </Stack.Navigator>
