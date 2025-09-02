@@ -75,20 +75,18 @@ public class CompactSpendingWidgetProvider extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.spending_widget_small);
         
-        // Update widget content
-        views.setTextViewText(R.id.widget_day_small, currentDay);
-        views.setTextViewText(R.id.widget_date_small, currentDate);
+        // Update widget content (no day/date in 3x1 layout)
         views.setTextViewText(R.id.widget_today_amount_small, todayText);
         views.setTextViewText(R.id.widget_week_amount_small, weekText);
         views.setTextViewText(R.id.widget_month_amount_small, monthText);
 
-        // Set up button click handler
+        // Set up widget container click handler (entire widget clickable)
         Intent addPaymentIntent = new Intent(context, CompactSpendingWidgetProvider.class);
         addPaymentIntent.setAction(ACTION_ADD_PAYMENT);
         PendingIntent addPaymentPendingIntent = PendingIntent.getBroadcast(
             context, 0, addPaymentIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
-        views.setOnClickPendingIntent(R.id.widget_add_payment_btn_small, addPaymentPendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_container_small, addPaymentPendingIntent);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
