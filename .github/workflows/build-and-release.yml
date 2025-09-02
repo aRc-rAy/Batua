@@ -1,0 +1,151 @@
+name: 🚀 Build & Release Android App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., v1.0.2)'
+        required: true
+        default: 'v1.0.2'
+
+jobs:
+  build:
+    name: 🏗️ Build Android App
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: 📱 Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: 🏗️ Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🧹 Clean project
+      run: |
+        cd android
+        ./gradlew clean
+        
+    - name: 🏗️ Build APK
+      run: |
+        cd android
+        ./gradlew assembleRelease
+        
+    - name: 🏗️ Build AAB (Play Store)
+      run: |
+        cd android
+        ./gradlew bundleRelease
+        
+    - name: 📱 Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release-apk
+        path: android/app/build/outputs/apk/release/app-release.apk
+        
+    - name: 📦 Upload AAB Artifact  
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release-aab
+        path: android/app/build/outputs/bundle/release/app-release.aab
+
+  release:
+    name: 🚀 Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download APK
+      uses: actions/download-artifact@v4
+      with:
+        name: app-release-apk
+        path: ./artifacts/
+        
+    - name: 📥 Download AAB
+      uses: actions/download-artifact@v4
+      with:
+        name: app-release-aab  
+        path: ./artifacts/
+        
+    - name: 📊 Get APK info
+      id: apk-info
+      run: |
+        APK_SIZE=$(stat -c%s "./artifacts/app-release.apk")
+        APK_SIZE_MB=$(echo "scale=1; $APK_SIZE / 1024 / 1024" | bc)
+        echo "size_mb=$APK_SIZE_MB" >> $GITHUB_OUTPUT
+        
+    - name: 🏷️ Get version
+      id: version
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: 🚀 Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: "PaymentTracker ${{ steps.version.outputs.version }} - Play Store Ready"
+        body: |
+          ## 🎉 PaymentTracker ${{ steps.version.outputs.version }}
+          
+          **📱 Ready for Play Store submission with enhanced security and privacy features**
+          
+          ### 📥 Downloads
+          - **Android APK** (${{ steps.apk-info.outputs.size_mb }} MB): Direct install on Android devices
+          - **Android App Bundle (AAB)**: For Google Play Store submission
+          
+          ### ✨ Features
+          - 🛡️ **Enhanced Privacy**: Only reads SMS from trusted banks
+          - 📱 **Smart Detection**: Auto-detect payments from bank SMS  
+          - 📊 **Analytics**: Spending trends with charts and insights
+          - 💾 **Excel Export**: Export data for analysis
+          - 🏠 **Home Widget**: Quick spending overview
+          - 🎨 **Clean UI**: Professional, minimalist design
+          
+          ### 🏦 Supported Services
+          Major banks, digital wallets (PayTM, GPay, PhonePe), and UPI services
+          
+          ### 🔧 System Requirements
+          - Android 7.0+ (API level 24)
+          - 50 MB storage space
+          - SMS permission (optional)
+          
+          ### 🛡️ Privacy Commitment
+          - ✅ All data stays on your device
+          - ✅ No external servers or cloud storage
+          - ✅ Only reads bank/payment SMS
+          - ✅ SMS detection can be disabled
+          
+          ---
+          **🚀 Installation**: Download APK → Enable unknown sources → Install → Grant permissions → Start tracking!
+          
+        files: |
+          ./artifacts/app-release.apk
+          ./artifacts/app-release.aab
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,52 +1,86 @@
-# 📱 SpendBook - Personal Payment Tracker
+# 📱 PaymentTracker (Batua) - Privacy-First Expense Tracking
 
 A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
 
-[![Latest Release](https://img.shields.io/badge/version-2.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v2.0.1)
-[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases/download/v2.0.1/spendbook-v2.0.1.apk)
+[![Latest Release](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v1.0.1)
+[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases)
+[![Privacy](https://img.shields.io/badge/privacy-first-brightgreen.svg)](https://github.com/aRc-rAy/Batua/blob/main/PRIVACY_POLICY.md)
+[![Play Store Ready](https://img.shields.io/badge/Play%20Store-Ready-success.svg)](#)
 
-## ✨ Features
+## 🚀 **Quick Download**
 
-### 💰 **Expense Tracking**
+### **📱 Latest Release: v1.0.1 - Play Store Ready**
 
-- � **Manual Entry**: Add payments with amount, description, and category
-- � **SMS Auto-Detection**: Automatically detect payments from bank SMS
-- 🏷️ **Smart Categories**: 7 predefined categories with icons (Food 🍽️, Travel ✈️, Clothes 👕, Entertainment 🎬, Bills 📄, Healthcare 🏥, Others 📦)
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.apk)** | **[📦 AAB for Play Store](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.aab)**
+
+## ✨ **Key Features**
+
+### �️ **Privacy & Security**
+
+- 🔒 **Privacy First**: All data stays on your device - no cloud storage
+- 📵 **Selective SMS Reading**: Only reads messages from trusted financial institutions
+- 🏦 **Bank SMS Only**: HDFC, ICICI, SBI, Axis, PayTM, GPay, PhonePe, and more
+- 🚫 **No Personal Data**: Never accesses personal messages or conversations
+- ✋ **User Control**: SMS detection can be disabled anytime in settings
+- 🛡️ **Play Store Ready**: Enhanced security for Google Play compliance
+
+### �💰 **Expense Tracking**
+
+- ➕ **Manual Entry**: Add payments with amount, description, and category
+- 📱 **SMS Auto-Detection**: Automatically detect payments from bank SMS
+- 🏷️ **Smart Categories**: 8 predefined categories (Food, Travel, Clothes, Entertainment, Medical, Utilities, Others)
 - ✏️ **Edit & Delete**: Modify or remove transactions easily
 
 ### 📊 **Analytics & Insights**
 
 - 📈 **Visual Charts**: Bar charts and pie charts for spending analysis
-- 📅 **Time-based Analytics**: Daily, weekly, monthly, and yearly insights
-- 🎯 **Smart Insights**: Top spending categories, daily averages, and trends
-- 📊 **Dashboard**: Professional insights dashboard with spending patterns
+- 📅 **Time-based Analytics**: 7 days, 1 month, 3 months spending trends
+- 🥧 **Category Breakdown**: Pie charts showing spending distribution
+- 📊 **Dashboard**: Professional insights with spending patterns
 
 ### 💾 **Data Management**
 
 - 📄 **Excel Export**: Export transaction data for external analysis
-- 💾 **Local Storage**: Secure local data storage with AsyncStorage
+- 💾 **Local Storage**: Secure SQLite database storage
 - 🔄 **Data Persistence**: All data saved locally on device
+- 🏠 **Home Widget**: Quick view of daily/monthly spending totals
 
 ### 🎨 **User Experience**
 
-- 🌙 **Dark/Light Theme**: Professional theme support
-- 📱 **Responsive Design**: Optimized for Android devices
-- 🎯 **Intuitive Navigation**: Bottom tab navigation with stack navigation
+- � **Minimalist Design**: Clean, professional interface
+- 📱 **Responsive Layout**: Optimized for Android devices  
+- 🎯 **Intuitive Navigation**: Easy-to-use tab navigation
 - ⚡ **Fast Performance**: Optimized React Native performance
 
-## 📥 Download & Installation
+## 📥 **Download & Installation**
 
-### Latest Release: v2.0.1
+### **Latest Release: v1.0.1 - Play Store Ready**
 
-**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v2.0.1/spendbook-v2.0.1.apk)** (27.9 MB)
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.apk)** (Release APK) | **[📦 AAB Bundle](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.aab)** (For Play Store)
 
-### Installation Instructions:
+### **Installation Instructions:**
 
-1. **Enable Unknown Sources**: Go to Settings → Security → Unknown Sources → Enable
-2. **Download APK**: Click the download link above
-3. **Install App**: Open the downloaded APK file and tap "Install"
-4. **Grant Permissions**: Allow SMS and Storage permissions when prompted
-5. **Launch App**: Tap "Open" to start using SpendBook
+1. **Enable Unknown Sources**: Settings → Security → Unknown Sources → Enable
+2. **Download APK**: Click the APK download link above  
+3. **Install App**: Open downloaded APK file and tap "Install"
+4. **Grant Permissions**: Allow SMS and Storage permissions when prompted (optional)
+5. **Start Tracking**: Launch the app and start managing your expenses!
+
+### **System Requirements:**
+- Android 7.0 (API level 24) or higher
+- 50 MB free storage space
+- Optional: SMS permission for auto-detection
+
+## 🏦 **Supported Banks & Services**
+
+### **Major Banks**
+HDFC Bank | ICICI Bank | State Bank of India | Axis Bank | Kotak Bank | Punjab National Bank | Bank of India | Canara Bank | Union Bank | IndusInd Bank | YES Bank | RBL Bank | Federal Bank | IDFC Bank | Bandhan Bank | AU Small Finance Bank
+
+### **Digital Wallets & UPI**
+PayTM | Google Pay | PhonePe | Amazon Pay | MobiKwik | FreeCharge | BHIM | Yono | All UPI Services
+
+### **Card Networks**
+Visa | Mastercard | RuPay | American Express
 
 ### System Requirements:
 
