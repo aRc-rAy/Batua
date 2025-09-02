@@ -1,24 +1,38 @@
-# SpendBook v3.0.1 - Release Notes
+# Release Notes - SpendBook
 
-**📱 Download:** [APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.apk) | [AAB](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.aab)
+## Version 4.0.0 (Latest)
 
-## What's New
-- 🛡️ **Play Store Ready**: Enhanced security and Google Play Protect compliance
-- 🔒 **Complete Privacy**: All data stored locally on device only
-- 📱 **Better Performance**: Improved app stability and faster startup
-- 🎨 **Updated Branding**: Consistent "SpendBook" naming throughout
-- 📊 **Smart Analytics**: Enhanced expense tracking with visual charts
+### 🎉 New Features
+- **Compact Amount Formatting** - All amounts now display in clean format (1.5K, 2.3L)
+- **Enhanced Analytics** - Improved bar chart text visibility with smart font sizing
+- **Modern Widget Design** - Updated home widgets with better color scheme and theming
+- **Improved Typography** - Optimized text sizing across all screens
 
-## Key Features
-- Manual expense entry with 8+ categories
-- Export to Excel for detailed analysis
-- Dark mode support with clean UI
-- 100% local storage - no data leaves your device
-- Works completely offline
+### 🐛 Bug Fixes
+- Fixed today's amount calculation in widgets
+- Fixed add button centering in widgets
+- Improved text contrast and readability
+- Fixed transaction card styling
 
-## Requirements
-- Android 7.0+ (API 24)
-- 50 MB free space
-- Storage permission for Excel exports
+### 🎨 UI Improvements
+- Less bold text styling for better readability
+- Consistent compact formatting across the app
+- Adaptive backgrounds for light/dark theme compatibility
+- Modernized widget appearance
 
-**Built with React Native & TypeScript | Privacy-First Expense Tracking**
+---
+
+## Version 3.0.1
+
+### Features
+- Manual payment tracking with categories
+- Analytics dashboard with charts
+- Budget management system
+- Excel export functionality
+- Home screen widgets
+- Modern minimalist design
+
+### Privacy
+- Complete offline functionality
+- Local data storage only
+- No external data transmission

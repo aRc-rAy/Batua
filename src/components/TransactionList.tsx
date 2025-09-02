@@ -51,31 +51,22 @@ const TransactionList: React.FC<TransactionListProps> = ({
   };
 
   const getDateLabel = (dateString: string): string => {
+    // Parse the original ISO date string properly for local time comparison
     const paymentDate = new Date(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
-    // Create new date objects for comparison without modifying originals
-    const todayStart = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-    );
-    const yesterdayStart = new Date(
-      yesterday.getFullYear(),
-      yesterday.getMonth(),
-      yesterday.getDate(),
-    );
-    const paymentDateStart = new Date(
-      paymentDate.getFullYear(),
-      paymentDate.getMonth(),
-      paymentDate.getDate(),
-    );
+    // Compare dates using local date components to avoid timezone issues
+    const isSameDay = (date1: Date, date2: Date) => {
+      return date1.getFullYear() === date2.getFullYear() &&
+             date1.getMonth() === date2.getMonth() &&
+             date1.getDate() === date2.getDate();
+    };
 
-    if (paymentDateStart.getTime() === todayStart.getTime()) {
+    if (isSameDay(paymentDate, today)) {
       return 'Today';
-    } else if (paymentDateStart.getTime() === yesterdayStart.getTime()) {
+    } else if (isSameDay(paymentDate, yesterday)) {
       return 'Yesterday';
     } else {
       return paymentDate.toLocaleDateString('en-US', {
@@ -134,7 +125,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
     const grouped: { [key: string]: Payment[] } = {};
 
     paymentList.forEach(payment => {
-      const dateKey = payment.date.split('T')[0]; // Get YYYY-MM-DD format
+      const dateKey = payment.date.split('T')[0]; // Get YYYY-MM-DD format for grouping
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];
       }
@@ -144,13 +135,17 @@ const TransactionList: React.FC<TransactionListProps> = ({
     // Sort dates (newest first) and return as array
     return Object.keys(grouped)
       .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-      .map(dateKey => ({
-        date: dateKey,
-        label: getDateLabel(dateKey),
-        payments: grouped[dateKey].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-        ),
-      }));
+      .map(dateKey => {
+        // Use the first payment's original date for label generation to preserve time info
+        const firstPayment = grouped[dateKey][0];
+        return {
+          date: dateKey,
+          label: getDateLabel(firstPayment.date),
+          payments: grouped[dateKey].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          ),
+        };
+      });
   };
 
   const groupedTransactions = groupPaymentsByDate(payments);

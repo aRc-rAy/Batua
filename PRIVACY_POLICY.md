@@ -1,92 +1,49 @@
-# SpendBook Privacy Policy
+# Privacy Policy - SpendBook
 
-**Last updated: August 31, 2025**
+**Last updated: September 3, 2025**
 
-## 1. Introduction
+## Our Commitment to Privacy
 
-SpendBook ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.
+SpendBook is designed with privacy as the top priority. We believe your financial data should stay with you.
 
-## 2. Information We Collect
+## Data Collection
 
-### 2.1 Information You Provide
+**We collect ZERO personal data.**
 
-- Payment records you manually enter
-- App preferences and settings
+- No account creation required
+- No personal information collected
+- No usage analytics or tracking
+- No ads or third-party integrations
 
-### 2.2 Automatically Collected Information
+## Data Storage
 
-- App usage statistics for improving user experience
-- Device information (Android version, device model) for compatibility
+**Everything stays on your device:**
 
-## 3. How We Use Your Information
+- All payment records stored locally using SQLite
+- App preferences saved in device storage
+- No cloud storage or external servers
+- No data synchronization services
 
-### 3.1 Local Processing Only
+## Permissions
 
-- All data processing happens locally on your device
-- No data is transmitted to external servers
-- No data is shared with third parties
+**Minimal permissions required:**
 
-### 3.2 App Functionality
-
-- Process and display your payment records
-- Generate analytics and charts
-- Export data to Excel (local file only)
-
-## 4. Data Storage and Security
-
-### 4.1 Local Storage
-
-- All data is stored locally on your device using SQLite database
-- Data remains on your device and under your control
-- You can delete all data at any time
-
-### 4.2 Security Measures
-
+- **Storage Access** - Only for Excel export functionality
 - No internet permission required
-- Data encryption for sensitive information
-- Regular security updates
+- No location, camera, or contacts access
 
-## 5. Third-Party Services
+## Data Export
 
-### 5.1 No Third-Party Data Sharing
+- Excel export creates files on your device only
+- You control where exported files are shared
+- No automatic uploads or cloud storage
 
-- We do not share your data with any third parties
-- No analytics or tracking services are used
-- No advertising networks are integrated
+## Changes to Privacy Policy
 
-### 5.2 Google Play Services
+We may update this privacy policy to reflect app improvements. Changes will be posted in the app and on our repository.
 
-- Uses Google Play Services for app integrity verification
-- No personal data is shared with Google
+## Contact
 
-## 6. Children's Privacy
+For privacy questions, please create an issue on our GitHub repository.
 
-- SpendBook is not intended for children under 13
-- We do not knowingly collect personal information from children
-
-## 7. Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
-
-## 8. Contact Us
-
-If you have any questions about this Privacy Policy, please contact us:
-
-- Email: privacy@spendbook.app
-- In-app: Settings > Write to Developer
-
-## 9. Data Deletion
-
-You can delete all your data at any time:
-
-- Go to Settings > Data Management > Clear All Data
-- This permanently deletes all payment records and app data
-
-## 10. Consent
-
-By using SpendBook, you consent to this Privacy Policy. If you do not agree with this policy, please do not use the application.
-
----
-
-**SpendBook - Your Privacy-First Payment Tracker**
-Made with ❤️ in India 🇮🇳
+**Bottom Line:** SpendBook is 100% offline. Your data never leaves your device.

@@ -8,7 +8,37 @@
 - 🛡️ **Play Store Ready**: Enhanced security and privacy compliance
 - 📱 **Offline First**: Works completely offline, no internet requiredFirst Expense Tracking
 
-A comprehensive Android app for manual expense tracking with Excel export, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
+# SpendBook - Payment Tracker
+
+A simple and elegant React Native app for tracking daily expenses with analytics and budget management.
+
+## Features
+
+- **Manual Payment Entry** - Add expenses with categories (Food, Travel, Clothes, etc.)
+- **Analytics Dashboard** - View spending trends with charts (7 days, 1 month, 3 months)
+- **Budget Management** - Set monthly budgets with daily spending insights
+- **Export Data** - Export payment history to Excel format
+- **Home Widgets** - Quick overview of daily/monthly spending on home screen
+- **Modern UI** - Clean, minimalist design with light/dark theme support
+
+## Tech Stack
+
+- React Native 0.80.2 with TypeScript
+- SQLite for local data storage
+- Chart libraries for analytics
+- Excel export functionality
+
+## Privacy
+
+All data is stored locally on your device. No data is sent to external servers. Complete privacy and offline functionality.
+
+## Version
+
+Current Version: **4.0.0**
+
+## License
+
+Private Project
 
 [![Latest Release](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v3.0.1)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases)
