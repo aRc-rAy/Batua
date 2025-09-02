@@ -9,7 +9,7 @@ import {
 import { Payment, PaymentCategory } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles } from '../utils/typography';
-import { formatAmount } from '../utils/formatting';
+import { formatAmount, formatAmountCompact } from '../utils/formatting';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface GroupedTransactions {
@@ -200,7 +200,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
               </Text>
             </View>
             <Text style={[styles.amount, { color: theme.colors.text }]}>
-              ₹{formatAmount(payment.amount)}
+              ₹{formatAmountCompact(payment.amount)}
             </Text>
           </View>
 
@@ -345,8 +345,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   amount: {
-    ...textStyles.large,
-    fontWeight: '700',
+    ...textStyles.bodyMedium,
+    fontWeight: '500',
+    fontSize: 14,
   },
   bottomRow: {
     flexDirection: 'row',

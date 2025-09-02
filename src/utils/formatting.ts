@@ -63,13 +63,13 @@ export const formatAmountCompact = (amount: number, includeCurrency: boolean = f
   
   if (amount >= 10000000) { // 1 crore and above
     const crores = amount / 10000000;
-    formattedValue = `${crores % 1 === 0 ? crores.toString() : crores.toFixed(1)}Cr`;
+    formattedValue = `${crores.toFixed(1)}Cr`;
   } else if (amount >= 100000) { // 1 lakh and above
     const lakhs = amount / 100000;
-    formattedValue = `${lakhs % 1 === 0 ? lakhs.toString() : lakhs.toFixed(1)}L`;
+    formattedValue = `${lakhs.toFixed(1)}L`;
   } else if (amount >= 1000) { // 1 thousand and above
     const thousands = amount / 1000;
-    formattedValue = `${thousands % 1 === 0 ? thousands.toString() : thousands.toFixed(1)}k`;
+    formattedValue = `${thousands.toFixed(1)}k`;
   } else {
     // Less than 1000, show full amount
     formattedValue = amount.toString();

@@ -4,21 +4,21 @@
 
 ## What's New
 - 🛡️ **Play Store Ready**: Enhanced security and Google Play Protect compliance
-- 🔒 **Privacy First**: SMS reading limited to trusted banks only
+- 🔒 **Complete Privacy**: All data stored locally on device only
 - 📱 **Better Performance**: Improved app stability and faster startup
 - 🎨 **Updated Branding**: Consistent "SpendBook" naming throughout
 - 📊 **Smart Analytics**: Enhanced expense tracking with visual charts
 
 ## Key Features
 - Manual expense entry with 8+ categories
-- Automatic SMS transaction detection from 50+ banks
 - Export to Excel for detailed analysis
 - Dark mode support with clean UI
 - 100% local storage - no data leaves your device
+- Works completely offline
 
 ## Requirements
 - Android 7.0+ (API 24)
 - 50 MB free space
-- SMS permission (optional for auto-detection)
+- Storage permission for Excel exports
 
 **Built with React Native & TypeScript | Privacy-First Expense Tracking**

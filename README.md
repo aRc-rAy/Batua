@@ -1,6 +1,14 @@
-# 📱 SpendBook - Privacy-First Expense Tracking
+# 📱 SpendBook - ### 🔒 **Priva### 💰 **Expense Tracking**
 
-A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
+- ➕ **Manual Entry**: Add payments with amount, description, and category
+- 📊 **Excel Export**: Export your payment history to Excel spreadsheets Security**
+
+- 🔒 **Complete Privacy**: All data stored locally on your device only
+- 🚫 **No Cloud Storage**: Zero data transmission or cloud synchronization
+- 🛡️ **Play Store Ready**: Enhanced security and privacy compliance
+- 📱 **Offline First**: Works completely offline, no internet requiredFirst Expense Tracking
+
+A comprehensive Android app for manual expense tracking with Excel export, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
 
 [![Latest Release](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v3.0.1)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases)
@@ -63,7 +71,7 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 1. **Enable Unknown Sources**: Settings → Security → Unknown Sources → Enable
 2. **Download APK**: Click the APK download link above
 3. **Install App**: Open downloaded APK file and tap "Install"
-4. **Grant Permissions**: Allow SMS and Storage permissions when prompted (optional)
+4. **Grant Permissions**: Allow Storage permissions when prompted for Excel export
 5. **Start Tracking**: Launch the app and start managing your expenses!
 
 ### **System Requirements:**
@@ -72,37 +80,36 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 - **Target**: Android 14 (API 34)
 - **Storage**: 50 MB free storage space
 - **RAM**: 2 GB minimum, 4 GB recommended
-- **Permissions**: SMS (optional), Storage (for exports)
+- **Permissions**: Storage (for Excel exports)
 - **Play Store**: Fully compatible with Google Play Store
 - **Security**: Enhanced privacy controls and Google Play Protect ready
 
-## 🏦 **Supported Banks & Services**
+## 📊 **Data Management**
 
-### **Major Banks**
+### **Manual Expense Tracking**
 
-HDFC Bank | ICICI Bank | State Bank of India | Axis Bank | Kotak Bank | Punjab National Bank | Bank of India | Canara Bank | Union Bank | IndusInd Bank | YES Bank | RBL Bank | Federal Bank | IDFC Bank | Bandhan Bank | AU Small Finance Bank
+✅ **Complete Manual Control**: Add all expenses manually for full control
+✅ **Category Organization**: Organize expenses into predefined categories
+✅ **Detailed Records**: Add descriptions and amounts for each transaction
+✅ **Edit & Delete**: Full control over your expense records
 
-### **Digital Wallets & UPI**
+### **Export Capabilities**
 
-PayTM | Google Pay | PhonePe | Amazon Pay | MobiKwik | FreeCharge | BHIM | Yono | All UPI Services
-
-### **Card Networks**
-
-Visa | Mastercard | RuPay | American Express
+✅ **Excel Export**: Export all your payment data to Excel spreadsheets
+✅ **Complete History**: Export your entire payment history
+✅ **Easy Sharing**: Share exported files for accounting or personal records
 
 ### System Requirements:
 
 - **Android Version**: 5.0 (API 21) or higher
 - **Storage**: 50 MB free space
-- **Permissions**: SMS, Storage, Network
+- **Permissions**: Storage (for Excel exports)
 
 ## 🔐 Permissions
 
 The app requires the following permissions for full functionality:
 
-- **📱 SMS Access**: For automatic payment detection from bank SMS
-- **💾 Storage**: For Excel export functionality and data persistence
-- **🌐 Network**: For potential future updates and analytics
+- ** Storage**: For Excel export functionality and data persistence
 
 ## 🏗️ Technical Stack
 
@@ -112,8 +119,7 @@ The app requires the following permissions for full functionality:
 - **Charts**: react-native-chart-kit for data visualization and analytics
 - **Navigation**: React Navigation (Bottom Tabs + Stack Navigation)
 - **Icons**: react-native-vector-icons for consistent iconography
-- **SMS**: react-native-sms-android for SMS reading capabilities
-- **Excel**: react-native-csv for data export functionality
+- **Excel**: react-native-csv for Excel export functionality
 - **Platform**: Android (primary target), iOS (compatible)
 - **Build Tool**: Gradle with Android Gradle Plugin 8.3.0
 - **Minimum Android**: API 24 (Android 7.0)
@@ -248,19 +254,17 @@ PaymentTracker/
 │   │   ├── HistoryScreen.tsx  # Transaction history
 │   │   ├── AnalyticsScreen.tsx # Analytics dashboard
 │   │   ├── EditPaymentScreen.tsx # Edit transactions
+│   │   ├── ExportScreen.tsx   # Excel export functionality
 │   │   ├── PaymentActionsScreen.tsx # Payment actions
-│   │   ├── SettingsScreen.tsx # App settings
-│   │   └── SMSScreen.tsx      # SMS configuration
+│   │   └── SettingsScreen.tsx # App settings
 │   ├── services/              # Business logic
 │   │   ├── AIAssistantService.ts # AI assistant integration
 │   │   ├── BudgetService.ts   # Budget management
 │   │   ├── PaymentService.ts  # Payment data management
-│   │   ├── SMSService.ts      # SMS parsing and detection
 │   │   ├── SuggestionService.ts # Smart suggestions
 │   │   └── WidgetService.ts   # Widget functionality
 │   ├── types/                 # TypeScript definitions
-│   │   ├── index.ts           # Core type definitions
-│   │   └── sms-android.d.ts   # SMS Android types
+│   │   └── index.ts           # Core type definitions
 │   └── utils/                 # Utility functions
 │       ├── formatting.ts      # Data formatting utilities
 │       └── typography.ts      # Typography utilities

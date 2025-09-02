@@ -122,7 +122,7 @@ if exist "app\build\outputs\apk\release\app-release.apk" (
 echo 💡 ADDITIONAL RECOMMENDATIONS:
 echo    • Test the APK on different devices
 echo    • Consider internal Play Store testing
-echo    • Explain SMS permission clearly to users
+echo    • Explain storage permission clearly to users
 echo    • Keep your keystore file secure and backed up
 echo.
 

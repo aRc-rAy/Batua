@@ -57,7 +57,7 @@ if exist "app\build\outputs\apk\release\app-release.apk" (
 echo.
 echo 💡 Tips to avoid Play Protect issues:
 echo    1. Use release builds with your own keystore
-echo    2. Explain SMS permission usage clearly to users
+echo    2. Explain storage permission usage clearly to users
 echo    3. Consider uploading to Play Console for validation
 echo.
 pause

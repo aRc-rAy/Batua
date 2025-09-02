@@ -126,7 +126,7 @@ if %issues% gtr 0 (
 )
 
 echo 💡 ADDITIONAL TIPS:
-echo    • Always explain SMS permission usage to users
+echo    • Always explain storage permission usage to users
 echo    • Test on devices with different Play Protect settings
 echo    • Keep your release keystore secure and backed up
 echo    • Consider gradual rollout when publishing

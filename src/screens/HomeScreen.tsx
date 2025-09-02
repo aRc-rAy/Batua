@@ -21,7 +21,7 @@ import { BudgetService } from '../services/BudgetService';
 import { WidgetService } from '../services/WidgetService';
 import { useTheme } from '../context/ThemeContext';
 import { textStyles, fontFamilies } from '../utils/typography';
-import { formatAmount } from '../utils/formatting';
+import { formatAmount, formatAmountCompact } from '../utils/formatting';
 import { createPaymentPressHandler } from '../utils/navigationHelpers';
 import TransactionList from '../components/TransactionList';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -643,7 +643,7 @@ const HomeScreen: React.FC = () => {
               <View style={styles.budgetCard}>
                 <Text style={styles.budgetCardLabel}>Today's Spending</Text>
                 <Text style={styles.budgetCardValue}>
-                  {loading ? '...' : `₹${formatAmount(todaySpending)}`}
+                  {loading ? '...' : `₹${formatAmountCompact(todaySpending)}`}
                 </Text>
               </View>
 
@@ -651,7 +651,7 @@ const HomeScreen: React.FC = () => {
               <View style={styles.budgetCard}>
                 <Text style={styles.budgetCardLabel}>This Month</Text>
                 <Text style={styles.budgetCardValue}>
-                  {loading ? '...' : `₹${formatAmount(monthSpending)}`}
+                  {loading ? '...' : `₹${formatAmountCompact(monthSpending)}`}
                 </Text>
               </View>
 
@@ -699,14 +699,14 @@ const HomeScreen: React.FC = () => {
               <View style={styles.budgetCard}>
                 <Text style={styles.budgetCardLabel}>Today's Spending</Text>
                 <Text style={styles.budgetCardValue}>
-                  {loading ? '...' : `₹${formatAmount(todaySpending)}`}
+                  {loading ? '...' : `₹${formatAmountCompact(todaySpending)}`}
                 </Text>
               </View>
 
               <View style={styles.budgetCard}>
                 <Text style={styles.budgetCardLabel}>This Month</Text>
                 <Text style={styles.budgetCardValue}>
-                  {loading ? '...' : `₹${formatAmount(monthSpending)}`}
+                  {loading ? '...' : `₹${formatAmountCompact(monthSpending)}`}
                 </Text>
               </View>
             </View>

@@ -59,12 +59,10 @@ public class CompactSpendingWidgetProvider extends AppWidgetProvider {
         double weekSpending = prefs.getFloat(PREF_WEEK_SPENDING, 0.0f);
         double monthSpending = prefs.getFloat(PREF_MONTH_SPENDING, 0.0f);
 
-        // Format currency values (same as main widget)
-        DecimalFormat currencyFormat = new DecimalFormat("#,##0.00");
-        
-        String todayText = "₹" + currencyFormat.format(todaySpending);
-        String weekText = "₹" + currencyFormat.format(weekSpending);
-        String monthText = "₹" + currencyFormat.format(monthSpending);
+        // Format currency values in compact format
+        String todayText = "₹" + formatAmountCompact(todaySpending);
+        String weekText = "₹" + formatAmountCompact(weekSpending);
+        String monthText = "₹" + formatAmountCompact(monthSpending);
 
         // Get current date and day
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
@@ -116,6 +114,25 @@ public class CompactSpendingWidgetProvider extends AppWidgetProvider {
         
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
+        }
+    }
+    
+    /**
+     * Format amount in compact form (1.5k, 2.3L, etc.)
+     */
+    private static String formatAmountCompact(double amount) {
+        if (amount >= 10000000) { // 1 crore and above
+            double crores = amount / 10000000.0;
+            return String.format(Locale.getDefault(), "%.1fCr", crores);
+        } else if (amount >= 100000) { // 1 lakh and above
+            double lakhs = amount / 100000.0;
+            return String.format(Locale.getDefault(), "%.1fL", lakhs);
+        } else if (amount >= 1000) { // 1 thousand and above
+            double thousands = amount / 1000.0;
+            return String.format(Locale.getDefault(), "%.1fK", thousands);
+        } else {
+            // Less than 1000, show full amount
+            return String.format(Locale.getDefault(), "%.0f", amount);
         }
     }
 }

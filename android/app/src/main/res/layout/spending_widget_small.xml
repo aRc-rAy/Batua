@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="4dp"
-    android:background="#1A1A1A">
+    android:padding="8dp"
+    android:background="@drawable/widget_background">
 
     <!-- Today Column -->
     <LinearLayout
@@ -15,27 +15,28 @@
         android:orientation="vertical"
         android:background="@drawable/spending_card_background"
         android:gravity="center"
-        android:layout_marginEnd="2dp">
+        android:layout_marginEnd="4dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"
-            android:textColor="#E2E8F0"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textColor="#666666"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            android:gravity="center"
+            android:letterSpacing="0.05" />
 
         <TextView
             android:id="@+id/widget_today_amount_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="₹0.00"
-            android:textColor="#00FF88"
-            android:textSize="10sp"
+            android:textColor="#1565C0"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 
@@ -47,28 +48,29 @@
         android:orientation="vertical"
         android:background="@drawable/spending_card_background"
         android:gravity="center"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp">
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Week"
-            android:textColor="#E2E8F0"
+            android:textColor="#666666"
             android:textSize="10sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textStyle="normal"
+            android:gravity="center"
+            android:letterSpacing="0.05" />
 
         <TextView
             android:id="@+id/widget_week_amount_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="₹0.00"
-            android:textColor="#FFD700"
-            android:textSize="10sp"
+            android:textColor="#1565C0"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 
@@ -80,27 +82,28 @@
         android:orientation="vertical"
         android:background="@drawable/spending_card_background"
         android:gravity="center"
-        android:layout_marginStart="2dp">
+        android:layout_marginStart="4dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Month"
-            android:textColor="#E2E8F0"
+            android:textColor="#666666"
             android:textSize="10sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textStyle="normal"
+            android:gravity="center"
+            android:letterSpacing="0.05" />
 
         <TextView
             android:id="@+id/widget_month_amount_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="₹0.00"
-            android:textColor="#FF6B9D"
-            android:textSize="10sp"
+            android:textColor="#1565C0"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 

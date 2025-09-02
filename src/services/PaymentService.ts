@@ -73,17 +73,31 @@ export class PaymentService {
     try {
       const payments = await this.getAllPayments();
       const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const todayDateString = now.toDateString(); // Get today as date string for comparison
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
+      console.log('Today date string:', todayDateString);
+      console.log('All payments:', payments.length);
+      
       const todaySpending = payments
-        .filter(payment => new Date(payment.date) >= today)
+        .filter(payment => {
+          const paymentDate = new Date(payment.date);
+          const paymentDateString = paymentDate.toDateString();
+          const isToday = paymentDateString === todayDateString;
+          
+          if (isToday) {
+            console.log('Found today payment:', payment.amount, paymentDate.toISOString());
+          }
+          
+          return isToday;
+        })
         .reduce((total, payment) => total + payment.amount, 0);
 
       const monthSpending = payments
         .filter(payment => new Date(payment.date) >= startOfMonth)
         .reduce((total, payment) => total + payment.amount, 0);
 
+      console.log('Calculated spending:', { today: todaySpending, month: monthSpending });
       return { today: todaySpending, month: monthSpending };
     } catch (error) {
       console.error('Error calculating spending:', error);

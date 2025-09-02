@@ -437,7 +437,7 @@ const AnalyticsScreen: React.FC = () => {
           <Text
             style={{
               color: theme.colors.text,
-              fontSize: timeGrouping === 'year' ? 10 : 9,
+              fontSize: timeGrouping === 'month' ? 8 : 11,
               fontWeight: '600',
               textAlign: 'center',
               backgroundColor: theme.colors.surface,
@@ -452,7 +452,7 @@ const AnalyticsScreen: React.FC = () => {
               shadowOpacity: 0.2,
               shadowRadius: 2,
             }}>
-            ₹{timeGrouping === 'month' ? formatAmountCompact(value) : formatAmountChart(value)}
+            ₹{formatAmountCompact(value)}
           </Text>
         ),
       };
@@ -643,9 +643,10 @@ const AnalyticsScreen: React.FC = () => {
       textAlign: 'center',
     },
     highLowValue: {
-      ...textStyles.smallSemibold,
+      ...textStyles.bodyMedium,
       color: theme.colors.text,
       textAlign: 'center',
+      fontSize: 14,
     },
     highLowLabel: {
       ...textStyles.caption,
@@ -707,9 +708,10 @@ const AnalyticsScreen: React.FC = () => {
       textAlign: 'center',
     },
     insightCardValue: {
-      ...textStyles.bodySemibold,
+      ...textStyles.bodyMedium,
       color: theme.colors.text,
       textAlign: 'center',
+      fontSize: 13,
     },
     pieChartContainer: {
       alignItems: 'center',
@@ -921,12 +923,14 @@ const AnalyticsScreen: React.FC = () => {
                       yAxisThickness={1}
                       xAxisThickness={1}
                       yAxisTextStyle={{
-                        color: theme.colors.textSecondary,
-                        fontSize: 8,
+                        color: theme.colors.text,
+                        fontSize: timeGrouping === 'month' ? 6 : 10,
+                        fontWeight: '500',
                       }}
                       xAxisLabelTextStyle={{
-                        color: theme.colors.textSecondary,
-                        fontSize: timeGrouping === 'year' ? 12 : 8,
+                        color: theme.colors.text,
+                        fontSize: timeGrouping === 'year' ? 12 : timeGrouping === 'month' ? 6 : 10,
+                        fontWeight: '500',
                       }}
                       noOfSections={6}
                       maxValue={Math.max(...chartData.data) * 1.2}
@@ -948,9 +952,8 @@ const AnalyticsScreen: React.FC = () => {
                 <View style={styles.pieChartContainer}>
                   <PieChart
                     data={pieChartData.map(item => ({
-                      name: `${item.name} - ${formatAmountChart(
+                      name: `${item.name} - ₹${formatAmountCompact(
                         item.amount,
-                        true,
                       )}`,
                       population: item.amount,
                       color: item.color,
@@ -990,7 +993,7 @@ const AnalyticsScreen: React.FC = () => {
                     />
                     <Text style={styles.highLowTitle}>Highest Spending</Text>
                     <Text style={styles.highLowValue}>
-                      {formatAmountChart(maxValue, true)}
+                      ₹{formatAmountCompact(maxValue)}
                     </Text>
                     <Text style={styles.highLowLabel}>{maxLabel}</Text>
                   </View>
@@ -1004,7 +1007,7 @@ const AnalyticsScreen: React.FC = () => {
                       />
                       <Text style={styles.highLowTitle}>Lowest Spending</Text>
                       <Text style={styles.highLowValue}>
-                        {formatAmountChart(minValue, true)}
+                        ₹{formatAmountCompact(minValue)}
                       </Text>
                       <Text style={styles.highLowLabel}>{minLabel}</Text>
                     </View>
@@ -1044,9 +1047,8 @@ const AnalyticsScreen: React.FC = () => {
                     />
                     <Text style={styles.insightCardTitle}>Average Daily</Text>
                     <Text style={styles.insightCardValue}>
-                      {formatAmount(
+                      ₹{formatAmountCompact(
                         spendingInsights.averageDailySpending,
-                        true,
                       )}
                     </Text>
                   </View>
@@ -1090,9 +1092,8 @@ const AnalyticsScreen: React.FC = () => {
                       Avg per Transaction
                     </Text>
                     <Text style={styles.insightCardValue}>
-                      {formatAmount(
+                      ₹{formatAmountCompact(
                         spendingInsights.avgTransactionAmount,
-                        true,
                       )}
                     </Text>
                   </View>
@@ -1106,7 +1107,7 @@ const AnalyticsScreen: React.FC = () => {
                     />
                     <Text style={styles.insightCardTitle}>Total Spending</Text>
                     <Text style={styles.insightCardValue}>
-                      {formatAmount(totalSpending, true)}
+                      ₹{formatAmountCompact(totalSpending)}
                     </Text>
                   </View>
                 </View>

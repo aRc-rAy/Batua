@@ -12,13 +12,12 @@ export const PrivacyInfo: React.FC = () => {
       <Text style={styles.title}>🛡️ Your Privacy Matters</Text>
       
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>SMS Permission Usage</Text>
+        <Text style={styles.sectionTitle}>Complete Privacy</Text>
         <Text style={styles.text}>
-          • Only reads messages from banks and payment services{'\n'}
-          • Automatically detects transaction amounts and merchants{'\n'}
-          • No personal messages are ever accessed{'\n'}
-          • All SMS processing happens locally on your device{'\n'}
-          • No SMS data is sent to external servers
+          • All data stored locally on your device only{'\n'}
+          • No cloud storage or external data sharing{'\n'}
+          • Works completely offline, no internet required{'\n'}
+          • Zero data transmission to external servers
         </Text>
       </View>
 
@@ -26,20 +25,19 @@ export const PrivacyInfo: React.FC = () => {
         <Text style={styles.sectionTitle}>Data Security</Text>
         <Text style={styles.text}>
           • All payment data stays on your device{'\n'}
-          • No cloud storage or external data sharing{'\n'}
           • You have full control over your data{'\n'}
-          • SMS detection can be disabled anytime in settings
+          • Export to Excel for backup purposes{'\n'}
+          • Manual tracking for complete control
         </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Trusted Sources Only</Text>
+        <Text style={styles.sectionTitle}>Features</Text>
         <Text style={styles.text}>
-          We only read SMS from verified financial institutions including:{'\n'}
-          • Major banks (HDFC, ICICI, SBI, Axis, etc.){'\n'}
-          • Digital wallets (PayTM, GPay, PhonePe, etc.){'\n'}
-          • UPI payment services{'\n'}
-          • Credit/Debit card networks
+          • Manual expense entry with categories{'\n'}
+          • Excel export for data portability{'\n'}
+          • Analytics and spending insights{'\n'}
+          • Dark mode support
         </Text>
       </View>
 

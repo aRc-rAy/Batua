@@ -72,12 +72,18 @@ export class WidgetService {
       const { today, month } = await PaymentService.getTotalSpending();
       const weekSpending = await this.getWeeklySpending();
       
+      console.log('Widget data being sent:', { 
+        today: today, 
+        week: weekSpending, 
+        month: month 
+      });
+      
       await this.updateWidget(today, weekSpending, month);
       
       // Also update compact widget if available
       if (WidgetModule) {
         // The native module will update both widget types
-        console.log('Widget data updated:', { today, weekSpending, month });
+        console.log('Widget data updated successfully');
       }
     } catch (error) {
       console.error('Error refreshing widget:', error);
