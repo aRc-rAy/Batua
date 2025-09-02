@@ -332,7 +332,7 @@ const SettingsScreen: React.FC = () => {
           />
           <SettingItem
             title="App Version"
-            subtitle="3.0.1"
+            subtitle="4.0.0"
             icon="code-outline"
           />
         </View>

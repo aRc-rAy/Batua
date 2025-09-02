@@ -69,10 +69,10 @@ const TransactionList: React.FC<TransactionListProps> = ({
     } else if (isSameDay(paymentDate, yesterday)) {
       return 'Yesterday';
     } else {
-      return paymentDate.toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'short',
+      return paymentDate.toLocaleDateString('en-GB', {
         day: 'numeric',
+        month: 'short',
+        year: 'numeric',
       });
     }
   };
@@ -222,7 +222,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
           style={[
             styles.dateLabel,
             {
-              color: theme.colors.textSecondary,
+              color: theme.colors.primary,
               backgroundColor: theme.colors.surface,
               borderColor: theme.colors.border + '40',
             },
@@ -278,15 +278,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dateLabel: {
-    ...textStyles.smallMedium,
+    ...textStyles.caption,
+    fontSize: 11,
     marginBottom: 8,
     paddingHorizontal: 12,
     paddingVertical: 4,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     fontWeight: '600',
+    textAlign: 'center',
   },
   transactionItem: {
     marginBottom: 12,

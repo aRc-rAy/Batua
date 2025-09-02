@@ -1,16 +1,12 @@
-# 📱 SpendBook - ### 🔒 **Priva### 💰 **Expense Tracking**
-
-- ➕ **Manual Entry**: Add payments with amount, description, and category
-- 📊 **Excel Export**: Export your payment history to Excel spreadsheets Security**
-
-- 🔒 **Complete Privacy**: All data stored locally on your device only
-- 🚫 **No Cloud Storage**: Zero data transmission or cloud synchronization
-- 🛡️ **Play Store Ready**: Enhanced security and privacy compliance
-- 📱 **Offline First**: Works completely offline, no internet requiredFirst Expense Tracking
-
-# SpendBook - Payment Tracker
+# 📱 SpendBook - Expense Tracking
 
 A simple and elegant React Native app for tracking daily expenses with analytics and budget management.
+
+## 🚀 Download
+
+**Latest Release: v4.0.0**
+
+📱 **[Download SpendBook-v4.0.0.apk](https://github.com/aRc-rAy/Batua/releases/download/v4.0.0/SpendBook-v4.0.0.apk)**
 
 ## Features
 
@@ -18,8 +14,11 @@ A simple and elegant React Native app for tracking daily expenses with analytics
 - **Analytics Dashboard** - View spending trends with charts (7 days, 1 month, 3 months)
 - **Budget Management** - Set monthly budgets with daily spending insights
 - **Export Data** - Export payment history to Excel format
-- **Home Widgets** - Quick overview of daily/monthly spending on home screen
 - **Modern UI** - Clean, minimalist design with light/dark theme support
+
+## Privacy
+
+All data is stored locally on your device. No data is sent to external servers. Complete privacy and offline functionality.
 
 ## Tech Stack
 
@@ -28,10 +27,6 @@ A simple and elegant React Native app for tracking daily expenses with analytics
 - Chart libraries for analytics
 - Excel export functionality
 
-## Privacy
-
-All data is stored locally on your device. No data is sent to external servers. Complete privacy and offline functionality.
-
 ## Version
 
 Current Version: **4.0.0**
@@ -39,15 +34,6 @@ Current Version: **4.0.0**
 ## License
 
 Private Project
-
-[![Latest Release](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v3.0.1)
-[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases)
-[![Privacy](https://img.shields.io/badge/privacy-first-brightgreen.svg)](https://github.com/aRc-rAy/Batua/blob/main/PRIVACY_POLICY.md)
-[![Play Store Ready](https://img.shields.io/badge/Play%20Store-Ready-success.svg)](#)
-
-## 🚀 **Quick Download**
-
-### **📱 Latest Release: v3.0.1 - Play Store Ready**
 
 **[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.apk)** | **[📦 AAB for Play Store](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.aab)**
 

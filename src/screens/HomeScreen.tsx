@@ -163,7 +163,7 @@ const HomeScreen: React.FC = () => {
       setLoading(true);
       const [spending, payments] = await Promise.all([
         PaymentService.getTotalSpending(),
-        PaymentService.getRecentPayments(5),
+        PaymentService.getRecentPayments(3),
       ]);
 
       setTodaySpending(spending.today);
