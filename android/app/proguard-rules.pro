@@ -11,12 +11,16 @@
 
 # React Native ProGuard rules
 -keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
 -keep class com.facebook.soloader.** { *; }
 -keepattributes SourceFile,LineNumberTable
 -keepattributes *Annotation*
 
 # SMS reading functionality
 -keep class android.provider.Telephony$** { *; }
+
+# Keep payment tracker specific classes
+-keep class com.spendbook.** { *; }
 
 # Keep SQLite classes
 -keep class net.sqlcipher.** { *; }

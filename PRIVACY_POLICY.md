@@ -13,10 +13,24 @@ SpendBook ("we," "our," or "us") is committed to protecting your privacy. This P
 - Payment records you manually enter
 - App preferences and settings
 
-### 2.2 SMS Data (Optional)
+### 2.2 SMS Data (Optional & Privacy-Protected)
 
-- SMS messages containing transaction information (only if you enable SMS detection)
-- This data is processed locally on your device and never sent to our servers
+**Why we need SMS access:**
+- Automatically detect bank transaction messages
+- Parse payment amounts and merchant names
+- Save you time from manual entry
+
+**What we DON'T do:**
+- Read personal messages
+- Access messages without payment keywords
+- Store SMS content on external servers
+- Share SMS data with third parties
+
+**Privacy Protection:**
+- Only processes SMS from trusted financial institutions (banks, digital wallets)
+- Only reads messages containing payment-related keywords
+- All SMS processing happens locally on your device
+- SMS detection can be disabled anytime in Settings
 
 ### 2.3 Automatically Collected Information
 

@@ -12,6 +12,32 @@ export class SMSService {
   private static readonly SMS_MONITORING_START_TIME_KEY = 'sms_monitoring_start_time';
   private static monitoringStartTime: number | null = null;
 
+  // Enhanced trusted sender list for Play Store compliance
+  private static readonly TRUSTED_FINANCIAL_INSTITUTIONS = [
+    // Banks
+    'HDFC', 'ICICI', 'SBI', 'AXIS', 'KOTAK', 'PNB', 'BOI', 'CANARA', 'UNION',
+    'INDUSIND', 'YES', 'RBL', 'FEDERAL', 'IDFC', 'BANDHAN', 'AU',
+    // Digital Wallets
+    'PAYTM', 'GPAY', 'PHONEPE', 'AMAZONPAY', 'MOBIKWIK', 'FREECHARGE',
+    // Card Networks
+    'VISA', 'MASTERCARD', 'RUPAY', 'AMEX',
+    // UPI
+    'UPI', 'BHIM', 'YONO'
+  ];
+
+  /**
+   * Enhanced privacy-compliant SMS sender verification
+   */
+  private static isFromTrustedFinancialInstitution(address: string): boolean {
+    if (!address) return false;
+    
+    const normalizedAddress = address.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+    return this.TRUSTED_FINANCIAL_INSTITUTIONS.some(institution => 
+      normalizedAddress.includes(institution)
+    );
+  }
+
   // Load processed SMS IDs from storage
   private static async loadProcessedSmsIds(): Promise<void> {
     try {
@@ -104,7 +130,7 @@ export class SMSService {
     }
   }
 
-  // Request SMS permissions
+  // Request SMS permissions with enhanced privacy message
   static async requestSmsPermissions(): Promise<boolean> {
     if (Platform.OS !== 'android') return false;
 
@@ -112,10 +138,11 @@ export class SMSService {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_SMS,
         {
-          title: 'SMS Permission',
-          message: 'This app needs access to SMS to automatically detect payment transactions',
+          title: 'Payment Tracker SMS Access',
+          message: 'Payment Tracker needs SMS access to automatically detect bank transaction messages and help you track your payments.\n\n• Only reads messages from banks and payment services\n• No personal messages are accessed\n• All data stays on your device\n• You can disable this anytime in settings',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
           buttonPositive: 'Allow',
-          buttonNegative: 'Deny',
         }
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -124,8 +151,13 @@ export class SMSService {
     }
   }
 
-  // Parse SMS message to extract payment information
+  // Parse SMS message to extract payment information with privacy protection
   static parseSmsForPayment(smsBody: string, sender: string, date: number): Payment | null {
+    // Privacy check: Only process SMS from trusted financial institutions
+    if (!this.isFromTrustedFinancialInstitution(sender)) {
+      return null;
+    }
+
     const body = smsBody.toLowerCase();
     
     // Common payment keywords

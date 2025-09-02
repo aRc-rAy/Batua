@@ -115,7 +115,22 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             // Additional security for release builds
             debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
             zipAlignEnabled true
+        }
+    }
+
+    // Add Android App Bundle support
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
         }
     }
 }
