@@ -1,12 +1,12 @@
-# PaymentTracker (Batua) - Release v1.0.1
+# PaymentTracker (Batua) - Release v3.0.1
 
 **🎉 Play Store Ready Release with Enhanced Security & Privacy**
 
 ## 📱 **Download**
-- **Android APK**: [app-release.apk](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.apk)
-- **Android App Bundle** (For Play Store): [app-release.aab](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.aab)
+- **Android APK**: [app-release.apk](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.apk)
+- **Android App Bundle** (For Play Store): [app-release.aab](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.aab)
 
-## 🆕 **What's New in v1.0.1**
+## 🆕 **What's New in v3.0.1**
 
 ### 🛡️ **Play Store Optimizations**
 - Enhanced Google Play Protect compliance

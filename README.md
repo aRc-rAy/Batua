@@ -2,16 +2,16 @@
 
 A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
 
-[![Latest Release](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v1.0.1)
+[![Latest Release](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/aRc-rAy/Batua/releases/tag/v3.0.1)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://github.com/aRc-rAy/Batua/releases)
 [![Privacy](https://img.shields.io/badge/privacy-first-brightgreen.svg)](https://github.com/aRc-rAy/Batua/blob/main/PRIVACY_POLICY.md)
 [![Play Store Ready](https://img.shields.io/badge/Play%20Store-Ready-success.svg)](#)
 
 ## 🚀 **Quick Download**
 
-### **📱 Latest Release: v1.0.1 - Play Store Ready**
+### **📱 Latest Release: v3.0.1 - Play Store Ready**
 
-**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.apk)** | **[📦 AAB for Play Store](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.aab)**
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.apk)** | **[📦 AAB for Play Store](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.aab)**
 
 ## ✨ **Key Features**
 
@@ -54,9 +54,9 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 
 ## 📥 **Download & Installation**
 
-### **Latest Release: v1.0.1 - Play Store Ready**
+### **Latest Release: v3.0.1 - Play Store Ready**
 
-**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.apk)** (Release APK) | **[📦 AAB Bundle](https://github.com/aRc-rAy/Batua/releases/download/v1.0.1/app-release.aab)** (For Play Store)
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.apk)** (Release APK) | **[📦 AAB Bundle](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.aab)** (For Play Store)
 
 ### **Installation Instructions:**
 
