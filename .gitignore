@@ -220,7 +220,10 @@ buck-out/
 
 # Build outputs (keep APK in root for releases)
 android/app/build/
+# Build outputs (keep APK in root for releases)
+*.aab
 !spendbook-v2.0.1.apk
+!SpendBook-v3.0.1.apk
 
 # VS Code
 .vscode/
