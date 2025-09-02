@@ -102,6 +102,12 @@ android {
                 storePassword MYAPP_RELEASE_STORE_PASSWORD
                 keyAlias MYAPP_RELEASE_KEY_ALIAS
                 keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            } else {
+                // Use debug keystore for development builds
+                storeFile file('debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
             }
         }
     }
@@ -116,7 +122,6 @@ android {
             // Additional security for release builds
             debuggable false
             jniDebuggable false
-            renderscriptDebuggable false
             zipAlignEnabled true
         }
     }

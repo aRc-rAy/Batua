@@ -32,12 +32,26 @@
 # Keep React Native gesture handler
 -keep class com.swmansion.gesturehandler.** { *; }
 
-# General Android optimizations
--optimizationpasses 5
--dontusemixedcaseclassnames
--dontskipnonpubliclibraryclasses
--dontpreverify
--verbose
+# Keep React Native screens
+-keep class com.swmansion.rnscreens.** { *; }
+
+# Keep React Native safe area context
+-keep class com.th3rdwave.safeareacontext.** { *; }
+
+# Keep React Native async storage
+-keep class com.reactnativecommunity.asyncstorage.** { *; }
+
+# Keep React Native FS
+-keep class com.rnfs.** { *; }
+
+# Keep React Native linear gradient
+-keep class com.BV.LinearGradient.** { *; }
+
+# Keep React Native SVG
+-keep class com.horcrux.svg.** { *; }
+
+# Keep SMS Android module
+-keep class com.rhaker.reactnativesmsandroid.** { *; }
 
 # Remove logging in release builds for security
 -assumenosideeffects class android.util.Log {
@@ -45,7 +59,3 @@
     public static *** v(...);
     public static *** i(...);
 }
-
-# Keep line numbers for crash reports
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable

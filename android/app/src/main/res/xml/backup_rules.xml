@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Include app data for backup -->
-    <include domain="database" path="SpendBook.db" />
-    <include domain="sharedpref" path="SpendBook_preferences.xml" />
-
-    <!-- Exclude sensitive data -->
-    <exclude domain="sharedpref" path="auth_prefs.xml" />
-    <exclude domain="database" path="temp_cache.db" />
+    <!-- No backup implemented - exclude all data for privacy -->
+    <exclude domain="root" />
 </full-backup-content>
