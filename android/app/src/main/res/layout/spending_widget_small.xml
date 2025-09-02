@@ -7,32 +7,58 @@
     android:padding="4dp"
     android:background="@drawable/widget_background">
 
-    <!-- Enhanced Header with Day & Date -->
+    <!-- Top Row: Day/Date Left, Button Right -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginBottom="6dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Day & Date on Left -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Monday"
-            android:textColor="#1A202C"
-            android:textSize="16sp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="start"
+            android:layout_marginStart="8dp">
+
+            <TextView
+                android:id="@+id/widget_day_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monday"
+                android:textColor="#1A202C"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="start" />
+
+            <TextView
+                android:id="@+id/widget_date_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sep 02, 2025"
+                android:textColor="#4A5568"
+                android:textSize="14sp"
+                android:gravity="start"
+                android:layout_marginTop="2dp" />
+
+        </LinearLayout>
+
+        <!-- Add Payment Button on Right -->
+        <Button
+            android:id="@+id/widget_add_payment_btn_small"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="+"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/widget_date_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sep 02, 2025"
-            android:textColor="#4A5568"
-            android:textSize="12sp"
+            android:background="@drawable/widget_button_background"
             android:gravity="center"
-            android:layout_marginTop="1dp" />
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
     </LinearLayout>
 
@@ -43,7 +69,7 @@
         android:layout_weight="1"
         android:orientation="horizontal"
         android:baselineAligned="false"
-        android:layout_marginBottom="6dp">
+        android:layout_marginBottom="8dp">
 
         <!-- Today Column -->
         <LinearLayout
@@ -53,14 +79,14 @@
             android:orientation="vertical"
             android:background="@drawable/spending_card_background"
             android:gravity="center"
-            android:layout_marginEnd="2dp">
+            android:layout_marginEnd="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Today"
                 android:textColor="#2D3748"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -70,10 +96,10 @@
                 android:layout_height="wrap_content"
                 android:text="₹0.00"
                 android:textColor="#3182CE"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="4dp" />
 
         </LinearLayout>
 
@@ -85,15 +111,15 @@
             android:orientation="vertical"
             android:background="@drawable/spending_card_background"
             android:gravity="center"
-            android:layout_marginStart="1dp"
-            android:layout_marginEnd="1dp">
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Week"
                 android:textColor="#2D3748"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -103,10 +129,10 @@
                 android:layout_height="wrap_content"
                 android:text="₹0.00"
                 android:textColor="#D69E2E"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="4dp" />
 
         </LinearLayout>
 
@@ -118,14 +144,14 @@
             android:orientation="vertical"
             android:background="@drawable/spending_card_background"
             android:gravity="center"
-            android:layout_marginStart="2dp">
+            android:layout_marginStart="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Month"
                 android:textColor="#2D3748"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center" />
 
@@ -135,25 +161,13 @@
                 android:layout_height="wrap_content"
                 android:text="₹0.00"
                 android:textColor="#9F7AEA"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="4dp" />
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <!-- Add Payment Button -->
-    <Button
-        android:id="@+id/widget_add_payment_btn_small"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:text="+ Add Payment"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:background="@drawable/widget_button_background"
-        android:layout_marginBottom="8dp" />
 
 </LinearLayout>

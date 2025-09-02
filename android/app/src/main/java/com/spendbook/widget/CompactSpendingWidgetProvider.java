@@ -66,14 +66,17 @@ public class CompactSpendingWidgetProvider extends AppWidgetProvider {
         String weekText = "₹" + currencyFormat.format(weekSpending);
         String monthText = "₹" + currencyFormat.format(monthSpending);
 
-        // Get current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
+        // Get current date and day
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        String currentDay = dayFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.spending_widget_small);
         
         // Update widget content
+        views.setTextViewText(R.id.widget_day_small, currentDay);
         views.setTextViewText(R.id.widget_date_small, currentDate);
         views.setTextViewText(R.id.widget_today_amount_small, todayText);
         views.setTextViewText(R.id.widget_week_amount_small, weekText);
