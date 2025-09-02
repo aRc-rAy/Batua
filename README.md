@@ -1,4 +1,4 @@
-# 📱 PaymentTracker (Batua) - Privacy-First Expense Tracking
+# 📱 SpendBook - Privacy-First Expense Tracking
 
 A comprehensive Android app for tracking daily expenses with smart SMS detection, analytics, and professional insights. Take control of your finances with intelligent categorization and detailed spending reports.
 
@@ -11,7 +11,7 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 
 ### **📱 Latest Release: v3.0.1 - Play Store Ready**
 
-**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.apk)** | **[📦 AAB for Play Store](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.aab)**
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.apk)** | **[📦 AAB for Play Store](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.aab)**
 
 ## ✨ **Key Features**
 
@@ -48,7 +48,7 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 ### 🎨 **User Experience**
 
 - � **Minimalist Design**: Clean, professional interface
-- 📱 **Responsive Layout**: Optimized for Android devices  
+- 📱 **Responsive Layout**: Optimized for Android devices
 - 🎯 **Intuitive Navigation**: Easy-to-use tab navigation
 - ⚡ **Fast Performance**: Optimized React Native performance
 
@@ -56,17 +56,18 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 
 ### **Latest Release: v3.0.1 - Play Store Ready**
 
-**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.apk)** (Release APK) | **[📦 AAB Bundle](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.aab)** (For Play Store)
+**[⬇️ Download APK](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.apk)** (Release APK) | **[📦 AAB Bundle](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.aab)** (For Play Store)
 
 ### **Installation Instructions:**
 
 1. **Enable Unknown Sources**: Settings → Security → Unknown Sources → Enable
-2. **Download APK**: Click the APK download link above  
+2. **Download APK**: Click the APK download link above
 3. **Install App**: Open downloaded APK file and tap "Install"
 4. **Grant Permissions**: Allow SMS and Storage permissions when prompted (optional)
 5. **Start Tracking**: Launch the app and start managing your expenses!
 
 ### **System Requirements:**
+
 - Android 7.0 (API level 24) or higher
 - 50 MB free storage space
 - Optional: SMS permission for auto-detection
@@ -74,12 +75,15 @@ A comprehensive Android app for tracking daily expenses with smart SMS detection
 ## 🏦 **Supported Banks & Services**
 
 ### **Major Banks**
+
 HDFC Bank | ICICI Bank | State Bank of India | Axis Bank | Kotak Bank | Punjab National Bank | Bank of India | Canara Bank | Union Bank | IndusInd Bank | YES Bank | RBL Bank | Federal Bank | IDFC Bank | Bandhan Bank | AU Small Finance Bank
 
 ### **Digital Wallets & UPI**
+
 PayTM | Google Pay | PhonePe | Amazon Pay | MobiKwik | FreeCharge | BHIM | Yono | All UPI Services
 
 ### **Card Networks**
+
 Visa | Mastercard | RuPay | American Express
 
 ### System Requirements:

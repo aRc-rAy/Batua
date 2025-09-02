@@ -1,10 +1,10 @@
-# PaymentTracker (Batua) - Release v3.0.1
+# SpendBook - Release v3.0.1
 
 **🎉 Play Store Ready Release with Enhanced Security & Privacy**
 
 ## 📱 **Download**
-- **Android APK**: [app-release.apk](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.apk)
-- **Android App Bundle** (For Play Store): [app-release.aab](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/app-release.aab)
+- **Android APK**: [SpendBook-v3.0.1.apk](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.apk)
+- **Android App Bundle** (For Play Store): [SpendBook-v3.0.1.aab](https://github.com/aRc-rAy/Batua/releases/download/v3.0.1/SpendBook-v3.0.1.aab)
 
 ## 🆕 **What's New in v3.0.1**
 

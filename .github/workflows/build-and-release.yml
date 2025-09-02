@@ -107,9 +107,9 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ steps.version.outputs.version }}
-        name: "PaymentTracker ${{ steps.version.outputs.version }} - Play Store Ready"
+        name: "SpendBook ${{ steps.version.outputs.version }} - Play Store Ready"
         body: |
-          ## 🎉 PaymentTracker ${{ steps.version.outputs.version }}
+          ## 🎉 SpendBook ${{ steps.version.outputs.version }}
           
           **📱 Ready for Play Store submission with enhanced security and privacy features**
           
