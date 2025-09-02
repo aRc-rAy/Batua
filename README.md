@@ -6,7 +6,7 @@ A simple and elegant React Native app for tracking daily expenses with analytics
 
 **Latest Release: v4.0.0** - *September 3, 2025*
 
-📱 **[Download SpendBook-v4.0.0.apk](https://github.com/aRc-rAy/Batua/releases/latest)**
+📱 **[Download SpendBook-v4.0.0.apk](https://github.com/aRc-rAy/Batua/releases/download/v4.0.0/SpendBook-v4.0.0.apk)**
 
 *Simple, Private, Offline Expense Tracking*
 
