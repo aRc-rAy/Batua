@@ -266,7 +266,6 @@ const SettingsScreen: React.FC = () => {
       ...textStyles.body,
       color: theme.colors.textSecondary,
       textAlign: 'center',
-      fontStyle: 'italic',
     },
   });
 
